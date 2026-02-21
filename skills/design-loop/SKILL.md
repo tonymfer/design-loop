@@ -390,7 +390,8 @@ CONSTRAINTS:
 
 COMPLETION:
 When ALL 8 criteria score >= 4/5 for TWO consecutive screenshots,
-output "POLISHED" and stop iterating.
+output <promise>POLISHED</promise> and stop iterating.
+The Stop hook detects this tag and allows the session to exit cleanly.
 Then suggest: "Run /export-loop to generate a shareable summary of this run."
 
 STUCK HANDLING:
@@ -440,6 +441,11 @@ Then execute the loop directly. For each iteration 1 to max_iterations:
 
 On completion, update state to `status: completed` with `final_avg` and `completed_at`.
 Begin iteration 1 immediately.
+
+After each iteration, the Stop hook intercepts session exit:
+- If <promise>POLISHED</promise> was output → session exits, loop complete
+- If max iterations reached → session exits with final summary
+- Otherwise → same prompt is fed back for the next iteration automatically
 
 ## Design Criteria Quick Reference
 
