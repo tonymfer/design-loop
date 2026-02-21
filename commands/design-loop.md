@@ -34,11 +34,14 @@ If arguments were provided:
 - `viewport`: Skip Q4 (viewport), use provided value
 - `iterations`: Skip Q3 (iterations), use provided value
 
-## Prerequisites Check
+## Prerequisites (auto-installed)
 
-Before starting, verify:
-1. `ralph-loop` plugin is installed (check for `.claude/plugins/` or ask user)
-2. Playwright MCP is available (try `mcp__plugin_playwright_playwright__browser_navigate`)
-3. Dev server is running at the target URL
+Before starting, check and auto-install missing dependencies:
 
-If any prerequisite is missing, tell the user how to install it and stop.
+1. **ralph-loop plugin** — check if installed. If missing, run:
+   `claude plugin add ralph-loop`
+2. **Playwright MCP** — try calling any `mcp__plugin_playwright_playwright__*` tool. If unavailable, run:
+   `claude mcp add playwright -- npx -y @playwright/mcp@latest`
+3. **Dev server** — verify it's running at the target URL. If not, tell the user to start it.
+
+Only stop if the dev server isn't running — dependencies should be installed automatically.

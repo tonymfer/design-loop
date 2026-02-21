@@ -7,11 +7,10 @@ description: Use when user wants to visually iterate on UI/UX design using scree
 
 Autonomous visual iteration loop for frontend UI/UX. Takes screenshots after each change, analyzes against 8 design criteria, fixes issues, repeats until polished.
 
-**Runs on Ralph Loop infrastructure** — requires `ralph-loop` plugin installed.
-
 ## Overview
 
 Design Loop = Ralph Loop + Playwright Screenshots + Design Analysis.
+Dependencies (ralph-loop plugin, Playwright MCP) are auto-installed on first run.
 
 Each iteration:
 1. Take screenshot of the target page (Playwright MCP)
@@ -34,6 +33,21 @@ Each iteration:
 - When a Figma design exists (use Figma MCP to implement it instead)
 - Single CSS fix (just do it directly)
 - Performance optimization
+
+## Phase 0: Dependency Check (auto-install)
+
+Before anything else, verify dependencies are available:
+
+```
+1. CHECK ralph-loop plugin — try to detect ralph-loop infrastructure
+   If missing: run `claude plugin add ralph-loop` via Bash
+2. CHECK Playwright MCP — try calling mcp__plugin_playwright_playwright__browser_navigate
+   If unavailable: run `claude mcp add playwright -- npx -y @playwright/mcp@latest` via Bash
+3. CHECK dev server — verify target URL responds
+   If not running: tell user to start it and wait
+```
+
+Only block on the dev server — plugins and MCPs are installed automatically.
 
 ## Phase 1: Project Context Scan
 

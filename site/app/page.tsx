@@ -291,27 +291,13 @@ export default function Home() {
         <Section>
           <SectionHeading>Install</SectionHeading>
           <p className="t" style={{ color: "var(--text-m)", marginBottom: "var(--sp-gap)" }}>
-            Three commands. Requires{" "}
+            One command. Requires{" "}
             <a href="https://docs.anthropic.com/en/docs/claude-code" style={{ color: "var(--accent)" }}>
               Claude Code
-            </a>{" "}
-            and the{" "}
-            <a href="https://github.com/anthropics/claude-plugins-public" style={{ color: "var(--accent)" }}>
-              ralph-loop
-            </a>{" "}
-            plugin.
+            </a>
+            . Dependencies are auto-installed on first run.
           </p>
           <CodeBlock>
-            <span style={{ color: "var(--text-m)" }}># 1. Install the ralph-loop plugin (iteration infrastructure)</span>
-            {"\n"}
-            <span style={{ color: "var(--text-h)" }}>claude plugin add ralph-loop</span>
-            {"\n\n"}
-            <span style={{ color: "var(--text-m)" }}># 2. Install the Playwright MCP (screenshots)</span>
-            {"\n"}
-            <span style={{ color: "var(--text-h)" }}>claude mcp add playwright -- npx -y @playwright/mcp@latest</span>
-            {"\n\n"}
-            <span style={{ color: "var(--text-m)" }}># 3. Install design-loop</span>
-            {"\n"}
             <span style={{ color: "var(--text-h)" }}>claude plugin add https://github.com/tonymfer/design-loop</span>
           </CodeBlock>
           <p className="t" style={{ marginTop: "var(--sp-gap)", color: "var(--text)" }}>

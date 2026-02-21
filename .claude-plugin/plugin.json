@@ -1,7 +1,7 @@
 {
   "name": "design-loop",
   "description": "Autonomous visual iteration loop for frontend UI/UX. Screenshots your page, scores it against 8 design criteria, fixes issues, repeats until polished.",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "author": {
     "name": "tonymfer",
     "email": "tony.base.eth@gmail.com"
@@ -9,5 +9,14 @@
   "homepage": "https://github.com/tonymfer/design-loop",
   "repository": "https://github.com/tonymfer/design-loop",
   "license": "MIT",
-  "keywords": ["design", "ui", "ux", "visual-polish", "screenshots", "playwright", "iteration", "ralph-loop", "next.js", "react", "tailwind", "ssr", "framework-detection"]
+  "keywords": ["design", "ui", "ux", "visual-polish", "screenshots", "playwright", "iteration", "ralph-loop", "next.js", "react", "tailwind", "ssr", "framework-detection"],
+  "dependencies": {
+    "plugins": ["ralph-loop"],
+    "mcpServers": {
+      "playwright": {
+        "command": "npx",
+        "args": ["-y", "@playwright/mcp@latest"]
+      }
+    }
+  }
 }

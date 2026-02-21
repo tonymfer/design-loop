@@ -56,23 +56,16 @@ Every screenshot is scored against these design fundamentals:
 ## Requirements
 
 - [Claude Code](https://docs.anthropic.com/en/docs/claude-code) CLI
-- [ralph-loop](https://github.com/anthropics/claude-plugins-public) plugin (iteration infrastructure)
-- [Playwright MCP](https://github.com/anthropics/claude-plugins-public) (screenshots)
 
 ---
 
 ## Install
 
 ```bash
-# 1. Install ralph-loop (iteration infrastructure)
-claude plugin add ralph-loop
-
-# 2. Install Playwright MCP (screenshots)
-claude mcp add playwright -- npx -y @playwright/mcp@latest
-
-# 3. Install design-loop
 claude plugin add https://github.com/tonymfer/design-loop
 ```
+
+That's it. Dependencies (ralph-loop, Playwright MCP) are auto-installed on first run.
 
 ---
 

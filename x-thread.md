@@ -69,12 +69,12 @@ The demo IS the proof.
 Free. Open source. MIT license.
 
 ```
-claude plugin add ralph-loop
-claude mcp add playwright -- npx -y @playwright/mcp@latest
 claude plugin add https://github.com/tonymfer/design-loop
 ```
 
 Then: `/design-loop http://localhost:3000`
+
+One command. Dependencies auto-install on first run.
 
 https://github.com/tonymfer/design-loop
 
