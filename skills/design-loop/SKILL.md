@@ -2,7 +2,7 @@
 name: design-loop
 description: Use when user wants to visually iterate on UI/UX design using screenshots, when they say "design loop", "visual loop", "polish the UI", or want autonomous screenshot-driven frontend refinement
 argument-hint: "[url] [iterations]"
-allowed-tools: Read, Write, Edit, Glob, Grep, Bash, mcp__claude-in-chrome__navigate, mcp__claude-in-chrome__computer, mcp__claude-in-chrome__read_page, mcp__claude-in-chrome__find, mcp__claude-in-chrome__javascript_tool
+allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 ---
 
 # design-loop

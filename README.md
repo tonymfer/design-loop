@@ -1,7 +1,7 @@
 # design-loop
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com/tonymfer/design-loop/releases)
+[![Version](https://img.shields.io/badge/version-1.1.0-blue.svg)](https://github.com/tonymfer/design-loop/releases)
 [![Claude Code Plugin](https://img.shields.io/badge/Claude_Code-Plugin-blueviolet.svg)](https://docs.anthropic.com/en/docs/claude-code)
 
 **AI can code your UI. But it can't *see* it.**
@@ -165,18 +165,22 @@ You can also chain skills explicitly for a directed workflow:
 ```
 design-loop/
   skills/design-loop/
-    SKILL.md          # Core workflow (the product)
+    SKILL.md              # Core workflow (the product)
   commands/
-    design-loop.md    # /design-loop slash command
-    export-loop.md    # /export-loop slash command
-    version.md        # /version — check for updates
+    design-loop.md        # /design-loop slash command
+    export-loop.md        # /export-loop slash command
+    version.md            # /version — check for updates
   hooks/
-    hooks.json        # Plugin hook manifest
-    stop-hook.sh      # Stop hook for autonomous iteration
+    hooks.json            # Plugin hook manifest
+    session-start-hook.sh # Validates Playwright CLI on session start
+    stop-hook.sh          # Stop hook for autonomous iteration
+  agents/
+    visual-reviewer.md    # UI screenshot analysis agent
   .claude-plugin/
-    plugin.json       # Plugin manifest
-    marketplace.json  # Marketplace manifest
-  site/               # Interactive demo (design-loop.vercel.app)
+    plugin.json           # Plugin manifest
+    marketplace.json      # Marketplace manifest
+  settings.json           # Plugin settings (default agent)
+  site/                   # Interactive demo (design-loop.vercel.app)
   CHANGELOG.md
   LICENSE
 ```
