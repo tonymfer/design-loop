@@ -220,6 +220,171 @@
   border-top-color: rgba(234,179,8,0.06) !important;
 }
 
+/* ── Shimmer animation (iter 4 — hero "see" text) ── */
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+[data-iteration="4"] .accent-glow {
+  background: linear-gradient(
+    90deg,
+    #eab308 0%,
+    #fde68a 25%,
+    #fef9c3 50%,
+    #fde68a 75%,
+    #eab308 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer 3s ease-in-out infinite;
+  text-shadow: none;
+}
+
+/* ── Terminal-style code block headers (iter 3-4) ── */
+[data-iteration="3"] pre.code-block,
+[data-iteration="4"] pre.code-block {
+  position: relative;
+  padding-top: calc(var(--card-pad) + 28px);
+}
+
+[data-iteration="3"] pre.code-block::before,
+[data-iteration="4"] pre.code-block::before {
+  content: "● ● ●";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: block;
+  padding: 8px var(--card-pad);
+  font-size: 10px;
+  letter-spacing: 4px;
+  color: var(--text-m);
+  border-bottom: 1px solid var(--border);
+  font-family: var(--font-mono);
+}
+
+/* ── Step connector lines (desktop) ── */
+@media (min-width: 640px) {
+  .step-card {
+    position: relative;
+  }
+  .step-card:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: -12px;
+    width: 20px;
+    height: 1px;
+    border-top: 2px dashed var(--border);
+    transform: translateY(-50%);
+    pointer-events: none;
+    transition: all 400ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+}
+
+[data-iteration="3"] .step-card:not(:last-child)::after,
+[data-iteration="4"] .step-card:not(:last-child)::after {
+  border-top-style: solid;
+  border-top-color: var(--accent);
+  box-shadow: 0 0 8px rgba(234,179,8,0.3);
+}
+
+/* ── NEW badge ── */
+.new-badge {
+  display: none;
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  padding: 2px 6px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  background: var(--accent);
+  color: var(--bg);
+  border-radius: 2px;
+  line-height: 1.4;
+}
+
+[data-iteration="3"] .new-badge,
+[data-iteration="4"] .new-badge {
+  display: block;
+}
+
+/* ── Subtle noise texture (iter 4) ── */
+[data-iteration="4"]::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.015;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 256px 256px;
+}
+
+/* ── Card hover lift ── */
+.card-lift {
+  transition: transform 200ms ease, box-shadow 200ms ease,
+    border-color 400ms cubic-bezier(0.4, 0, 0.2, 1),
+    background 400ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card-lift:hover {
+  transform: translateY(-2px);
+}
+
+/* ── POLISHED badge ── */
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 4px rgba(234,179,8,0.3); }
+  50% { box-shadow: 0 0 12px rgba(234,179,8,0.5); }
+}
+
+.polished-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  background: var(--accent);
+  color: var(--bg);
+  border-radius: 2px;
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* ── Score delta indicator ── */
+.score-up {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: #22c55e;
+  margin-left: 6px;
+}
+
+[data-iteration="3"] .score-up,
+[data-iteration="4"] .score-up {
+  color: #4ade80;
+}
+
+/* ── Rhythm text (hero tagline) ── */
+.rhythm-text {
+  display: none;
+}
+
+[data-iteration="3"] .rhythm-text,
+[data-iteration="4"] .rhythm-text {
+  display: block;
+}
+
 /* ── Mobile ── */
 @media (max-width: 640px) {
   [data-iteration="0"] {

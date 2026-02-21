@@ -33,9 +33,19 @@ const CRITERIA = [
 
 const STEPS = [
   { num: "1", title: "Screenshot", desc: "Playwright captures the page" },
-  { num: "2", title: "Score", desc: "8 criteria evaluated 1–5" },
-  { num: "3", title: "Fix", desc: "Top 3 issues fixed in code" },
-  { num: "4", title: "Repeat", desc: "Loop until polished" },
+  { num: "2", title: "Measure", desc: "JS checks layout metrics", isNew: true },
+  { num: "3", title: "Score", desc: "8 criteria rated 1–5" },
+  { num: "4", title: "Fix", desc: "Top 3 issues fixed in code" },
+  { num: "5", title: "Repeat", desc: "Loop until polished" },
+];
+
+const FEATURES = [
+  { icon: "⚡", title: "Standalone", desc: "Zero dependencies. Native iteration engine with structured 4-phase progression." },
+  { icon: "📐", title: "MEASURE Step", desc: "JavaScript layout probing catches what screenshots miss — viewport drift, overflow, cascade bugs." },
+  { icon: "🔍", title: "CSS Cascade Audit", desc: "Detects unlayered CSS resets overriding Tailwind v4 utilities. Catches specificity conflicts." },
+  { icon: "🎯", title: "9 Frameworks", desc: "Auto-detects Next.js, Vite, Remix, Astro, SvelteKit, and more from package.json." },
+  { icon: "📊", title: "Phase-Aware", desc: "Structured 4-phase progression: Layout → Polish → Accessibility → Final review." },
+  { icon: "🔄", title: "Stuck Detection", desc: "Detects score plateaus and rotates strategies — skips what's working, focuses on what's not." },
 ];
 
 function avg(s: Record<string, number>) {
@@ -136,7 +146,7 @@ export default function Home() {
               letterSpacing: "0.12em",
             }}
           >
-            Claude Code Plugin
+            Claude Code Plugin · v2.0
           </div>
           <h1
             className="t mx-auto mb-6 font-[800]"
@@ -158,9 +168,10 @@ export default function Home() {
             className="t mx-auto mb-10"
             style={{ fontSize: "var(--sub-size, calc(var(--b-size) * 1.15))", lineHeight: 1.7, color: "var(--text-m)", maxWidth: "var(--sub-max-w, 480px)", textWrap: "balance", textAlign: "center" } as React.CSSProperties}
           >
-            design-loop gives Claude eyes. It screenshots your page, scores it
-            against 8 design criteria, fixes the issues, and repeats —
-            autonomously — until your UI is polished.
+            design-loop gives Claude eyes. It screenshots your page,
+            measures layout metrics, scores against 8 design criteria,
+            fixes the issues, and repeats — autonomously — until your UI
+            is polished.
           </p>
           <a
             href="https://github.com/tonymfer/design-loop"
@@ -181,27 +192,41 @@ export default function Home() {
           >
             Install Plugin →
           </a>
+          <p
+            className="rhythm-text t mt-8"
+            style={{
+              fontFamily: "var(--font-mono)",
+              fontSize: "13px",
+              letterSpacing: "0.08em",
+              color: "var(--text-m)",
+            }}
+          >
+            Screenshot. Measure. Score. Fix. Repeat.
+          </p>
         </section>
 
         {/* ── How it works ── */}
         <Section>
           <SectionHeading>How it works</SectionHeading>
           <p className="t" style={{ color: "var(--text-m)", marginBottom: "var(--sp-gap)" }}>
-            Four steps, repeated until every criterion scores 4/5 or higher.
+            Five steps, repeated until every criterion scores 4/5 or higher.
           </p>
           <div
-            className="t mt-[var(--sp-card)] grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-[var(--sp-gap)]"
+            className="t mt-[var(--sp-card)] grid grid-cols-2 gap-3 sm:grid-cols-5 sm:gap-[var(--sp-gap)]"
           >
-            {STEPS.map((step, i) => (
+            {STEPS.map((step) => (
               <div
                 key={step.num}
-                className="t flex items-start gap-3 rounded-[var(--radius)] p-4 sm:flex-col sm:items-center sm:gap-0 sm:p-5 sm:text-center"
+                className="step-card t relative flex items-start gap-3 rounded-[var(--radius)] p-4 sm:flex-col sm:items-center sm:gap-0 sm:p-5 sm:text-center"
                 style={{
                   background: "var(--bg-card)",
                   border: `1px solid var(--border)`,
                   boxShadow: "var(--shadow)",
                 }}
               >
+                {"isNew" in step && step.isNew && (
+                  <span className="new-badge">New</span>
+                )}
                 <div
                   className="t flex h-9 w-9 shrink-0 items-center justify-center rounded-full font-mono text-sm font-bold sm:mb-2.5 sm:h-[var(--step-size)] sm:w-[var(--step-size)] sm:text-base"
                   style={{
@@ -227,6 +252,61 @@ export default function Home() {
           </div>
         </Section>
 
+        {/* ── What Screenshots Miss ── */}
+        <Section>
+          <SectionHeading>What Screenshots Miss</SectionHeading>
+          <p className="t" style={{ color: "var(--text-m)", marginBottom: "var(--sp-gap)" }}>
+            A screenshot looks fine. The layout is broken. v2.0 catches what pixels can&apos;t show.
+          </p>
+          <div
+            className="t mt-[var(--sp-card)] grid grid-cols-1 gap-[var(--sp-gap)] sm:grid-cols-2"
+          >
+            <Card className="card-lift">
+              <h3
+                className="t mb-2 font-semibold"
+                style={{ fontSize: "var(--b-size)", color: "var(--text-h)" }}
+              >
+                <span style={{ color: "var(--accent)", marginRight: "8px" }}>01</span>
+                CSS Cascade Bugs
+              </h3>
+              <p className="t mb-0" style={{ fontSize: "calc(var(--b-size) * 0.88)", color: "var(--text-m)", lineHeight: 1.55 }}>
+                Unlayered CSS resets silently override Tailwind v4 utilities.
+                Everything looks correct in the screenshot — but <code style={{ fontFamily: "var(--font-mono)", fontSize: "0.9em", color: "var(--accent)" }}>margin: 0</code> is
+                fighting your spacing system. MEASURE catches it.
+              </p>
+            </Card>
+            <Card className="card-lift">
+              <h3
+                className="t mb-2 font-semibold"
+                style={{ fontSize: "var(--b-size)", color: "var(--text-h)" }}
+              >
+                <span style={{ color: "var(--accent)", marginRight: "8px" }}>02</span>
+                Wide Viewport Drift
+              </h3>
+              <p className="t mb-0" style={{ fontSize: "calc(var(--b-size) * 0.88)", color: "var(--text-m)", lineHeight: 1.55 }}>
+                Your 1280px screenshot is centered. At 1920px, everything drifts
+                left. MEASURE checks the real <code style={{ fontFamily: "var(--font-mono)", fontSize: "0.9em", color: "var(--accent)" }}>offsetLeft</code> against the
+                expected center — no screenshot needed.
+              </p>
+            </Card>
+          </div>
+          <div
+            className="t mt-[var(--sp-gap)] rounded-[var(--radius)] text-center"
+            style={{
+              background: "var(--accent-bg)",
+              border: `1px solid var(--badge-border)`,
+              padding: "clamp(14px, 3vw, 20px) clamp(16px, 3vw, 28px)",
+            }}
+          >
+            <p
+              className="t mb-0 text-sm font-medium sm:text-base"
+              style={{ color: "var(--accent)", fontFamily: "var(--font-mono)", fontSize: "13px", letterSpacing: "0.02em" }}
+            >
+              This is why design-loop doesn&apos;t just look. It measures.
+            </p>
+          </div>
+        </Section>
+
         {/* ── The 8 Criteria ── */}
         <Section>
           <SectionHeading>The 8 Criteria</SectionHeading>
@@ -238,17 +318,48 @@ export default function Home() {
             style={{ gridTemplateColumns: `repeat(var(--cols), 1fr)`, gap: "var(--sp-gap)" }}
           >
             {CRITERIA.map((c) => (
-              <Card key={c.key} className="card-hover">
+              <Card key={c.key} className="card-hover card-lift">
                 <div className="mb-2 flex items-center gap-2.5">
                   <span className="t flex h-8 w-8 shrink-0 items-center justify-center rounded text-sm" style={{ background: "var(--accent-bg)", color: "var(--accent)" }}>
                     {c.icon}
                   </span>
-                  <h3 className="t mb-0 font-semibold" style={{ fontSize: "var(--b-size)", color: "var(--text-h)" }}>
+                  <h3 className="t mb-0 flex-1 font-semibold" style={{ fontSize: "var(--b-size)", color: "var(--text-h)" }}>
                     {c.name}
                   </h3>
+                  <span
+                    className="t font-mono text-xs font-bold"
+                    style={{ color: "var(--accent)" }}
+                  >
+                    {s[c.key]}/5
+                  </span>
                 </div>
                 <p className="t mb-0" style={{ fontSize: "calc(var(--b-size) * 0.88)", color: "var(--text-m)", lineHeight: 1.55 }}>
                   {c.desc}
+                </p>
+              </Card>
+            ))}
+          </div>
+        </Section>
+
+        {/* ── v2.0 Features ── */}
+        <Section>
+          <SectionHeading>v2.0</SectionHeading>
+          <p className="t" style={{ color: "var(--text-m)", marginBottom: "var(--sp-gap)" }}>
+            Standalone. Smarter. Framework-aware.
+          </p>
+          <div
+            className="t mt-[var(--sp-card)] grid grid-cols-1 gap-[var(--sp-gap)] sm:grid-cols-2"
+          >
+            {FEATURES.map((f) => (
+              <Card key={f.title} className="card-lift">
+                <div className="mb-1.5 flex items-center gap-2.5">
+                  <span className="text-base">{f.icon}</span>
+                  <h3 className="t mb-0 font-semibold" style={{ fontSize: "var(--b-size)", color: "var(--text-h)" }}>
+                    {f.title}
+                  </h3>
+                </div>
+                <p className="t mb-0" style={{ fontSize: "calc(var(--b-size) * 0.88)", color: "var(--text-m)", lineHeight: 1.55 }}>
+                  {f.desc}
                 </p>
               </Card>
             ))}
@@ -281,29 +392,34 @@ export default function Home() {
             >
               Scorecard — {ITER_LABELS[iter]}
             </h3>
-            {CRITERIA.map((c) => (
-              <div
-                key={c.key}
-                className="t flex items-center justify-between"
-                style={{
-                  padding: "8px 0",
-                  borderBottom: `1px solid var(--border)`,
-                  fontSize: "calc(var(--b-size) * 0.9)",
-                }}
-              >
-                <span style={{ color: "var(--text)" }}>{c.name}</span>
-                <span style={{ fontFamily: "var(--font-mono)", fontWeight: 600, color: "var(--accent)" }}>
-                  {s[c.key]}/5
-                </span>
-              </div>
-            ))}
+            {CRITERIA.map((c) => {
+              const delta = s[c.key] - SCORES[0][c.key];
+              return (
+                <div
+                  key={c.key}
+                  className="t flex items-center justify-between"
+                  style={{
+                    padding: "8px 0",
+                    borderBottom: `1px solid var(--border)`,
+                    fontSize: "calc(var(--b-size) * 0.9)",
+                  }}
+                >
+                  <span style={{ color: "var(--text)" }}>{c.name}</span>
+                  <span style={{ fontFamily: "var(--font-mono)", fontWeight: 600, color: "var(--accent)" }}>
+                    {s[c.key]}/5
+                    {delta > 0 && <span className="score-up">+{delta}</span>}
+                  </span>
+                </div>
+              );
+            })}
             <div
               className="t mt-1 flex items-center justify-between pt-2.5 font-bold"
               style={{ borderTop: `2px solid var(--accent)`, color: "var(--text-h)" }}
             >
               <span>Average</span>
-              <span style={{ fontFamily: "var(--font-mono)", color: "var(--accent)", fontSize: "1.2em" }}>
+              <span className="flex items-center gap-2" style={{ fontFamily: "var(--font-mono)", color: "var(--accent)", fontSize: "1.2em" }}>
                 {score}/5
+                {iter === 4 && <span className="polished-badge">Polished</span>}
               </span>
             </div>
           </Card>
@@ -329,6 +445,10 @@ export default function Home() {
             <span style={{ color: "var(--text-m)" }}># Start polishing</span>
             {"\n"}
             <span style={{ color: "var(--text-h)" }}>/design-loop http://localhost:3000</span>
+            {"\n\n"}
+            <span style={{ color: "var(--text-m)" }}># With viewport and iteration limit</span>
+            {"\n"}
+            <span style={{ color: "var(--text-h)" }}>/design-loop http://localhost:3000 desktop 20</span>
           </CodeBlock>
         </Section>
       </div>
@@ -346,6 +466,8 @@ export default function Home() {
           </a>
           {" · "}
           <span>MIT License</span>
+          {" · "}
+          <span style={{ color: "var(--accent)" }}>v2.0</span>
         </p>
       </footer>
     </div>
@@ -391,7 +513,7 @@ function Card({ children, className = "", style = {} }: { children: React.ReactN
 function CodeBlock({ children }: { children: React.ReactNode }) {
   return (
     <pre
-      className="t overflow-x-auto whitespace-pre"
+      className="t code-block overflow-x-auto whitespace-pre"
       style={{
         fontFamily: "var(--font-mono)",
         fontSize: "13px",
