@@ -5,11 +5,8 @@ arguments:
   - name: url
     description: Target page URL (default: http://localhost:3000)
     required: false
-  - name: viewport
-    description: Viewport mode — mobile, desktop, or both
-    required: false
   - name: iterations
-    description: Max iterations (default: 10)
+    description: Max iterations (default: 10, 0 for no limit)
     required: false
 ---
 
@@ -17,22 +14,23 @@ arguments:
 
 You are about to start an autonomous visual iteration loop. This command:
 1. Scans the project for framework, design tokens, and conventions
-2. Interviews the user (3-5 targeted questions)
-3. Generates a design-loop prompt
+2. Interviews the user (3 targeted questions)
+3. Takes section-level screenshots and scores against 5 design criteria
 4. Begins autonomous iteration within the current session
 
 ## Instructions
 
 Invoke the `design-loop` skill. It will handle the full workflow:
-- Phase 1: Project context scan (auto-detect framework, tokens, icons, constraints)
-- Phase 2: Interview (target page, focus areas, iterations, viewport)
-- Phase 3: Generate the design-loop prompt with all project context
-- Phase 4: Write to `.claude/design-loop.state.md` and begin iteration 1
+- Phase 0: Dependency check (auto-install Playwright MCP)
+- Phase 1: Context scan (package.json, tailwind config, component libraries)
+- Phase 2: Interview (target page, focus area, max iterations)
+- Phase 3: Section screenshots (node mode or scroll mode)
+- Phase 4: Evaluate against 5 criteria & fix top issues
+- Phase 5: Write `.claude/design-loop.state.md` and begin iteration 1
 
 If arguments were provided:
 - `url`: Skip Q1 (target), use provided URL
-- `viewport`: Skip Q7 (viewport), use provided value
-- `iterations`: Skip Q5 (iterations), use provided value
+- `iterations`: Skip Q3 (iterations), use provided value (0 = no limit)
 
 ## Prerequisites (auto-installed)
 

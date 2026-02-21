@@ -24,12 +24,12 @@ Generate a shareable summary of the most recent design-loop run.
 
 ### Score Progression
 
-| Iter | S | H | C | A | D | Co | T | E | Avg |
-|------|---|---|---|---|---|----|----|---|-----|
+| Iter | Comp | Typo | Color | Ident | Polish | Avg |
+|------|------|------|-------|-------|--------|-----|
 [rows from history]
 
 ### Key Improvements
-- [top 3 criterion improvements, e.g., "Spacing: 2 → 5 (+3)"]
+- [top 3 criterion improvements, e.g., "Composition: 2 → 5 (+3)"]
 
 ### Summary
 [started avg] → [final avg] across [N] iterations

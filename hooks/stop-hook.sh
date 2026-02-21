@@ -161,7 +161,12 @@ sed "s/^iteration: .*/iteration: $NEXT_ITERATION/" "$STATE_FILE" > "$TEMP_FILE"
 mv "$TEMP_FILE" "$STATE_FILE"
 
 # Build system message with iteration count
-SYSTEM_MSG="🔄 design-loop iteration $NEXT_ITERATION/$MAX_ITERATIONS | To complete: all 8 criteria >= 4/5 for 2 consecutive iterations, then output <promise>POLISHED</promise>"
+if [[ $MAX_ITERATIONS -gt 0 ]]; then
+  ITER_DISPLAY="$NEXT_ITERATION/$MAX_ITERATIONS"
+else
+  ITER_DISPLAY="$NEXT_ITERATION (no limit)"
+fi
+SYSTEM_MSG="🔄 design-loop iteration $ITER_DISPLAY | To complete: all 5 criteria >= 4/5 for 2 consecutive iterations, then output <promise>POLISHED</promise>"
 
 # Output JSON to block the stop and feed prompt back
 jq -n \
