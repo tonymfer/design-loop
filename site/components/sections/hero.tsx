@@ -84,7 +84,7 @@ export function Hero() {
   );
 
   return (
-    <Spotlight className="relative min-h-[85vh] flex items-center justify-center overflow-hidden">
+    <Spotlight className="relative min-h-[80vh] flex items-center justify-center overflow-hidden pb-8">
       {showPaths && (
         <div
           className="pointer-events-none absolute inset-0"

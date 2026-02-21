@@ -76,7 +76,7 @@ function ScoreCounter() {
 
 export function FinalCTA() {
   return (
-    <section className="relative border-t border-[var(--border)] py-20 text-center overflow-hidden">
+    <section className="relative border-t border-[var(--border)] py-24 text-center overflow-hidden">
       {/* Subtle dot grid background */}
       <div className="absolute inset-0 dot-grid" />
 

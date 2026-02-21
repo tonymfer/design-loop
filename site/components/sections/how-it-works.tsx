@@ -69,7 +69,7 @@ export function HowItWorks() {
             const Icon = step.icon;
             return (
               <ScrollReveal key={step.title} delay={i * 0.08}>
-                <div className="group relative rounded-xl border border-[var(--border)] bg-[var(--card-bg)] p-5 transition-all hover:border-[color-mix(in_srgb,var(--accent),transparent_80%)] hover:bg-[var(--surface)]">
+                <div className="group relative h-full rounded-xl border border-[var(--border)] bg-[var(--card-bg)] p-5 transition-all hover:border-[color-mix(in_srgb,var(--accent),transparent_80%)] hover:bg-[var(--surface)]">
                   <span className="font-mono text-[10px] font-bold text-[color-mix(in_srgb,var(--accent),transparent_60%)]">
                     {step.number}
                   </span>
@@ -83,7 +83,7 @@ export function HowItWorks() {
                     {step.description}
                   </p>
                   {i < steps.length - 1 && (
-                    <div className="pointer-events-none absolute -right-3 top-1/2 hidden text-[color-mix(in_srgb,var(--accent),transparent_70%)] sm:block">
+                    <div className="pointer-events-none absolute -right-3 top-1/2 hidden text-[color-mix(in_srgb,var(--accent),transparent_40%)] sm:block">
                       &rarr;
                     </div>
                   )}
@@ -95,7 +95,8 @@ export function HowItWorks() {
 
         {/* Phase strategy — inline */}
         <ScrollReveal delay={0.4}>
-          <div className="mt-10 grid grid-cols-2 gap-3 lg:grid-cols-4">
+          <p className="mt-10 mb-3 font-mono text-[10px] uppercase tracking-widest text-[var(--text-muted)]">Iteration phases</p>
+          <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
             {phases.map((phase) => (
               <div
                 key={phase.range}

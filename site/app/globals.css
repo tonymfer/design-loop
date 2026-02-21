@@ -30,7 +30,7 @@
 @property --text-muted {
   syntax: "<color>";
   inherits: true;
-  initial-value: #8b8b96;
+  initial-value: #9e9ea8;
 }
 @property --accent {
   syntax: "<color>";
@@ -65,7 +65,7 @@
   --page-bg: #030712;
   --text-primary: #fafaf9;
   --text-secondary: #a1a1aa;
-  --text-muted: #8b8b96;
+  --text-muted: #9e9ea8;
   --accent: #06b6d4;
   --accent-rgb: 6, 182, 212;
   --accent-2: #8b5cf6;

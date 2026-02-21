@@ -109,12 +109,14 @@ export function StackDetection() {
 
         {/* Detection details — compact inline */}
         <ScrollReveal delay={0.1}>
-          <div className="mt-6 flex flex-wrap gap-x-6 gap-y-2">
+          <div className="mt-6 grid gap-3 sm:grid-cols-3">
             {detectionDetails.map((detail, i) => (
-              <p key={i} className="text-xs text-[var(--text-muted)]">
-                <span className="text-[color-mix(in_srgb,var(--accent),transparent_40%)]">&rarr;</span>{" "}
-                {detail.text}
-              </p>
+              <div key={i} className="rounded-lg border border-[var(--border)] bg-[var(--card-bg)] px-4 py-3">
+                <p className="text-xs leading-relaxed text-[var(--text-muted)]">
+                  <span className="text-[var(--accent)]">&rarr;</span>{" "}
+                  {detail.text}
+                </p>
+              </div>
             ))}
           </div>
         </ScrollReveal>

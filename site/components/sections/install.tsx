@@ -6,7 +6,7 @@ import { TerminalBlock } from "@/components/ui/terminal-block";
 
 export function Install() {
   return (
-    <section id="install" className="border-t border-[var(--border)] py-16">
+    <section id="install" className="border-t border-[var(--border)] py-20">
       <div className="mx-auto max-w-[1100px] px-6">
         <ScrollReveal>
           <h2 className="font-serif text-3xl sm:text-4xl text-[var(--text-primary)]">
@@ -35,7 +35,7 @@ export function Install() {
         </ScrollReveal>
 
         <ScrollReveal delay={0.15}>
-          <h3 className="mt-10 text-sm font-semibold text-[var(--text-primary)]">Usage</h3>
+          <h3 className="mt-10 text-base font-semibold text-[var(--text-primary)]">Usage</h3>
           <div className="mt-3">
             <TerminalBlock>
               <code>

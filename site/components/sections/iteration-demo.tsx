@@ -398,7 +398,7 @@ export function IterationDemo() {
         <div className="mx-auto max-w-[1100px] px-6">
           <ScrollReveal>
             <h2 className="font-serif text-3xl sm:text-4xl text-[var(--text-primary)]">
-              <span className="bg-gradient-to-r from-zinc-100 to-zinc-400 bg-clip-text text-transparent">See it in action</span>
+              <span className="bg-gradient-to-r from-cyan-300 to-violet-300 bg-clip-text text-transparent">See it in action</span>
             </h2>
             <p className="mt-4 max-w-xl text-[var(--text-secondary)]">
               Click any state. The entire page transforms.

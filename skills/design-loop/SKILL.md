@@ -207,23 +207,85 @@ criteria table above are the sole design guidance.
 | 4 | Good — most designers would approve |
 | 5 | Excellent — distinctive, polished, portfolio-worthy |
 
+### CSS Layout Audit
+
+Run this JS via `browser_evaluate` once per iteration alongside screenshots. It catches structural bugs that are invisible at screenshot scale (e.g., unequal card heights in grids, overflow clipping):
+
+```js
+(() => {
+  const issues = [];
+
+  // Check grid rows for unequal card heights.
+  // CSS Grid stretches direct children (wrappers), but visible cards
+  // inside wrappers may not fill them — causing ragged row bottoms.
+  document.querySelectorAll('[class*="grid"]').forEach(grid => {
+    const style = getComputedStyle(grid);
+    if (style.display !== 'grid') return;
+    const children = [...grid.children].filter(c => c.offsetHeight > 0);
+    if (children.length < 2) return;
+
+    // Group children by row (bucket by approximate top position)
+    const rows = {};
+    children.forEach(c => {
+      const key = Math.round(c.getBoundingClientRect().top / 10) * 10;
+      (rows[key] = rows[key] || []).push(c);
+    });
+
+    // For each row, compare inner card heights (first child of each wrapper)
+    Object.values(rows).forEach(row => {
+      if (row.length < 2) return;
+      const cards = row.map(w => w.firstElementChild).filter(Boolean);
+      if (cards.length < 2) return;
+      const heights = cards.map(c => c.offsetHeight);
+      const max = Math.max(...heights);
+      const min = Math.min(...heights);
+      if (max - min > 4) {
+        issues.push({
+          type: 'unequal-card-heights-in-row',
+          grid: grid.className.split(' ').slice(0, 3).join(' '),
+          delta: max - min + 'px',
+          cards: cards.map(c => ({
+            class: c.className.split(' ').slice(0, 3).join(' '),
+            height: c.offsetHeight
+          }))
+        });
+      }
+    });
+  });
+
+  // Check for horizontal overflow
+  const body = document.body;
+  if (body.scrollWidth > body.clientWidth) {
+    issues.push({
+      type: 'horizontal-overflow',
+      overflow: (body.scrollWidth - body.clientWidth) + 'px'
+    });
+  }
+
+  return JSON.stringify({ issues, count: issues.length });
+})()
+```
+
+If issues are found, include them alongside screenshot-based observations when scoring. These count as Polish issues.
+
 ### Process (each iteration)
 
 1. **SCREENSHOT**: Use Phase 3 strategy (node mode or scroll mode)
-2. **ANALYZE**: Review screenshots against all 5 criteria. Score each 1–5. List top 3 issues by severity. Show score deltas from previous iteration.
-3. **FIX**: Targeted CSS/component edits for top 3 issues.
+2. **AUDIT**: Run the CSS Layout Audit JS above. Merge any issues found into the analysis.
+3. **ANALYZE**: Review screenshots + audit results against all 5 criteria. Score each 1–5. List top 3 issues by severity. Show score deltas from previous iteration.
+4. **FIX**: Targeted CSS/component edits for top 3 issues.
    - Edit ONLY component/style files — no API/backend changes
    - Prefer existing design tokens and utility classes
    - One fix at a time, verify build passes
    - After each fix, explain WHY in one line
-4. **VERIFY**: Re-screenshot after fixes. Confirm issues resolved. If new issues introduced, fix first.
-5. **REPORT**: Output after each iteration:
+5. **VERIFY**: Re-screenshot after fixes. Confirm issues resolved. If new issues introduced, fix first.
+6. **REPORT**: Output after each iteration:
    ```
    ITERATION [N]: Fixed [issue1], [issue2], [issue3]
    Scores: Comp:[x] Typo:[x] Color:[x] Ident:[x] Polish:[x] = Avg [x.x]/5
    Trend: [↑/↓/→] from [prev avg] → [current avg]
    ```
-6. **LOG**: Append row to `.claude/design-loop-history.md`:
+7. **LOG**: Append row to `.claude/design-loop-history.md`:
    ```
    | [N] | [Comp] | [Typo] | [Color] | [Ident] | [Polish] | [Avg] | [Focus] | [Changes] |
    ```

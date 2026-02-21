@@ -64,7 +64,7 @@ const criteria: Criterion[] = [
 
 export function CriteriaGrid() {
   return (
-    <section className="border-t border-[var(--border)] py-16">
+    <section className="border-t border-[var(--border)] py-20">
       <div className="mx-auto max-w-[1100px] px-6">
         <ScrollReveal>
           <h2 className="font-serif text-3xl sm:text-4xl text-[var(--text-primary)]">
@@ -76,10 +76,10 @@ export function CriteriaGrid() {
           </p>
         </ScrollReveal>
 
-        <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-6">
           {criteria.map((c, i) => (
-            <ScrollReveal key={c.key} delay={i * 0.05}>
-              <BentoCard className={i >= 3 ? "lg:col-span-1" : ""}>
+            <ScrollReveal key={c.key} delay={i * 0.05} className={i < 3 ? "lg:col-span-2" : "lg:col-span-3"}>
+              <BentoCard className="h-full">
                 <div className="space-y-3">
                   <div className="flex items-center gap-3">
                     <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-[rgba(var(--accent-rgb),0.2)] to-[rgba(var(--accent-2-rgb),0.2)] ring-1 ring-[rgba(var(--accent-rgb),0.2)]">
@@ -92,7 +92,7 @@ export function CriteriaGrid() {
                   <p className="text-sm leading-relaxed text-[var(--text-secondary)]">
                     {c.description}
                   </p>
-                  <p className="text-xs text-[var(--text-muted)] italic">
+                  <p className="text-xs leading-relaxed text-[color-mix(in_srgb,var(--accent),transparent_40%)]">
                     {c.antiSlop}
                   </p>
                 </div>
