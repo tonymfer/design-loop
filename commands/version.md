@@ -31,8 +31,7 @@ Check whether the installed design-loop plugin is up to date.
    design-loop v{installed} — update available (v{latest})
 
    Run to update:
-     claude plugin remove design-loop
-     claude plugin add https://github.com/tonymfer/design-loop
+     claude plugin update design-loop
    ```
 
    If the remote check fails (no internet, private repo, etc.):
@@ -40,6 +39,5 @@ Check whether the installed design-loop plugin is up to date.
    design-loop v{installed} — could not check for updates
 
    To manually update:
-     claude plugin remove design-loop
-     claude plugin add https://github.com/tonymfer/design-loop
+     claude plugin update design-loop
    ```
