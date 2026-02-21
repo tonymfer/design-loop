@@ -142,7 +142,12 @@ export function Threads({
     if (!containerRef.current) return;
     const container = containerRef.current;
 
-    const renderer = new Renderer({ alpha: true });
+    let renderer: Renderer;
+    try {
+      renderer = new Renderer({ alpha: true });
+    } catch {
+      return;
+    }
     const gl = renderer.gl;
     gl.clearColor(0, 0, 0, 0);
     gl.enable(gl.BLEND);
