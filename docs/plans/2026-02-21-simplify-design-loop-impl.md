@@ -4,9 +4,9 @@
 
 **Goal:** Rewrite design-loop from ~930 lines (SKILL.md + REFERENCE.md) to ~180 lines with hybrid section-based screenshots, anti-slop criteria, and ralph-loop completion.
 
-**Architecture:** Replace the entire SKILL.md content with a streamlined 5-phase workflow. Delete REFERENCE.md. Update both command files to match new phase names and criteria columns.
+**Architecture:** Replace the entire SKILL.md content with a streamlined 5-phase workflow. Delete REFERENCE.md. Update both command files and the stop hook to match new criteria and no-limit mode.
 
-**Tech Stack:** Markdown skill files, Playwright MCP, Claude Code plugin system
+**Tech Stack:** Markdown skill files, Playwright MCP, Claude Code plugin system, Bash (stop hook)
 
 **Design doc:** `docs/plans/2026-02-21-simplify-design-loop.md`
 
@@ -189,13 +189,28 @@ The core of design-loop. Inspired by Chrome DevTools' "Capture node screenshot" 
 
 ## Phase 5: Loop Control
 
+Write initial state to `.claude/design-loop.state.md` before starting iteration 1:
+
+```yaml
+---
+status: running
+iteration: 0
+max_iterations: [from Q3, or 0 for no limit]
+---
+
+[The prompt text that the stop hook feeds back each iteration]
+```
+
+The stop hook (`hooks/stop-hook.sh`) reads this file to control the loop.
+`max_iterations: 0` = no limit (loop until POLISHED or user stops).
+
 **COMPLETION:**
 When ALL sections score >= 4/5 on ALL criteria for TWO consecutive iterations,
 output <promise>POLISHED</promise> and stop.
 Then suggest: "Run /export-loop to generate a shareable summary."
 
 **NO-LIMIT MODE:**
-If user chose "No limit", loop indefinitely until POLISHED or user stops the session.
+If user chose "No limit", set `max_iterations: 0`. Loop until POLISHED or user stops.
 
 **MAX ITERATIONS:**
 If max reached without POLISHED, output final summary and stop.
@@ -380,7 +395,50 @@ git commit -m "feat: update /export-loop with new 5-criteria column names"
 
 ---
 
-### Task 5: Final verification
+### Task 5: Update stop hook
+
+The stop hook is what makes the autonomous loop work. It needs two changes.
+
+**Files:**
+- Modify: `hooks/stop-hook.sh`
+
+**Step 1: Update criteria count in system message (line 164)**
+
+Change:
+```
+SYSTEM_MSG="🔄 design-loop iteration $NEXT_ITERATION/$MAX_ITERATIONS | To complete: all 8 criteria >= 4/5 for 2 consecutive iterations, then output <promise>POLISHED</promise>"
+```
+
+To:
+```
+SYSTEM_MSG="🔄 design-loop iteration $NEXT_ITERATION/$MAX_ITERATIONS | To complete: all 5 criteria >= 4/5 for 2 consecutive iterations, then output <promise>POLISHED</promise>"
+```
+
+**Step 2: Handle no-limit mode (max_iterations=0)**
+
+The existing code on line 51 validates `MAX_ITERATIONS` is numeric (`^[0-9]+$`), and line 64 already checks `$MAX_ITERATIONS -gt 0` before comparing to iteration count. This means `max_iterations: 0` naturally means "no limit" — the max-iterations check is skipped.
+
+Verify this by reading lines 51 and 64. If the logic is correct, only the system message needs a tweak for display:
+
+Change the system message to handle the display of unlimited:
+```bash
+if [[ $MAX_ITERATIONS -eq 0 ]]; then
+  SYSTEM_MSG="🔄 design-loop iteration $NEXT_ITERATION (no limit) | To complete: all 5 criteria >= 4/5 for 2 consecutive iterations, then output <promise>POLISHED</promise>"
+else
+  SYSTEM_MSG="🔄 design-loop iteration $NEXT_ITERATION/$MAX_ITERATIONS | To complete: all 5 criteria >= 4/5 for 2 consecutive iterations, then output <promise>POLISHED</promise>"
+fi
+```
+
+**Step 3: Commit**
+
+```bash
+git add hooks/stop-hook.sh
+git commit -m "feat: update stop hook — 5 criteria, no-limit mode display"
+```
+
+---
+
+### Task 6: Final verification
 
 **Step 1: Check file structure is clean**
 
@@ -404,10 +462,18 @@ wc -l skills/design-loop/SKILL.md
 Search the codebase for any remaining references to REFERENCE.md or the old 8 criteria names:
 
 ```bash
-grep -r "REFERENCE.md" skills/ commands/
-grep -r "Touch Targets\|Empty States\|Density" skills/ commands/
+grep -r "REFERENCE.md" skills/ commands/ hooks/
+grep -r "Touch Targets\|Empty States\|Density" skills/ commands/ hooks/
+grep -r "all 8 criteria" skills/ commands/ hooks/
 ```
 
-Both should return empty.
+All should return empty.
 
-**Step 4: Commit any fixes if needed, then done**
+**Step 4: Verify stop hook references 5 criteria**
+
+```bash
+grep "criteria" hooks/stop-hook.sh
+# Should show "all 5 criteria"
+```
+
+**Step 5: Commit any fixes if needed, then done**
