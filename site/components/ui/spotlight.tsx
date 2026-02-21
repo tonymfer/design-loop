@@ -24,7 +24,7 @@ export function Spotlight({
   const smoothX = useSpring(mouseX, { damping: 30, stiffness: 200 });
   const smoothY = useSpring(mouseY, { damping: 30, stiffness: 200 });
 
-  const background = useMotionTemplate`radial-gradient(400px circle at ${smoothX}px ${smoothY}px, rgba(234,179,8,0.06), transparent 80%)`;
+  const background = useMotionTemplate`radial-gradient(500px circle at ${smoothX}px ${smoothY}px, rgba(var(--accent-rgb),0.08), rgba(var(--accent-2-rgb),0.03) 50%, transparent 80%)`;
 
   function handleMouseMove(e: React.MouseEvent<HTMLDivElement>) {
     const rect = e.currentTarget.getBoundingClientRect();

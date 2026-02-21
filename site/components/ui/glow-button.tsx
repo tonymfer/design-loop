@@ -18,9 +18,9 @@ export function GlowButton({
       className={cn(
         "inline-block font-mono text-sm transition-all",
         variant === "primary" &&
-          "rounded-sm bg-yellow-500 px-6 py-3 text-zinc-950 hover:-translate-y-0.5 hover:shadow-[0_0_24px_rgba(234,179,8,0.3)]",
+          "rounded-lg bg-gradient-to-r from-[var(--accent)] to-[var(--accent-2)] px-6 py-3 text-white font-medium hover:-translate-y-0.5 hover:shadow-[0_0_32px_rgba(var(--accent-rgb),0.4)]",
         variant === "ghost" &&
-          "border-b border-zinc-700 text-zinc-400 hover:border-yellow-500 hover:text-yellow-500",
+          "border-b border-[var(--border)] text-[var(--text-secondary)] hover:border-[var(--accent)] hover:text-[var(--accent)]",
         className
       )}
     >

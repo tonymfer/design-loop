@@ -9,79 +9,117 @@ interface Step {
   icon: LucideIcon;
   title: string;
   description: string;
+  number: string;
 }
 
 const steps: Step[] = [
   {
     icon: Camera,
     title: "Screenshot",
-    description: "Playwright captures the page",
+    description: "Section-level captures via Playwright — semantic landmarks or scroll fallback",
+    number: "01",
   },
   {
     icon: Ruler,
     title: "Measure",
-    description: "JS checks layout metrics",
+    description: "JS checks layout metrics, centering drift, spacing consistency",
+    number: "02",
   },
   {
     icon: BarChart3,
     title: "Score",
-    description: "8 criteria rated 1\u20135",
+    description: "5 anti-slop criteria rated 1–5 with companion skill enrichment",
+    number: "03",
   },
   {
     icon: Wrench,
     title: "Fix",
-    description: "Top 3 issues fixed in code",
+    description: "Top 3 issues fixed in code, build verified between each fix",
+    number: "04",
   },
   {
     icon: Repeat,
     title: "Repeat",
-    description: "Loops until polished \u2014 no manual intervention",
+    description: "Loops until all criteria hit 4/5+ for two consecutive iterations",
+    number: "05",
   },
+];
+
+const phases = [
+  { range: "1\u20133", focus: "Spacing & Layout", why: "Biggest visual impact first" },
+  { range: "4\u20136", focus: "Hierarchy & Contrast", why: "Typography and readability" },
+  { range: "7\u20139", focus: "Alignment & Consistency", why: "Edge alignment, pattern unification" },
+  { range: "10+", focus: "Density & Polish", why: "Content balance, final touches" },
 ];
 
 export function HowItWorks() {
   return (
     <section
       id="how-it-works"
-      className="border-t border-zinc-800/60 py-24"
+      className="border-t border-[var(--border)] py-16"
     >
       <div className="mx-auto max-w-[1100px] px-6">
-        <h2 className="mb-3 font-serif text-3xl text-zinc-50 sm:text-4xl">
-          How it works
-        </h2>
-        <p className="mb-10 text-zinc-400">
-          Five steps per iteration. Each one makes the page measurably better.
-        </p>
+        <ScrollReveal>
+          <h2 className="font-serif text-3xl sm:text-4xl">
+            <span className="bg-gradient-to-r from-zinc-100 to-zinc-400 bg-clip-text text-transparent">
+              How it works
+            </span>
+          </h2>
+          <p className="mt-4 max-w-lg text-[var(--text-secondary)]">
+            Five steps per iteration. Each one makes the page measurably better.
+          </p>
+        </ScrollReveal>
 
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-5 sm:gap-6">
+        <div className="mt-12 grid gap-4 sm:grid-cols-5">
           {steps.map((step, i) => {
             const Icon = step.icon;
             return (
               <ScrollReveal key={step.title} delay={i * 0.08}>
-                <div className="relative flex items-start gap-3 sm:flex-col sm:items-center sm:text-center">
-                  {/* Connector line (desktop only, not on last) */}
+                <div className="group relative rounded-xl border border-[var(--border)] bg-[var(--card-bg)] p-5 transition-all hover:border-[color-mix(in_srgb,var(--accent),transparent_80%)] hover:bg-[var(--surface)]">
+                  <span className="font-mono text-[10px] font-bold text-[color-mix(in_srgb,var(--accent),transparent_60%)]">
+                    {step.number}
+                  </span>
+                  <div className="mt-3 flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-[rgba(var(--accent-rgb),0.1)] to-[rgba(var(--accent-2-rgb),0.1)] ring-1 ring-[rgba(var(--accent-rgb),0.1)]">
+                    <Icon className="h-4.5 w-4.5 text-[var(--accent)]" />
+                  </div>
+                  <h3 className="mt-4 text-sm font-semibold text-[var(--text-primary)]">
+                    {step.title}
+                  </h3>
+                  <p className="mt-2 text-xs leading-relaxed text-[var(--text-muted)]">
+                    {step.description}
+                  </p>
                   {i < steps.length - 1 && (
-                    <div className="pointer-events-none absolute right-0 top-7 hidden h-px w-full translate-x-1/2 bg-gradient-to-r from-yellow-500/40 to-yellow-500/10 sm:block" />
+                    <div className="pointer-events-none absolute -right-3 top-1/2 hidden text-[color-mix(in_srgb,var(--accent),transparent_70%)] sm:block">
+                      &rarr;
+                    </div>
                   )}
-
-                  {/* Icon circle */}
-                  <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full border border-zinc-800 bg-zinc-900">
-                    <Icon className="h-5 w-5 text-yellow-500" />
-                  </div>
-
-                  <div className="sm:mt-3">
-                    <h3 className="mb-1 text-sm font-semibold text-zinc-100">
-                      {step.title}
-                    </h3>
-                    <p className="text-sm text-zinc-500">
-                      {step.description}
-                    </p>
-                  </div>
                 </div>
               </ScrollReveal>
             );
           })}
         </div>
+
+        {/* Phase strategy — inline */}
+        <ScrollReveal delay={0.4}>
+          <div className="mt-10 grid grid-cols-4 gap-3">
+            {phases.map((phase) => (
+              <div
+                key={phase.range}
+                className="rounded-lg border border-[var(--border)] bg-[var(--card-bg)] px-4 py-3"
+              >
+                <span className="font-mono text-[10px] font-bold text-[color-mix(in_srgb,var(--accent),transparent_40%)]">
+                  Iter {phase.range}
+                </span>
+                <p className="mt-1 text-xs font-semibold text-[var(--text-primary)]">
+                  {phase.focus}
+                </p>
+                <p className="mt-0.5 text-[11px] text-[var(--text-muted)]">
+                  {phase.why}
+                </p>
+              </div>
+            ))}
+          </div>
+        </ScrollReveal>
       </div>
     </section>
   );

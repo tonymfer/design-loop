@@ -2,13 +2,10 @@
 
 import {
   LayoutGrid,
-  Triangle,
-  Circle,
-  AlignLeft,
-  Columns3,
-  Equal,
-  Pointer,
-  Square,
+  Type,
+  Palette,
+  Fingerprint,
+  Sparkles,
   type LucideIcon,
 } from "lucide-react";
 import { ScrollReveal } from "@/components/ui/scroll-reveal";
@@ -18,111 +15,86 @@ interface Criterion {
   key: string;
   name: string;
   icon: LucideIcon;
-  phase: number;
   description: string;
+  antiSlop: string;
 }
 
 const criteria: Criterion[] = [
   {
-    key: "spacing",
-    name: "Spacing",
+    key: "composition",
+    name: "Composition",
     icon: LayoutGrid,
-    phase: 1,
     description:
-      "Consistent scale (4/8/12/16/24/32px). No cramped elements.",
+      "Layout, spacing, visual flow. Elements breathe. Sections have rhythm.",
+    antiSlop: "Rejects uniform grids \u2014 asymmetry creates interest",
   },
   {
-    key: "hierarchy",
-    name: "Hierarchy",
-    icon: Triangle,
-    phase: 2,
+    key: "typography",
+    name: "Typography",
+    icon: Type,
     description:
-      "Clear visual weight order. Primary action obvious.",
+      "Hierarchy through size/weight/tracking. Font pairing works.",
+    antiSlop: "Flags Inter/Roboto defaults \u2014 consider display fonts",
   },
   {
-    key: "contrast",
-    name: "Contrast",
-    icon: Circle,
-    phase: 2,
+    key: "color",
+    name: "Color & Contrast",
+    icon: Palette,
     description:
-      "Text readable against background. Interactive elements distinguishable.",
+      "Intentional palette, WCAG AA text contrast, interactive states visible.",
+    antiSlop: "Flags purple gradients, gratuitous gradients, rainbow decorations",
   },
   {
-    key: "alignment",
-    name: "Alignment",
-    icon: AlignLeft,
-    phase: 3,
+    key: "identity",
+    name: "Visual Identity",
+    icon: Fingerprint,
     description:
-      "Elements on consistent grid. No orphaned items. Edges line up.",
+      'Looks designed, not generated. Has a point of view. Passes the "portfolio test."',
+    antiSlop: "Flags generic card layouts, stock-photo hero patterns",
   },
   {
-    key: "density",
-    name: "Density",
-    icon: Columns3,
-    phase: 4,
+    key: "polish",
+    name: "Polish",
+    icon: Sparkles,
     description:
-      "Right amount of content per viewport. Not too sparse, not too cluttered.",
-  },
-  {
-    key: "consistency",
-    name: "Consistency",
-    icon: Equal,
-    phase: 3,
-    description:
-      "Same patterns for same concepts. Colors meaningful, not random.",
-  },
-  {
-    key: "touch",
-    name: "Touch targets",
-    icon: Pointer,
-    phase: 1,
-    description:
-      "Buttons and links have at least 44px touch area on mobile.",
-  },
-  {
-    key: "empty",
-    name: "Empty states",
-    icon: Square,
-    phase: 4,
-    description:
-      "Graceful when data is missing. Not broken, not blank.",
+      "Alignment, consistency, details. Same pattern = same treatment.",
+    antiSlop: "Flags mixed spacing scales, orphaned elements",
   },
 ];
 
 export function CriteriaGrid() {
   return (
-    <section className="border-t border-zinc-800/60 py-24">
+    <section className="border-t border-[var(--border)] py-16">
       <div className="mx-auto max-w-[1100px] px-6">
         <ScrollReveal>
-          <h2 className="font-serif text-3xl sm:text-4xl text-zinc-50">
-            8 design fundamentals
+          <h2 className="font-serif text-3xl sm:text-4xl text-[var(--text-primary)]">
+            <span className="bg-gradient-to-r from-cyan-300 to-violet-300 bg-clip-text text-transparent">5 anti-slop criteria</span>
           </h2>
-          <p className="mt-4 max-w-xl text-zinc-400">
-            Every screenshot is scored. Every score has a reason.
+          <p className="mt-4 max-w-xl text-[var(--text-secondary)]">
+            Every screenshot set is scored. Every score detects AI-default
+            patterns and pushes toward intentional design.
           </p>
         </ScrollReveal>
 
-        <div className="mt-12 grid gap-4 sm:grid-cols-2">
+        <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {criteria.map((c, i) => (
-            <ScrollReveal key={c.key} delay={i * 0.04}>
-              <BentoCard>
-                <div className="flex items-start gap-4">
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-sm bg-yellow-500">
-                    <c.icon className="h-4 w-4 text-zinc-950" />
-                  </div>
-                  <div className="min-w-0">
-                    <div className="flex items-center gap-2">
-                      <span className="font-semibold text-zinc-100">
-                        {c.name}
-                      </span>
-                      <span className="rounded-sm border border-zinc-800 px-1.5 py-0.5 font-mono text-[10px] uppercase text-zinc-500">
-                        phase {c.phase}
-                      </span>
+            <ScrollReveal key={c.key} delay={i * 0.05}>
+              <BentoCard className={i >= 3 ? "lg:col-span-1" : ""}>
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-[rgba(var(--accent-rgb),0.2)] to-[rgba(var(--accent-2-rgb),0.2)] ring-1 ring-[rgba(var(--accent-rgb),0.2)]">
+                      <c.icon className="h-4 w-4 text-[var(--accent)]" />
                     </div>
-                    <p className="mt-1 text-sm text-zinc-400">
-                      {c.description}
-                    </p>
+                    <span className="text-base font-semibold text-[var(--text-primary)]">
+                      {c.name}
+                    </span>
                   </div>
+                  <p className="text-sm leading-relaxed text-[var(--text-secondary)]">
+                    {c.description}
+                  </p>
+                  <p className="text-xs text-[var(--text-muted)] italic">
+                    {c.antiSlop}
+                  </p>
                 </div>
               </BentoCard>
             </ScrollReveal>

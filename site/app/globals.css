@@ -5,46 +5,267 @@
   --font-display: "Space Grotesk", system-ui, sans-serif;
   --font-serif: "Instrument Serif", Georgia, serif;
   --font-mono: "JetBrains Mono", monospace;
+  --color-accent: #06b6d4;
+  --color-accent-2: #8b5cf6;
 }
 
+/* ═══════════════════════════════════════════════
+   @property registrations for smooth color transitions
+   ═══════════════════════════════════════════════ */
+@property --page-bg {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #030712;
+}
+@property --text-primary {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #fafaf9;
+}
+@property --text-secondary {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #a1a1aa;
+}
+@property --text-muted {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #71717a;
+}
+@property --accent {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #06b6d4;
+}
+@property --accent-2 {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #8b5cf6;
+}
+@property --border {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: rgba(39, 39, 42, 0.4);
+}
+@property --card-bg {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: rgba(24, 24, 27, 0.3);
+}
+@property --surface {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: rgba(24, 24, 27, 0.4);
+}
+
+/* ═══════════════════════════════════════════════
+   Iteration 4 — Final (default, current beautiful theme)
+   ═══════════════════════════════════════════════ */
+[data-iteration="4"], :root {
+  --page-bg: #030712;
+  --text-primary: #fafaf9;
+  --text-secondary: #a1a1aa;
+  --text-muted: #71717a;
+  --accent: #06b6d4;
+  --accent-rgb: 6, 182, 212;
+  --accent-2: #8b5cf6;
+  --accent-2-rgb: 139, 92, 246;
+  --border: rgba(39, 39, 42, 0.4);
+  --card-bg: rgba(24, 24, 27, 0.3);
+  --surface: rgba(24, 24, 27, 0.4);
+  --effects-opacity: 1;
+  --gradient-opacity: 1;
+  --dot-grid-opacity: 0.15;
+  --radius: 12px;
+}
+
+/* ═══════════════════════════════════════════════
+   Iteration 0 — Before (light, bland AI slop)
+   ═══════════════════════════════════════════════ */
+[data-iteration="0"] {
+  --page-bg: #f8fafc;
+  --text-primary: #1e293b;
+  --text-secondary: #64748b;
+  --text-muted: #94a3b8;
+  --accent: #6b7280;
+  --accent-rgb: 107, 114, 128;
+  --accent-2: #6b7280;
+  --accent-2-rgb: 107, 114, 128;
+  --border: rgba(203, 213, 225, 0.6);
+  --card-bg: rgba(241, 245, 249, 0.8);
+  --surface: rgba(226, 232, 240, 0.5);
+  --effects-opacity: 0;
+  --gradient-opacity: 0;
+  --dot-grid-opacity: 0;
+  --radius: 4px;
+}
+
+/* ═══════════════════════════════════════════════
+   Iteration 1 — Dark but flat
+   ═══════════════════════════════════════════════ */
+[data-iteration="1"] {
+  --page-bg: #111827;
+  --text-primary: #e5e7eb;
+  --text-secondary: #9ca3af;
+  --text-muted: #6b7280;
+  --accent: #6b7280;
+  --accent-rgb: 107, 114, 128;
+  --accent-2: #6b7280;
+  --accent-2-rgb: 107, 114, 128;
+  --border: rgba(55, 65, 81, 0.5);
+  --card-bg: rgba(31, 41, 55, 0.4);
+  --surface: rgba(31, 41, 55, 0.5);
+  --effects-opacity: 0;
+  --gradient-opacity: 0;
+  --dot-grid-opacity: 0;
+  --radius: 6px;
+}
+
+/* ═══════════════════════════════════════════════
+   Iteration 2 — Color emerges
+   ═══════════════════════════════════════════════ */
+[data-iteration="2"] {
+  --page-bg: #0a0f1a;
+  --text-primary: #e2e8f0;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --accent: #22d3ee;
+  --accent-rgb: 34, 211, 238;
+  --accent-2: #22d3ee;
+  --accent-2-rgb: 34, 211, 238;
+  --border: rgba(34, 211, 238, 0.12);
+  --card-bg: rgba(15, 23, 42, 0.5);
+  --surface: rgba(15, 23, 42, 0.6);
+  --effects-opacity: 0.3;
+  --gradient-opacity: 0.3;
+  --dot-grid-opacity: 0.05;
+  --radius: 8px;
+}
+
+/* ═══════════════════════════════════════════════
+   Iteration 3 — Typography + gradients
+   ═══════════════════════════════════════════════ */
+[data-iteration="3"] {
+  --page-bg: #050a12;
+  --text-primary: #f1f5f9;
+  --text-secondary: #a1a1aa;
+  --text-muted: #71717a;
+  --accent: #06b6d4;
+  --accent-rgb: 6, 182, 212;
+  --accent-2: #8b5cf6;
+  --accent-2-rgb: 139, 92, 246;
+  --border: rgba(6, 182, 212, 0.15);
+  --card-bg: rgba(15, 23, 42, 0.4);
+  --surface: rgba(15, 23, 42, 0.5);
+  --effects-opacity: 0.6;
+  --gradient-opacity: 0.6;
+  --dot-grid-opacity: 0.08;
+  --radius: 10px;
+}
+
+/* ═══════════════════════════════════════════════
+   Base layer — uses CSS variables
+   ═══════════════════════════════════════════════ */
 @layer base {
   body {
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
-    background: #09090b;
-    color: #fafaf9;
+    background: var(--page-bg);
+    color: var(--text-primary);
+    transition: background 0.6s ease, color 0.6s ease;
   }
 }
 
-/* Shimmer animation for hero "see" text */
+/* Smooth transitions for all variable-driven elements */
+[data-iteration] {
+  transition:
+    --page-bg 0.6s ease,
+    --text-primary 0.6s ease,
+    --text-secondary 0.6s ease,
+    --text-muted 0.6s ease,
+    --accent 0.6s ease,
+    --accent-2 0.6s ease,
+    --border 0.6s ease,
+    --card-bg 0.6s ease,
+    --surface 0.6s ease;
+}
+
+/* ═══════════════════════════════════════════════
+   Gradient text handling for iterations 0-1
+   (solid color instead of gradient)
+   ═══════════════════════════════════════════════ */
+[data-iteration="0"] .bg-gradient-to-r.bg-clip-text,
+[data-iteration="1"] .bg-gradient-to-r.bg-clip-text {
+  background: none !important;
+  -webkit-background-clip: unset !important;
+  background-clip: unset !important;
+  -webkit-text-fill-color: unset !important;
+  color: var(--text-primary);
+}
+
+/* Iterations 0-1: override serif headings to sans */
+[data-iteration="0"] .font-serif {
+  font-family: var(--font-sans);
+}
+[data-iteration="1"] .font-serif {
+  font-family: var(--font-sans);
+}
+/* Iteration 2: keep sans */
+[data-iteration="2"] .font-serif {
+  font-family: var(--font-display);
+}
+
+/* ═══════════════════════════════════════════════
+   Shimmer animation for hero gradient text
+   ═══════════════════════════════════════════════ */
 @keyframes shimmer {
   0% { background-position: -200% center; }
   100% { background-position: 200% center; }
 }
 
-/* Noise texture overlay */
+/* Animated gradient border rotation */
+@keyframes border-rotate {
+  0% { --angle: 0deg; }
+  100% { --angle: 360deg; }
+}
+
+/* Pulse glow for grid dots */
+@keyframes pulse-glow {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.8; }
+}
+
+/* ═══════════════════════════════════════════════
+   Noise texture overlay
+   ═══════════════════════════════════════════════ */
 .noise-overlay::after {
   content: "";
   position: fixed;
   inset: 0;
   pointer-events: none;
   z-index: 0;
-  opacity: 0.015;
+  opacity: calc(0.02 * var(--effects-opacity));
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   background-repeat: repeat;
   background-size: 256px 256px;
+  transition: opacity 0.6s ease;
 }
 
-/* Ambient glow at top */
+/* ═══════════════════════════════════════════════
+   Ambient glow — driven by effects-opacity
+   ═══════════════════════════════════════════════ */
 .ambient-glow::before {
   content: "";
   position: fixed;
   inset: 0;
   pointer-events: none;
   z-index: 0;
+  opacity: var(--effects-opacity);
   background:
-    radial-gradient(ellipse 80% 50% at 50% -5%, rgba(234,179,8,0.1) 0%, transparent 55%),
-    radial-gradient(ellipse 50% 30% at 50% 100%, rgba(234,179,8,0.04) 0%, transparent 50%);
+    radial-gradient(ellipse 80% 50% at 50% -5%, rgba(var(--accent-rgb),0.12) 0%, transparent 55%),
+    radial-gradient(ellipse 60% 40% at 30% 10%, rgba(var(--accent-2-rgb),0.06) 0%, transparent 50%),
+    radial-gradient(ellipse 50% 30% at 50% 100%, rgba(var(--accent-2-rgb),0.05) 0%, transparent 50%);
+  transition: opacity 0.6s ease;
 }
 
 /* Ensure content above overlays */
@@ -53,7 +274,85 @@
   z-index: 1;
 }
 
-/* Floating paths opacity */
-.floating-paths-svg {
-  opacity: 0.6;
+/* ═══════════════════════════════════════════════
+   Dot grid background pattern
+   ═══════════════════════════════════════════════ */
+.dot-grid {
+  background-image: radial-gradient(rgba(var(--accent-rgb),0.15) 1px, transparent 1px);
+  background-size: 24px 24px;
+  opacity: var(--dot-grid-opacity);
+  transition: opacity 0.6s ease;
+}
+
+/* ═══════════════════════════════════════════════
+   Animated gradient border
+   ═══════════════════════════════════════════════ */
+.gradient-border {
+  position: relative;
+  background: #0a0a0f;
+  border-radius: var(--radius);
+}
+.gradient-border::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: calc(var(--radius) + 1px);
+  padding: 1px;
+  background: conic-gradient(from var(--angle, 0deg), var(--accent), var(--accent-2), var(--accent));
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  -webkit-mask-composite: xor;
+  animation: border-rotate 4s linear infinite;
+}
+
+/* ═══════════════════════════════════════════════
+   Aurora gradient background for hero
+   ═══════════════════════════════════════════════ */
+.aurora-bg {
+  opacity: var(--effects-opacity);
+  background:
+    radial-gradient(ellipse 120% 60% at 50% 0%, rgba(var(--accent-rgb),0.15) 0%, transparent 50%),
+    radial-gradient(ellipse 80% 50% at 70% 20%, rgba(var(--accent-2-rgb),0.10) 0%, transparent 45%),
+    radial-gradient(ellipse 60% 40% at 25% 30%, rgba(var(--accent-rgb),0.08) 0%, transparent 40%),
+    radial-gradient(ellipse 90% 50% at 50% 80%, rgba(var(--accent-2-rgb),0.06) 0%, transparent 50%);
+  animation: aurora-shift 12s ease-in-out infinite alternate;
+  transition: opacity 0.6s ease;
+}
+
+@keyframes aurora-shift {
+  0% {
+    filter: blur(0px);
+  }
+  50% {
+    filter: blur(2px);
+  }
+  100% {
+    filter: blur(0px);
+  }
+}
+
+/* ═══════════════════════════════════════════════
+   Floating orb drift for hero
+   ═══════════════════════════════════════════════ */
+.hero-orb {
+  opacity: var(--effects-opacity);
+  animation: orb-drift 8s ease-in-out infinite alternate;
+  transition: opacity 0.6s ease;
+}
+
+@keyframes orb-drift {
+  0% {
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
+  100% {
+    transform: translateX(-45%) translateY(-20px) scale(1.05);
+  }
+}
+
+/* ═══════════════════════════════════════════════
+   Light theme (iteration 0) overrides
+   ═══════════════════════════════════════════════ */
+[data-iteration="0"] .noise-overlay::after,
+[data-iteration="0"] .ambient-glow::before {
+  opacity: 0;
 }

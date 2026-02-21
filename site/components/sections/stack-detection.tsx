@@ -23,36 +23,36 @@ const componentLibraries = [
 ];
 
 const detectionDetails = [
-  "Reads your theme config, uses existing tokens \u2014 won\u2019t conflict",
-  "Framer Motion detected \u2192 uses motion.* components, respects AnimatePresence",
-  "React Three Fiber detected \u2192 3D scenes marked off-limits, only fixes 2D layer",
+  { text: "Reads your theme config, uses existing tokens \u2014 won\u2019t conflict", accent: false },
+  { text: "Framer Motion detected \u2192 uses motion.* components, respects AnimatePresence", accent: true },
+  { text: "React Three Fiber detected \u2192 3D scenes marked off-limits, only fixes 2D layer", accent: false },
 ];
 
 export function StackDetection() {
   return (
-    <section className="border-t border-zinc-800/60 py-24">
+    <section className="border-t border-[var(--border)] py-16">
       <div className="mx-auto max-w-[1100px] px-6">
         <ScrollReveal>
-          <h2 className="font-serif text-3xl sm:text-4xl text-zinc-50">
-            Knows your stack
+          <h2 className="font-serif text-3xl sm:text-4xl text-[var(--text-primary)]">
+            <span className="bg-gradient-to-r from-zinc-100 to-zinc-400 bg-clip-text text-transparent">Knows your stack</span>
           </h2>
-          <p className="mt-4 max-w-xl text-zinc-400">
+          <p className="mt-4 max-w-xl text-[var(--text-secondary)]">
             Auto-detects your framework, component library, and animation
             system. Adapts its fixes to match.
           </p>
         </ScrollReveal>
 
-        {/* Frameworks */}
-        <div className="mt-12 space-y-8">
-          <div>
-            <p className="mb-3 font-mono text-[11px] uppercase tracking-widest text-zinc-500">
+        <div className="mt-10 grid gap-8 sm:grid-cols-2">
+          {/* Frameworks */}
+          <div className="rounded-xl border border-[var(--border)] bg-[var(--card-bg)] p-5">
+            <p className="mb-4 font-mono text-[11px] uppercase tracking-widest text-[color-mix(in_srgb,var(--accent),transparent_40%)]">
               Frameworks
             </p>
             <div className="flex flex-wrap gap-2">
               {frameworks.map((name, i) => (
                 <motion.span
                   key={name}
-                  className="rounded-sm border border-zinc-800 bg-zinc-900/60 px-3.5 py-2 font-mono text-xs text-zinc-200 transition-colors hover:border-yellow-500/20 hover:text-yellow-500"
+                  className="rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 py-1.5 font-mono text-xs text-[var(--text-secondary)] transition-all hover:border-[color-mix(in_srgb,var(--accent),transparent_70%)] hover:text-[var(--accent)]"
                   initial={{ opacity: 0, scale: 0.9 }}
                   whileInView={{ opacity: 1, scale: 1 }}
                   viewport={{ once: true }}
@@ -66,7 +66,7 @@ export function StackDetection() {
                 </motion.span>
               ))}
               <motion.span
-                className="rounded-sm border border-zinc-800 bg-zinc-900/60 px-3.5 py-2 font-mono text-xs text-zinc-500"
+                className="rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 py-1.5 font-mono text-xs text-[var(--text-muted)]"
                 initial={{ opacity: 0, scale: 0.9 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
@@ -82,15 +82,15 @@ export function StackDetection() {
           </div>
 
           {/* Component Libraries */}
-          <div>
-            <p className="mb-3 font-mono text-[11px] uppercase tracking-widest text-zinc-500">
+          <div className="rounded-xl border border-[var(--border)] bg-[var(--card-bg)] p-5">
+            <p className="mb-4 font-mono text-[11px] uppercase tracking-widest text-[color-mix(in_srgb,var(--accent-2),transparent_40%)]">
               Component Libraries
             </p>
             <div className="flex flex-wrap gap-2">
               {componentLibraries.map((name, i) => (
                 <motion.span
                   key={name}
-                  className="rounded-sm border border-zinc-800 bg-zinc-900/60 px-3.5 py-2 font-mono text-xs text-zinc-200 transition-colors hover:border-yellow-500/20 hover:text-yellow-500"
+                  className="rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 py-1.5 font-mono text-xs text-[var(--text-secondary)] transition-all hover:border-[color-mix(in_srgb,var(--accent-2),transparent_70%)] hover:text-[var(--accent-2)]"
                   initial={{ opacity: 0, scale: 0.9 }}
                   whileInView={{ opacity: 1, scale: 1 }}
                   viewport={{ once: true }}
@@ -107,19 +107,17 @@ export function StackDetection() {
           </div>
         </div>
 
-        {/* Detection details */}
-        <div className="mt-10 space-y-3">
-          {detectionDetails.map((detail, i) => (
-            <ScrollReveal key={i} delay={i * 0.06}>
-              <div className="rounded-sm border border-zinc-800 bg-zinc-900/40 p-4">
-                <p className="text-sm text-zinc-300">
-                  <span className="text-yellow-500">&rarr;</span>{" "}
-                  {detail}
-                </p>
-              </div>
-            </ScrollReveal>
-          ))}
-        </div>
+        {/* Detection details — compact inline */}
+        <ScrollReveal delay={0.1}>
+          <div className="mt-6 flex flex-wrap gap-x-6 gap-y-2">
+            {detectionDetails.map((detail, i) => (
+              <p key={i} className="text-xs text-[var(--text-muted)]">
+                <span className="text-[color-mix(in_srgb,var(--accent),transparent_40%)]">&rarr;</span>{" "}
+                {detail.text}
+              </p>
+            ))}
+          </div>
+        </ScrollReveal>
       </div>
     </section>
   );

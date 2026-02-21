@@ -10,8 +10,8 @@ function ScoreCounter() {
   const ref = useRef<HTMLDivElement>(null);
   const [hasAnimated, setHasAnimated] = useState(false);
 
-  const fromValue = useMotionValue(2.4);
-  const toValue = useMotionValue(2.4);
+  const fromValue = useMotionValue(2.2);
+  const toValue = useMotionValue(2.2);
   const progress = useMotionValue(0);
 
   const fromDisplay = useTransform(fromValue, (v) => v.toFixed(1));
@@ -26,11 +26,11 @@ function ScoreCounter() {
         if (entry.isIntersecting && !hasAnimated) {
           setHasAnimated(true);
 
-          animate(toValue, 4.6, {
+          animate(toValue, 4.8, {
             duration: 1.4,
             ease: [0.22, 1, 0.36, 1],
           });
-          animate(progress, 80, {
+          animate(progress, 96, {
             duration: 1.4,
             ease: [0.22, 1, 0.36, 1],
           });
@@ -50,33 +50,42 @@ function ScoreCounter() {
       ref={ref}
       className="mt-10 flex items-center justify-center gap-6"
     >
-      <motion.span className="font-mono text-4xl font-bold text-zinc-600">
-        {fromDisplay}
-      </motion.span>
-      <span className="font-mono text-sm text-zinc-600">/5</span>
+      <div className="text-center">
+        <motion.span className="font-mono text-4xl font-bold text-[var(--text-muted)]">
+          {fromDisplay}
+        </motion.span>
+        <span className="ml-1 font-mono text-sm text-[var(--text-muted)]">/5</span>
+      </div>
 
-      <div className="h-1.5 w-36 overflow-hidden rounded-full bg-zinc-800">
+      <div className="h-2 w-40 overflow-hidden rounded-full bg-[var(--surface)]">
         <motion.div
-          className="h-full rounded-full bg-yellow-500"
+          className="h-full rounded-full bg-gradient-to-r from-[var(--accent)] to-[var(--accent-2)]"
           style={{ width: progressWidth }}
         />
       </div>
 
-      <motion.span className="font-mono text-4xl font-bold text-yellow-500">
-        {toDisplay}
-      </motion.span>
-      <span className="font-mono text-sm text-yellow-500">/5</span>
+      <div className="text-center">
+        <motion.span className="bg-gradient-to-r from-[var(--accent)] to-[var(--accent-2)] bg-clip-text font-mono text-4xl font-bold text-transparent">
+          {toDisplay}
+        </motion.span>
+        <span className="ml-1 font-mono text-sm text-[var(--accent)]">/5</span>
+      </div>
     </div>
   );
 }
 
 export function FinalCTA() {
   return (
-    <section className="border-t border-zinc-800/60 py-24 text-center">
-      <div className="mx-auto max-w-[1100px] px-6">
+    <section className="relative border-t border-[var(--border)] py-20 text-center overflow-hidden">
+      {/* Subtle dot grid background */}
+      <div className="absolute inset-0 dot-grid" />
+
+      <div className="relative mx-auto max-w-[1100px] px-6">
         <ScrollReveal>
-          <h2 className="font-serif text-3xl sm:text-4xl text-zinc-50">
-            Stop guessing. Start measuring.
+          <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl">
+            <span className="bg-gradient-to-r from-cyan-300 via-violet-300 to-cyan-300 bg-clip-text text-transparent">
+              Stop guessing. Start measuring.
+            </span>
           </h2>
         </ScrollReveal>
 

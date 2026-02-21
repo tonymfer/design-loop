@@ -6,19 +6,19 @@ import { TerminalBlock } from "@/components/ui/terminal-block";
 
 export function Install() {
   return (
-    <section id="install" className="border-t border-zinc-800/60 py-24">
+    <section id="install" className="border-t border-[var(--border)] py-16">
       <div className="mx-auto max-w-[1100px] px-6">
         <ScrollReveal>
-          <h2 className="font-serif text-3xl sm:text-4xl text-zinc-50">
-            One command away
+          <h2 className="font-serif text-3xl sm:text-4xl text-[var(--text-primary)]">
+            <span className="bg-gradient-to-r from-zinc-100 to-zinc-400 bg-clip-text text-transparent">One command away</span>
           </h2>
-          <p className="mt-4 max-w-xl text-zinc-400">
+          <p className="mt-4 max-w-xl text-[var(--text-secondary)]">
             Requires{" "}
             <a
               href="https://docs.anthropic.com/en/docs/claude-code"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-yellow-500 hover:underline"
+              className="text-[var(--accent)] hover:underline"
             >
               Claude Code
             </a>
@@ -27,7 +27,7 @@ export function Install() {
         </ScrollReveal>
 
         <ScrollReveal delay={0.1}>
-          <div className="mt-10">
+          <div className="mt-8">
             <TerminalBlock>
               claude plugin add https://github.com/tonymfer/design-loop
             </TerminalBlock>
@@ -35,28 +35,28 @@ export function Install() {
         </ScrollReveal>
 
         <ScrollReveal delay={0.15}>
-          <h3 className="mt-14 text-sm font-semibold text-zinc-200">Usage</h3>
-          <div className="mt-4">
+          <h3 className="mt-10 text-sm font-semibold text-[var(--text-primary)]">Usage</h3>
+          <div className="mt-3">
             <TerminalBlock>
               <code>
-                <span className="text-zinc-500"># Start polishing</span>
+                <span className="text-[var(--text-muted)]"># Start polishing</span>
                 {"\n"}
-                <span className="text-zinc-100">
+                <span className="text-[var(--text-primary)]">
                   /design-loop http://localhost:3000
                 </span>
                 {"\n\n"}
-                <span className="text-zinc-500">
+                <span className="text-[var(--text-muted)]">
                   # Desktop viewport, 20 iterations
                 </span>
                 {"\n"}
-                <span className="text-zinc-100">
+                <span className="text-[var(--text-primary)]">
                   /design-loop http://localhost:3000/dashboard --viewport
                   desktop --iterations 20
                 </span>
                 {"\n\n"}
-                <span className="text-zinc-500"># Test both viewports</span>
+                <span className="text-[var(--text-muted)]"># Test both viewports</span>
                 {"\n"}
-                <span className="text-zinc-100">
+                <span className="text-[var(--text-primary)]">
                   /design-loop http://localhost:5173 --viewport both
                 </span>
               </code>
@@ -65,17 +65,17 @@ export function Install() {
         </ScrollReveal>
 
         <ScrollReveal delay={0.2}>
-          <div className="mt-10 rounded-sm border border-yellow-500/10 bg-yellow-500/[0.03] p-5">
-            <p className="font-mono text-[11px] font-semibold uppercase tracking-wider text-yellow-500">
+          <div className="mt-8 rounded-xl border border-[rgba(var(--accent-rgb),0.1)] bg-[rgba(var(--accent-rgb),0.04)] p-5">
+            <p className="font-mono text-[11px] font-semibold uppercase tracking-wider text-[var(--accent)]">
               Pro Tip
             </p>
-            <p className="mt-2 text-sm leading-relaxed text-zinc-400">
+            <p className="mt-2 text-sm leading-relaxed text-[var(--text-secondary)]">
               Use{" "}
-              <code className="font-mono text-sm text-yellow-500">
+              <code className="font-mono text-sm text-[var(--accent)]">
                 frontend-design
               </code>{" "}
               &rarr;{" "}
-              <code className="font-mono text-sm text-yellow-500">
+              <code className="font-mono text-sm text-[var(--accent)]">
                 design-loop
               </code>{" "}
               to get creative direction first, then iterate visually.
