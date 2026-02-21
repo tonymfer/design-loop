@@ -396,6 +396,21 @@ Match the page's design language
 - Use Svelte scoped styles
 - Check for Skeleton UI or DaisyUI tokens
 
+### Animation Libraries (Framer Motion)
+
+- Use `motion.div`, `motion.span` etc. instead of CSS `transition-*` classes
+- Use `AnimatePresence` for mount/unmount animations
+- Use `whileHover`, `whileTap` props instead of `hover:` Tailwind variants for complex interactions
+- Prefer `layout` prop for layout animations over manual transforms
+- Don't mix Framer Motion and CSS transitions on the same element
+
+### 3D / WebGL (React Three Fiber — OFF-LIMITS)
+
+- NEVER modify code inside `<Canvas>` elements
+- NEVER try to fix 3D scenes with CSS
+- If a 3D element looks off in screenshots, LOG it but DON'T fix it
+- Only fix the 2D HTML elements surrounding the canvas
+
 ## Integration with Other Plugins
 
 Design Loop works well chained with:

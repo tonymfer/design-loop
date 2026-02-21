@@ -69,6 +69,13 @@ Before interviewing the user, auto-detect the project's design system:
    - Emotion (`@emotion/react`, `@emotion/styled`)
    - vanilla-extract (`@vanilla-extract/css`)
 
+   Animation libraries:
+   - Framer Motion (`framer-motion`): prefer `motion.*` components over CSS transitions/keyframes
+
+   3D / WebGL (OFF-LIMITS for visual fixes):
+   - React Three Fiber (`@react-three/fiber`): mark <Canvas> elements as untouchable
+   - Drei (`@react-three/drei`): helper library for R3F, same off-limits rule
+
    Component libraries:
    - shadcn/ui (check `components.json`)
    - Radix (`@radix-ui/*`)
@@ -483,6 +490,12 @@ Iter  S  H  C  A  D  Co T  E  Avg
 | `@emotion/react` | Emotion | Check for `css` prop or `styled` |
 | `@vanilla-extract/css` | vanilla-extract | Check for `.css.ts` files |
 
+### Animation Library Detection
+
+| package.json dep | Library | Notes |
+|------------------|---------|-------|
+| `framer-motion` | Framer Motion | Prefer `motion.*` wrappers over CSS transitions. Check for `AnimatePresence`, `useAnimation` |
+
 ### Component Library Detection
 
 | package.json dep | Library | Token source |
@@ -494,5 +507,13 @@ Iter  S  H  C  A  D  Co T  E  Avg
 | `antd` | Ant Design | `ConfigProvider` theme |
 | `@mui/material` | Material UI | `createTheme()` config |
 | `daisyui` | DaisyUI | Tailwind plugin config |
+
+### 3D / WebGL Detection (OFF-LIMITS)
+
+| package.json dep | Library | Design-Loop Rule |
+|------------------|---------|-----------------|
+| `@react-three/fiber` | React Three Fiber | Do NOT edit `<Canvas>` children. Mark as off-limits zone. Screenshot for scoring only. |
+| `@react-three/drei` | Drei (R3F helpers) | Same as R3F — off-limits for visual fixes |
+| `three` | Three.js (raw) | Same — 3D code is not CSS/component work |
 
 **Advanced features**: See [REFERENCE.md](REFERENCE.md)
