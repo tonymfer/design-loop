@@ -231,7 +231,6 @@ Design Loop works well chained with:
 | Skill | When to Use | Chain Order |
 |-------|-------------|-------------|
 | **frontend-design** | Get creative direction (palette, typography, layout strategy) before iterating | frontend-design → design-loop |
-| **super-frontend** | Complex component architecture decisions | super-frontend → design-loop |
 
 ## Anti-Pattern Awareness
 

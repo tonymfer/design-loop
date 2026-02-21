@@ -84,8 +84,7 @@ Before interviewing the user, auto-detect the project's design system:
    - **/design-system/**
    - **/ui/**/*.{tsx,vue,svelte}
 5. CHECK for component libraries (from list above)
-6. DETECT available skills: check if frontend-design or super-frontend
-   are installed for optional chaining
+6. DETECT available skills: check if frontend-design is installed for optional chaining
 ```
 
 Store findings as `PROJECT_CONTEXT` — inject into the generated prompt.

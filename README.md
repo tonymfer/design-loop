@@ -136,7 +136,6 @@ It also reads your design tokens (Tailwind config, CSS variables, theme files) a
 | Chain | Use Case |
 |-------|----------|
 | `frontend-design` → `design-loop` | Get creative direction first, then iterate visually |
-| `super-frontend` → `design-loop` | Build complex components first, then polish |
 
 ---
 
