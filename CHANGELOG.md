@@ -16,3 +16,5 @@
 - Reference URL comparison at phase boundaries
 - Wide viewport check (1920px) for centering bugs
 - Interactive demo site at design-loop.vercel.app
+
+[1.0.0]: https://github.com/tonymfer/design-loop/releases/tag/v1.0.0

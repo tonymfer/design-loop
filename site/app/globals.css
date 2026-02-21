@@ -28,53 +28,32 @@
   opacity: 0;
   animation: hero-enter 600ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
-.hero-stagger > *:nth-child(1) { animation-delay: 100ms; }
-.hero-stagger > *:nth-child(2) { animation-delay: 250ms; }
-.hero-stagger > *:nth-child(3) { animation-delay: 400ms; }
-.hero-stagger > *:nth-child(4) { animation-delay: 550ms; }
-.hero-stagger > *:nth-child(5) { animation-delay: 650ms; }
-
-/* ── Pull quote ── */
-.pull-quote {
-  position: relative;
-  padding-left: 20px;
-}
-
-.pull-quote::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 3px;
-  background: var(--accent);
-}
-
-[data-iteration="3"] .pull-quote::before,
-[data-iteration="4"] .pull-quote::before {
-  box-shadow: 0 0 12px rgba(234,179,8,0.3);
-}
+.hero-stagger > *:nth-child(1) { animation-delay: 80ms; }
+.hero-stagger > *:nth-child(2) { animation-delay: 200ms; }
+.hero-stagger > *:nth-child(3) { animation-delay: 320ms; }
+.hero-stagger > *:nth-child(4) { animation-delay: 440ms; }
+.hero-stagger > *:nth-child(5) { animation-delay: 540ms; }
 
 /* ── Iteration 0: Typical AI default — clean, competent, boring ── */
 [data-iteration="0"] {
   --bg: #ffffff; --bg-card: #f9fafb; --bg-code: #f3f4f6;
-  --text: #6b7280; --text-h: #4b5563; --text-m: #9ca3af;
+  --text: #6b7280; --text-h: #1f2937; --text-m: #9ca3af;
   --accent: #3b82f6; --accent-bg: #eff6ff;
   --border: #e5e7eb; --radius: 8px;
   --shadow: 0 1px 2px rgba(0,0,0,0.04);
-  --sp-section: 40px; --sp-card: 10px; --sp-gap: 8px;
-  --h-size: 1.15rem; --h-weight: 600;
-  --b-size: 13.5px; --b-lh: 1.5;
-  --card-pad: 14px;
-  --hero-size: 1.75rem;
+  --sp-section: 48px; --sp-card: 12px; --sp-gap: 10px;
+  --h-size: 1.2rem; --h-weight: 600;
+  --b-size: 14px; --b-lh: 1.55;
+  --card-pad: 16px;
+  --hero-size: 1.85rem;
   --hero-max-w: 560px;
-  --sub-size: 13.5px;
-  --cta-pad: 9px 18px; --cta-radius: 8px;
+  --sub-size: 14px;
+  --cta-pad: 11px 22px; --cta-radius: 8px;
   --cta-bg: #3b82f6; --cta-text: #fff; --cta-weight: 500;
   --cta-font-size: 13px;
-  --cols: 2; --step-size: 32px;
-  --badge-bg: #eff6ff; --badge-border: #bfdbfe; --badge-text: #3b82f6;
-  --bar-w: 0%; --code-border: #e5e7eb;
+  --cols: 2; --step-size: 34px;
+  --badge-bg: #eff6ff; --badge-border: #bfdbfe; --badge-text: #2563eb;
+  --bar-w: 4%; --code-border: #e5e7eb;
   --font-heading: var(--font-sans);
   --nav-bg: rgba(255,255,255,0.9); --nav-border: #e5e7eb;
 }
@@ -134,7 +113,7 @@
 /* ── Iteration 3: Dark editorial — dramatic shift ── */
 [data-iteration="3"] {
   --bg: #0a0a0a; --bg-card: #151515; --bg-code: #111111;
-  --text: #a8a29e; --text-h: #f5f5f4; --text-m: #78716c;
+  --text: #a8a29e; --text-h: #f5f5f4; --text-m: #8a8279;
   --accent: #f59e0b; --accent-bg: rgba(245,158,11,0.06);
   --border: #292524; --radius: 3px;
   --shadow: 0 4px 12px rgba(0,0,0,0.4), 0 0 0 1px rgba(245,158,11,0.04);
@@ -306,6 +285,13 @@
   font-family: var(--font-mono);
 }
 
+/* ── Step grid: last card spans full width on mobile 2-col ── */
+@media (max-width: 639px) {
+  .step-card:last-child {
+    grid-column: 1 / -1;
+  }
+}
+
 /* ── Step connector lines (desktop) ── */
 @media (min-width: 640px) {
   .step-card {
@@ -331,7 +317,6 @@
   border-top-color: var(--accent);
   box-shadow: 0 0 8px rgba(234,179,8,0.3);
 }
-
 
 /* ── Subtle noise texture (iter 4) ── */
 [data-iteration="4"]::after {
@@ -410,29 +395,202 @@
   top: 34px !important;
 }
 
-/* ── Rhythm text (hero tagline) ── */
-.rhythm-text {
-  display: none;
+/* ── Nav hint text ── */
+@keyframes nav-hint-fade {
+  0% { opacity: 0; }
+  15% { opacity: 1; }
+  85% { opacity: 1; }
+  100% { opacity: 1; }
 }
 
-[data-iteration="3"] .rhythm-text,
-[data-iteration="4"] .rhythm-text {
+.nav-hint {
+  animation: nav-hint-fade 1s ease forwards;
+}
+
+/* ── Phase timeline ── */
+.phase-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--accent-bg);
+  border: 2px solid var(--border);
+  flex-shrink: 0;
+  transition: all 400ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.phase-line {
+  width: 2px;
+  flex: 1;
+  min-height: 24px;
+  background: var(--border);
+  transition: all 400ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-iteration="3"] .phase-dot,
+[data-iteration="4"] .phase-dot {
+  border-color: var(--accent);
+  background: var(--accent-bg);
+  box-shadow: 0 0 8px rgba(234,179,8,0.3);
+}
+
+[data-iteration="3"] .phase-line,
+[data-iteration="4"] .phase-line {
+  background: var(--accent);
+  box-shadow: 0 0 6px rgba(234,179,8,0.2);
+}
+
+/* ── Pill tags ── */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 14px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  color: var(--text-h);
+  white-space: nowrap;
+  transition: all 200ms ease;
+}
+
+.pill:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.pill-muted {
+  color: var(--text-m);
+  font-style: italic;
+}
+
+[data-iteration="3"] .pill,
+[data-iteration="4"] .pill {
+  border-radius: 2px;
+}
+
+[data-iteration="3"] .pill:hover,
+[data-iteration="4"] .pill:hover {
+  background: var(--accent-bg);
+  border-color: var(--accent);
+  color: var(--accent);
+  box-shadow: 0 0 8px rgba(234,179,8,0.15);
+}
+
+/* ── Phase tags on criteria cards ── */
+.phase-tag {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--text-m);
+  padding: 3px 8px;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+[data-iteration="3"] .phase-tag,
+[data-iteration="4"] .phase-tag {
+  border-color: rgba(234,179,8,0.15);
+  color: var(--accent);
+}
+
+/* ── Chat bubbles (interview section) ── */
+.chat-bubble {
+  padding: 10px 14px;
+  border-radius: 8px;
+  line-height: 1.5;
+  margin-bottom: 4px;
+}
+
+.chat-q {
+  background: var(--accent-bg);
+  color: var(--text-h);
+  border-bottom-left-radius: 2px;
+}
+
+.chat-a {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-bottom-right-radius: 2px;
+  margin-left: 12px;
+}
+
+[data-iteration="3"] .chat-q,
+[data-iteration="4"] .chat-q {
+  border-radius: 2px;
+  border: 1px solid rgba(234,179,8,0.15);
+}
+
+[data-iteration="3"] .chat-a,
+[data-iteration="4"] .chat-a {
+  border-radius: 2px;
+}
+
+/* ── Final CTA section ── */
+.cta-progress-track {
+  display: inline-block;
+  width: 120px;
+  height: 6px;
+  background: var(--border);
+  border-radius: 3px;
+  overflow: hidden;
+  position: relative;
+}
+
+.cta-progress-fill {
   display: block;
+  height: 100%;
+  width: 80%;
+  background: var(--accent);
+  border-radius: 3px;
+  transition: all 400ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-iteration="3"] .final-cta,
+[data-iteration="4"] .final-cta {
+  position: relative;
+}
+
+[data-iteration="3"] .final-cta::before,
+[data-iteration="4"] .final-cta::before {
+  content: "";
+  position: absolute;
+  inset: -40px -60px;
+  background: radial-gradient(ellipse 60% 50% at 50% 50%, rgba(234,179,8,0.04) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+[data-iteration="3"] .final-cta > *,
+[data-iteration="4"] .final-cta > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Skill chain tip ── */
+[data-iteration="3"] .skill-chain-tip,
+[data-iteration="4"] .skill-chain-tip {
+  border-color: rgba(234,179,8,0.15) !important;
 }
 
 /* ── Mobile ── */
 @media (max-width: 640px) {
   [data-iteration="0"] {
     --cols: 1;
-    --hero-size: 1.5rem;
+    --hero-size: 1.6rem;
   }
   [data-iteration="1"] {
     --cols: 1;
-    --hero-size: 1.85rem;
+    --hero-size: 1.9rem;
   }
   [data-iteration="2"] {
     --cols: 1;
-    --hero-size: 2rem;
+    --hero-size: 2.1rem;
+    --sp-section: 64px;
   }
   [data-iteration="3"] {
     --cols: 1;

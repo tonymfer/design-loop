@@ -31,8 +31,8 @@ Invoke the `design-loop` skill. It will handle the full workflow:
 
 If arguments were provided:
 - `url`: Skip Q1 (target), use provided URL
-- `viewport`: Skip Q4 (viewport), use provided value
-- `iterations`: Skip Q3 (iterations), use provided value
+- `viewport`: Skip Q7 (viewport), use provided value
+- `iterations`: Skip Q5 (iterations), use provided value
 
 ## Prerequisites (auto-installed)
 

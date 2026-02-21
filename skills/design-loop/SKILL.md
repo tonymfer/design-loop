@@ -5,13 +5,13 @@ argument-hint: "[url] [viewport] [iterations]"
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash, mcp__plugin_playwright_playwright__browser_navigate, mcp__plugin_playwright_playwright__browser_resize, mcp__plugin_playwright_playwright__browser_take_screenshot, mcp__plugin_playwright_playwright__browser_snapshot, mcp__plugin_playwright_playwright__browser_evaluate, mcp__plugin_playwright_playwright__browser_close, mcp__claude-in-chrome__navigate, mcp__claude-in-chrome__computer, mcp__claude-in-chrome__read_page, mcp__claude-in-chrome__find, mcp__claude-in-chrome__javascript_tool
 ---
 
-# Design Loop
+# design-loop
 
 Autonomous visual iteration loop for frontend UI/UX. Takes screenshots after each change, analyzes against 8 design criteria, fixes issues, repeats until polished.
 
 ## Overview
 
-Design Loop = Playwright Screenshots + Design Analysis + In-session Iteration.
+design-loop = Playwright Screenshots + Design Analysis + In-session Iteration.
 Playwright MCP is auto-installed on first run. No other dependencies.
 
 Each iteration:
@@ -117,12 +117,12 @@ Before interviewing the user, auto-detect the project's design system:
 9. CHECK for previous design-loop runs:
    - If .claude/design-loop-history.md exists, extract the most recent run's
      focus areas and final scores
-   - Store as PREVIOUS_RUN — suggest "Continue from previous focus?" in Q2
+   - Store as PREVIOUS_RUN — suggest "Continue from previous focus?" in Q3
 
 10. CHECK for frontend-design creative direction:
     - If frontend-design skill was invoked earlier in this session, or if
       .claude/design-direction.md exists, store as DETECTED_CREATIVE_DIRECTION
-    - This auto-skips Q7 (Inspirations) and Q9 (Creative Direction)
+    - This auto-skips Q9 (Inspirations) and Q10 (Creative Direction)
 ```
 
 Store findings as `PROJECT_CONTEXT` — inject into the generated prompt.
@@ -134,8 +134,8 @@ and `$ARGUMENTS`. Well-configured projects see 3-5 questions. New projects see 6
 
 If arguments were passed via `$ARGUMENTS`, use them to skip questions:
 - `$ARGUMENTS[0]` (url) → skip Q1, use as target URL
-- `$ARGUMENTS[1]` (viewport) → skip Q4, use as viewport mode (mobile/desktop/both)
-- `$ARGUMENTS[2]` (iterations) → skip Q3, use as max iterations
+- `$ARGUMENTS[1]` (viewport) → skip Q7, use as viewport mode (mobile/desktop/both)
+- `$ARGUMENTS[2]` (iterations) → skip Q5, use as max iterations
 
 **Q1: Target** (skip if `$ARGUMENTS[0]` provided)
 ```
@@ -143,7 +143,7 @@ If arguments were passed via `$ARGUMENTS`, use them to skip questions:
 Options: [current page URL] / [enter URL] / [file path to component]
 ```
 
-**Q5: Vision** (skip if `DETECTED_VISION` found in Phase 1)
+**Q2: Vision** (skip if `DETECTED_VISION` found in Phase 1)
 ```
 "What's the primary goal of this iteration?"
 Options:
@@ -155,14 +155,14 @@ Options:
 ```
 If skipped, use `DETECTED_VISION`. Default if no signal: "All of the above — general polish".
 
-**Q2: Focus**
+**Q3: Focus**
 ```
 "What aspects need improvement?"
 Options: Layout & Spacing / Color & Contrast / Typography / Visual Hierarchy / All of the above
 ```
 If `PREVIOUS_RUN` exists, prepend option: "Continue from previous run ([previous focus areas])".
 
-**Q6: Audience** (skip if `DETECTED_AUDIENCE` found in Phase 1)
+**Q4: Audience** (skip if `DETECTED_AUDIENCE` found in Phase 1)
 ```
 "Who's the target audience?"
 Options:
@@ -173,13 +173,13 @@ Options:
 ```
 If skipped, use `DETECTED_AUDIENCE`. Default if no signal: "General web users".
 
-**Q3: Iterations** (skip if `$ARGUMENTS[2]` provided)
+**Q5: Iterations** (skip if `$ARGUMENTS[2]` provided)
 ```
 "How many visual iterations?"
 Options: 5 (quick polish) / 10 (thorough) / 20 (deep redesign)
 ```
 
-**Q10: Success Metrics** (skip if user chose default focus + iterations)
+**Q6: Success Metrics** (skip if user chose default focus + iterations)
 ```
 "Beyond the 8 criteria scores, what defines success?"
 Options:
@@ -190,7 +190,7 @@ Options:
 ```
 If skipped, default: "Score threshold is enough". If `DETECTED_METRICS` found, use that.
 
-**Q4: Viewport** (skip if `$ARGUMENTS[1]` provided)
+**Q7: Viewport** (skip if `$ARGUMENTS[1]` provided)
 ```
 "Which viewport(s)?"
 Options: Mobile (390px) / Desktop (1280px) / Both (mobile-first, verify desktop)
@@ -202,7 +202,7 @@ Options: Mobile (390px) / Desktop (1280px) / Both (mobile-first, verify desktop)
 Options: Dark mode only / Light mode only / Both modes / No preference
 ```
 
-**Q7: Inspirations** (skip if `DETECTED_CREATIVE_DIRECTION` or `DETECTED_REFERENCES` found)
+**Q9: Inspirations** (skip if `DETECTED_CREATIVE_DIRECTION` or `DETECTED_REFERENCES` found)
 ```
 "Any design inspiration? Paste a URL and describe what you like about it."
 Options:
@@ -212,7 +212,7 @@ Options:
 ```
 If a reference URL is provided, Claude will screenshot it at iteration 1 for visual comparison.
 
-**Q9: Creative Direction** (skip if frontend-design skill is available or `DETECTED_CREATIVE_DIRECTION` found)
+**Q10: Creative Direction** (skip if frontend-design skill is available or `DETECTED_CREATIVE_DIRECTION` found)
 ```
 "Any creative direction?"
 Options: Conservative (safe, professional) / Editorial (bold, opinionated) / Playful (colorful, energetic) / Let design-loop decide
@@ -224,14 +224,14 @@ Generate a prompt containing these EXACT sections, filled with project context:
 
 ```
 TASK: Visual polish iteration on [PAGE] — [FOCUS AREAS]
-VISION: [from Q5 — e.g., "Enhance aesthetics" or "All of the above — general polish"]
+VISION: [from Q2 — e.g., "Enhance aesthetics" or "All of the above — general polish"]
 
 URL: [target URL, e.g., http://localhost:3000/page]
 COMPONENT: [primary component file path(s)]
-REFERENCE: [from Q7 — URL + description, or "none"]
+REFERENCE: [from Q9 — URL + description, or "none"]
 
-TARGET AUDIENCE: [from Q6 — e.g., "Mobile-first young audience (18-35)"]
-SUCCESS METRICS: [from Q10 — e.g., ">=4/5 all criteria + hero section draws eye first"]
+TARGET AUDIENCE: [from Q4 — e.g., "Mobile-first young audience (18-35)"]
+SUCCESS METRICS: [from Q6 — e.g., ">=4/5 all criteria + hero section draws eye first"]
 
 PROJECT CONTEXT:
 - Framework: [detected framework]
@@ -269,14 +269,14 @@ Based on VISION and TARGET AUDIENCE, adjust criterion priority:
 - Enterprise audience → DENSITY can be higher (more info-dense is expected)
 - Developer audience → prefer clean/minimal aesthetic, high CONSISTENCY weight
 
-REFERENCE COMPARISON (only if Q7 provided a URL):
+REFERENCE COMPARISON (only if Q9 provided a URL):
 At iteration 1, screenshot the reference URL at the same viewport as the target.
 At each phase boundary (iter 4, 7, 10), re-screenshot the reference.
 Compare ONLY the described aspects (e.g., "spacing and typography" means
 ignore the reference's colors and imagery).
 Note differences and incorporate into the next iteration's fix priorities.
 
-CUSTOM SUCCESS CHECK (only if Q10 specified custom metrics):
+CUSTOM SUCCESS CHECK (only if Q6 specified custom metrics):
 At each phase boundary, evaluate custom success metrics in addition to
 the 8 criteria scores. If the custom metric is subjective (e.g., "hero draws eye"),
 assess it against the screenshot and note progress.
@@ -419,12 +419,12 @@ Write initial state to `.claude/design-loop.state.md`:
 ---
 status: running
 iteration: 0
-max_iterations: [from Q3]
+max_iterations: [from Q5]
 started_at: "[ISO timestamp]"
-vision: "[from Q5]"
-audience: "[from Q6]"
-reference_url: "[from Q7, or null]"
-success_metrics: "[from Q10]"
+vision: "[from Q2]"
+audience: "[from Q4]"
+reference_url: "[from Q9, or null]"
+success_metrics: "[from Q6]"
 ---
 
 [generated prompt from Phase 3]
@@ -473,53 +473,6 @@ Iter  S  H  C  A  D  Co T  E  Avg
   5   4  4  4  4  4  4  4  4  4.0  ↑ POLISHED
 ```
 
-## Framework Detection Reference
+## Detection Reference
 
-| package.json dep | Framework | Default viewport |
-|------------------|-----------|-----------------|
-| `next` | Next.js | mobile-first |
-| `nuxt` | Nuxt | mobile-first |
-| `@sveltejs/kit` | SvelteKit | mobile-first |
-| `@remix-run/react` | Remix | mobile-first |
-| `gatsby` | Gatsby | desktop |
-| `solid-js` | Solid.js | desktop |
-| `vue` | Vue | desktop |
-| `react` (no next) | React SPA | desktop |
-| `svelte` (no kit) | Svelte | desktop |
-| `astro` | Astro | desktop |
-
-### CSS-in-JS Detection
-
-| package.json dep | Library | Notes |
-|------------------|---------|-------|
-| `styled-components` | styled-components | Check for `styled.div` patterns |
-| `@emotion/react` | Emotion | Check for `css` prop or `styled` |
-| `@vanilla-extract/css` | vanilla-extract | Check for `.css.ts` files |
-
-### Animation Library Detection
-
-| package.json dep | Library | Notes |
-|------------------|---------|-------|
-| `framer-motion` | Framer Motion | Prefer `motion.*` wrappers over CSS transitions. Check for `AnimatePresence`, `useAnimation` |
-
-### Component Library Detection
-
-| package.json dep | Library | Token source |
-|------------------|---------|-------------|
-| `components.json` (file) | shadcn/ui | `components.json` theme |
-| `@radix-ui/*` | Radix Primitives | Custom styling needed |
-| `@headlessui/react` | Headless UI | Custom styling needed |
-| `@chakra-ui/react` | Chakra UI | `extendTheme()` config |
-| `antd` | Ant Design | `ConfigProvider` theme |
-| `@mui/material` | Material UI | `createTheme()` config |
-| `daisyui` | DaisyUI | Tailwind plugin config |
-
-### 3D / WebGL Detection (OFF-LIMITS)
-
-| package.json dep | Library | Design-Loop Rule |
-|------------------|---------|-----------------|
-| `@react-three/fiber` | React Three Fiber | Do NOT edit `<Canvas>` children. Mark as off-limits zone. Screenshot for scoring only. |
-| `@react-three/drei` | Drei (R3F helpers) | Same as R3F — off-limits for visual fixes |
-| `three` | Three.js (raw) | Same — 3D code is not CSS/component work |
-
-**Advanced features**: See [REFERENCE.md](REFERENCE.md)
+For detailed framework, CSS-in-JS, animation library, component library, and 3D/WebGL detection tables, see [REFERENCE.md](REFERENCE.md).

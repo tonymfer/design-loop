@@ -1,6 +1,6 @@
-# Design Loop — Reference
+# design-loop — Reference
 
-> Lookup reference for design-loop. The core workflow and detection logic lives in [SKILL.md](SKILL.md). This file contains tool commands, templates, CSS fix snippets, and framework-specific implementation guidance.
+> Lookup reference for design-loop. The core workflow and detection logic lives in [SKILL.md](SKILL.md). This file contains tool commands, templates, CSS fix snippets, detection tables, and framework-specific implementation guidance.
 
 ## Playwright Screenshot Commands
 
@@ -48,7 +48,7 @@ Parameters: { "function": "() => { ... }" }
 
 ## Reference Screenshot Comparison
 
-When the user provides a reference URL in Q7, capture it alongside the target for visual benchmarking.
+When the user provides a reference URL in Q9, capture it alongside the target for visual benchmarking.
 
 ### Capture Protocol
 
@@ -209,6 +209,57 @@ Match the page's design language
 | Desktop (standard) | 1280px | 800px | Laptop |
 | Desktop (wide) | 1440px | 900px | External monitor |
 
+## Detection Tables
+
+### Framework Detection
+
+| package.json dep | Framework | Default viewport |
+|------------------|-----------|-----------------|
+| `next` | Next.js | mobile-first |
+| `nuxt` | Nuxt | mobile-first |
+| `@sveltejs/kit` | SvelteKit | mobile-first |
+| `@remix-run/react` | Remix | mobile-first |
+| `gatsby` | Gatsby | desktop |
+| `solid-js` | Solid.js | desktop |
+| `vue` | Vue | desktop |
+| `react` (no next) | React SPA | desktop |
+| `svelte` (no kit) | Svelte | desktop |
+| `astro` | Astro | desktop |
+
+### CSS-in-JS Detection
+
+| package.json dep | Library | Notes |
+|------------------|---------|-------|
+| `styled-components` | styled-components | Check for `styled.div` patterns |
+| `@emotion/react` | Emotion | Check for `css` prop or `styled` |
+| `@vanilla-extract/css` | vanilla-extract | Check for `.css.ts` files |
+
+### Animation Library Detection
+
+| package.json dep | Library | Notes |
+|------------------|---------|-------|
+| `framer-motion` | Framer Motion | Prefer `motion.*` wrappers over CSS transitions. Check for `AnimatePresence`, `useAnimation` |
+
+### Component Library Detection
+
+| package.json dep | Library | Token source |
+|------------------|---------|-------------|
+| `components.json` (file) | shadcn/ui | `components.json` theme |
+| `@radix-ui/*` | Radix Primitives | Custom styling needed |
+| `@headlessui/react` | Headless UI | Custom styling needed |
+| `@chakra-ui/react` | Chakra UI | `extendTheme()` config |
+| `antd` | Ant Design | `ConfigProvider` theme |
+| `@mui/material` | Material UI | `createTheme()` config |
+| `daisyui` | DaisyUI | Tailwind plugin config |
+
+### 3D / WebGL Detection (OFF-LIMITS)
+
+| package.json dep | Library | design-loop Rule |
+|------------------|---------|-----------------|
+| `@react-three/fiber` | React Three Fiber | Do NOT edit `<Canvas>` children. Screenshot for scoring only. |
+| `@react-three/drei` | Drei (R3F helpers) | Same as R3F — off-limits for visual fixes |
+| `three` | Three.js (raw) | Same — 3D code is not CSS/component work |
+
 ## Framework-Specific Patterns
 
 ### Next.js / React
@@ -243,7 +294,7 @@ Match the page's design language
 
 ## Integration with Other Plugins
 
-Design Loop works well chained with:
+design-loop works well chained with:
 
 - **playwright**: Required — provides screenshot capability
 - **frontend-design**: Invoke BEFORE design-loop to get creative direction

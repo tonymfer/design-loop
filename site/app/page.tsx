@@ -18,17 +18,25 @@ const ITER_LABELS = [
   "Final — Polished",
 ];
 
+const ITER_FOCUS = [
+  "AI Default",
+  "Spacing & Layout",
+  "Hierarchy & Contrast",
+  "Character & Polish",
+  "Polished",
+];
+
 const BTN_LABELS = ["Before", "Iter 1", "Iter 2", "Iter 3", "Final"];
 
 const CRITERIA = [
-  { key: "spacing", icon: "■", name: "Spacing", desc: "Consistent scale (4/8/12/16/24/32px). No cramped elements. Room to breathe." },
-  { key: "hierarchy", icon: "▲", name: "Hierarchy", desc: "Clear visual weight order. Primary action obvious. Secondary muted." },
-  { key: "contrast", icon: "◉", name: "Contrast", desc: "Text readable against background. Interactive elements distinguishable." },
-  { key: "alignment", icon: "▦", name: "Alignment", desc: "Elements on consistent grid. No orphaned items. Edges line up." },
-  { key: "density", icon: "▬", name: "Density", desc: "Right amount of content per viewport. Not too sparse, not too cluttered." },
-  { key: "consistency", icon: "≡", name: "Consistency", desc: "Same patterns for same concepts. Colors meaningful, not random." },
-  { key: "touch", icon: "☞", name: "Touch Targets", desc: "Buttons and links have at least 44px touch area on mobile." },
-  { key: "empty", icon: "☐", name: "Empty States", desc: "Graceful when data is missing. Not broken, not blank." },
+  { key: "spacing", icon: "■", name: "Spacing", desc: "Consistent scale (4/8/12/16/24/32px). No cramped elements. Room to breathe.", phase: 1 },
+  { key: "hierarchy", icon: "▲", name: "Hierarchy", desc: "Clear visual weight order. Primary action obvious. Secondary muted.", phase: 2 },
+  { key: "contrast", icon: "◉", name: "Contrast", desc: "Text readable against background. Interactive elements distinguishable.", phase: 2 },
+  { key: "alignment", icon: "▦", name: "Alignment", desc: "Elements on consistent grid. No orphaned items. Edges line up.", phase: 3 },
+  { key: "density", icon: "▬", name: "Density", desc: "Right amount of content per viewport. Not too sparse, not too cluttered.", phase: 4 },
+  { key: "consistency", icon: "≡", name: "Consistency", desc: "Same patterns for same concepts. Colors meaningful, not random.", phase: 3 },
+  { key: "touch", icon: "☞", name: "Touch Targets", desc: "Buttons and links have at least 44px touch area on mobile.", phase: 1 },
+  { key: "empty", icon: "☐", name: "Empty States", desc: "Graceful when data is missing. Not broken, not blank.", phase: 4 },
 ];
 
 const STEPS = [
@@ -36,14 +44,40 @@ const STEPS = [
   { num: "2", title: "Measure", desc: "JS checks layout metrics" },
   { num: "3", title: "Score", desc: "8 criteria rated 1–5" },
   { num: "4", title: "Fix", desc: "Top 3 issues fixed in code" },
-  { num: "5", title: "Repeat", desc: "Loop until polished" },
+  { num: "5", title: "Repeat", desc: "Stop Hook loops until polished — no manual intervention" },
 ];
 
+const PHASES = [
+  { range: "1–3", focus: "Spacing & Layout", why: "Biggest visual impact first" },
+  { range: "4–6", focus: "Hierarchy & Contrast", why: "Typography and readability" },
+  { range: "7–9", focus: "Alignment & Consistency", why: "Edge alignment, pattern unification" },
+  { range: "10+", focus: "Density & Polish", why: "Content balance, final touches" },
+];
+
+const FRAMEWORKS = ["Next.js", "Nuxt", "SvelteKit", "React", "Vue", "Astro", "HTML"];
+const COMPONENT_LIBS = ["shadcn/ui", "Radix UI", "Chakra UI", "Material UI", "Ant Design", "DaisyUI"];
+
 const FEATURES = [
-  { num: "01", title: "Standalone", desc: "Zero dependencies. Native iteration engine — no external scoring service or API." },
-  { num: "02", title: "CSS Cascade Audit", desc: "Detects unlayered resets overriding Tailwind v4 utilities. Catches specificity conflicts." },
-  { num: "03", title: "9 Frameworks", desc: "Auto-detects Next.js, Vite, Remix, Astro, SvelteKit, and more from package.json." },
-  { num: "04", title: "Stuck Detection", desc: "Detects score plateaus and rotates strategies — skips what's working, focuses on what's not." },
+  { num: "01", title: "Fully Autonomous", desc: "Stop Hook keeps the loop running. Claude iterates until done — no babysitting." },
+  { num: "02", title: "Zero Dependencies", desc: "No API key. No npm install. Playwright auto-installed on first run." },
+  { num: "03", title: "CSS Cascade Audit", desc: "Detects unlayered resets overriding Tailwind v4. Finds bugs screenshots miss." },
+  { num: "04", title: "9 Frameworks", desc: "Auto-detects Next.js, Nuxt, SvelteKit, Remix, Astro, React, Vue, and more." },
+  { num: "05", title: "Phase-Aware Strategy", desc: "Spacing first, hierarchy second, alignment third, polish last." },
+  { num: "06", title: "Stuck Detection", desc: "Tries alternative approaches. After 3 fails, documents TODO, moves on." },
+  { num: "07", title: "Wide Viewport Check", desc: "Tests at 1920px to catch centering drift invisible at standard widths." },
+];
+
+const CONTEXT_FILES = [
+  "package.json",
+  "tailwind.config.*",
+  "CLAUDE.md",
+  "globals.css / global styles",
+];
+
+const INTERVIEW_QA = [
+  { q: "What is the primary purpose of this page?", a: "Marketing landing page for a developer tool" },
+  { q: "Any components I should preserve?", a: "The iteration switcher in the nav" },
+  { q: "Design aesthetic preference?", a: "Minimal dark editorial, technical feel" },
 ];
 
 function avg(s: Record<string, number>) {
@@ -54,6 +88,7 @@ function avg(s: Record<string, number>) {
 export default function Home() {
   const [iter, setIter] = useState(4);
   const [playing, setPlaying] = useState(false);
+  const [navHintVisible, setNavHintVisible] = useState(true);
 
   const next = useCallback(() => {
     setIter((p) => (p >= 4 ? 0 : p + 1));
@@ -78,9 +113,15 @@ export default function Home() {
   const s = SCORES[iter];
   const score = avg(s);
 
+  const handleIterClick = (i: number) => {
+    setIter(i);
+    setPlaying(false);
+    setNavHintVisible(false);
+  };
+
   return (
     <div data-iteration={iter} className="min-h-screen" style={{ background: "var(--bg)", color: "var(--text)", fontSize: "var(--b-size)", lineHeight: "var(--b-lh)" }}>
-      {/* ── Switcher Bar ── */}
+      {/* ── Sticky Nav ── */}
       <nav
         className="sticky top-0 z-50 backdrop-blur-md"
         style={{ background: "var(--nav-bg)", borderBottom: "1px solid var(--nav-border)", padding: "12px 24px" }}
@@ -89,20 +130,28 @@ export default function Home() {
           <span className="hidden text-[11px] font-medium uppercase tracking-wider whitespace-nowrap sm:block" style={{ fontFamily: "var(--font-mono)", color: "var(--text-m)", letterSpacing: "0.12em" }}>
             design-loop
           </span>
-          <div className="flex flex-1 flex-wrap items-center justify-center gap-1.5 sm:gap-2">
-            <span className="mr-1 hidden text-[10px] uppercase tracking-widest sm:block" style={{ fontFamily: "var(--font-mono)", color: "var(--text-m)", letterSpacing: "0.1em" }}>
-              Try it:
-            </span>
+          <div className="flex flex-1 flex-wrap items-center justify-center gap-2 sm:gap-2">
+            {navHintVisible && (
+              <span className="nav-hint mr-1 hidden text-[10px] tracking-wide sm:block" style={{ fontFamily: "var(--font-mono)", color: "var(--accent)" }}>
+                This page is the demo — try switching iterations
+              </span>
+            )}
+            {!navHintVisible && (
+              <span className="mr-1 hidden text-[10px] uppercase tracking-widest sm:block" style={{ fontFamily: "var(--font-mono)", color: "var(--text-m)", letterSpacing: "0.1em" }}>
+                Try it:
+              </span>
+            )}
             {BTN_LABELS.map((label, i) => (
               <button
                 key={i}
-                onClick={() => { setIter(i); setPlaying(false); }}
+                onClick={() => handleIterClick(i)}
                 className="t iter-btn cursor-pointer whitespace-nowrap"
                 style={{
                   fontFamily: "var(--font-mono)",
                   fontSize: "13px",
                   fontWeight: iter === i ? 700 : 500,
-                  padding: "8px 18px",
+                  padding: "10px 18px",
+                  minHeight: "44px",
                   border: iter === i ? "2px solid var(--accent)" : "1px solid var(--border)",
                   borderRadius: "6px",
                   background: iter === i ? "var(--cta-bg)" : "transparent",
@@ -118,7 +167,8 @@ export default function Home() {
               style={{
                 fontFamily: "var(--font-mono)",
                 fontSize: "12px",
-                padding: "7px 14px",
+                padding: "10px 16px",
+                minHeight: "44px",
                 border: `1px solid ${playing ? "var(--accent)" : "var(--border)"}`,
                 borderRadius: "4px",
                 background: "transparent",
@@ -129,7 +179,10 @@ export default function Home() {
             </button>
           </div>
           <div className="hidden items-center gap-2.5 whitespace-nowrap sm:flex" style={{ fontFamily: "var(--font-mono)", fontSize: "12px", fontWeight: 600, color: "var(--accent)" }}>
-            <span>{score}/5</span>
+            <span className="flex items-center gap-1.5">
+              <span>{score}/5</span>
+              <span className="text-[10px] font-normal" style={{ color: "var(--text-m)" }}>{ITER_FOCUS[iter]}</span>
+            </span>
             <div className="h-1.5 w-24 overflow-hidden rounded-full" style={{ background: "var(--border)" }}>
               <div className="score-fill h-full rounded-full" style={{ width: "var(--bar-w)", background: "var(--accent)" }} />
             </div>
@@ -173,48 +226,63 @@ export default function Home() {
             className="t mx-auto mb-10"
             style={{ fontSize: "var(--sub-size, calc(var(--b-size) * 1.15))", lineHeight: 1.7, color: "var(--text-m)", maxWidth: "var(--sub-max-w, 480px)", textWrap: "balance", textAlign: "center" } as React.CSSProperties}
           >
-            design-loop gives Claude eyes. It screenshots your page,
-            measures layout metrics, scores against 8 design criteria,
-            fixes the issues, and repeats — autonomously — until your UI
-            is polished.
+            design-loop gives Claude eyes. Screenshot. Measure. Score. Fix.
+            Repeat — fully autonomous — until your UI is polished. No
+            babysitting. It loops until done.
           </p>
-          <a
-            href="https://github.com/tonymfer/design-loop"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="t cta-glow inline-block cursor-pointer no-underline hover:-translate-y-0.5"
-            style={{
-              fontFamily: "var(--font-mono)",
-              fontSize: "var(--cta-font-size, 14px)",
-              fontWeight: "var(--cta-weight)",
-              padding: "var(--cta-pad)",
-              background: "var(--cta-bg)",
-              color: "var(--cta-text)",
-              borderRadius: "var(--cta-radius)",
-              border: "none",
-              letterSpacing: "0.03em",
-            }}
-          >
-            Install Plugin →
-          </a>
+          <div className="flex flex-wrap items-center justify-center gap-4">
+            <a
+              href="#install"
+              className="t cta-glow inline-flex items-center cursor-pointer no-underline hover:-translate-y-0.5"
+              style={{
+                fontFamily: "var(--font-mono)",
+                fontSize: "var(--cta-font-size, 14px)",
+                fontWeight: "var(--cta-weight)",
+                padding: "var(--cta-pad)",
+                minHeight: "44px",
+                background: "var(--cta-bg)",
+                color: "var(--cta-text)",
+                borderRadius: "var(--cta-radius)",
+                border: "none",
+                letterSpacing: "0.03em",
+              }}
+            >
+              Get Started →
+            </a>
+            <a
+              href="#how-it-works"
+              className="t inline-flex items-center cursor-pointer no-underline"
+              style={{
+                fontFamily: "var(--font-mono)",
+                fontSize: "13px",
+                color: "var(--text-m)",
+                letterSpacing: "0.02em",
+                borderBottom: "1px solid var(--border)",
+                paddingBottom: "2px",
+                minHeight: "44px",
+              }}
+            >
+              Watch it work ↓
+            </a>
+          </div>
           <p
-            className="rhythm-text t mt-8"
+            className="t mt-8"
             style={{
               fontFamily: "var(--font-mono)",
-              fontSize: "13px",
-              letterSpacing: "0.08em",
+              fontSize: "12px",
+              letterSpacing: "0.04em",
               color: "var(--text-m)",
             }}
           >
-            Screenshot. Measure. Score. Fix. Repeat.
+            Works with Next.js, Nuxt, SvelteKit, React, Vue, Astro, and more.
           </p>
         </section>
 
-        {/* ── How it works ── */}
-        <Section>
+        {/* ── How It Works ── */}
+        <Section id="how-it-works">
           <SectionHeading>How it works</SectionHeading>
           <p className="t" style={{ color: "var(--text-m)", marginBottom: "var(--sp-gap)" }}>
-            Five steps, repeated until every criterion scores 4/5 or higher.
+            Five steps per iteration. Each one makes the page measurably better.
           </p>
           <div
             className="t mt-[var(--sp-card)] grid grid-cols-2 gap-3 sm:grid-cols-5 sm:gap-[var(--sp-gap)]"
@@ -254,38 +322,42 @@ export default function Home() {
           </div>
         </Section>
 
-        {/* ── Install ── */}
+        {/* ── Phase-Aware Iteration ── */}
         <Section>
-          <SectionHeading>Install</SectionHeading>
+          <SectionHeading>Structured, not random</SectionHeading>
           <p className="t" style={{ color: "var(--text-m)", marginBottom: "var(--sp-gap)" }}>
-            One command. Requires{" "}
-            <a href="https://docs.anthropic.com/en/docs/claude-code" style={{ color: "var(--accent)" }}>
-              Claude Code
-            </a>
-            . Dependencies are auto-installed on first run.
+            design-loop follows a deliberate progression — spacing first because layout problems cascade, typography second, alignment and polish last.
           </p>
-          <CodeBlock copyText="claude plugin add https://github.com/tonymfer/design-loop">
-            <span style={{ color: "var(--text-h)" }}>claude plugin add https://github.com/tonymfer/design-loop</span>
-          </CodeBlock>
-          <p className="t" style={{ marginTop: "var(--sp-gap)", color: "var(--text)" }}>
-            Then in any project:
-          </p>
-          <CodeBlock copyText="/design-loop http://localhost:3000">
-            <span style={{ color: "var(--text-m)" }}># Start polishing</span>
-            {"\n"}
-            <span style={{ color: "var(--text-h)" }}>/design-loop http://localhost:3000</span>
-            {"\n\n"}
-            <span style={{ color: "var(--text-m)" }}># With viewport and iteration limit</span>
-            {"\n"}
-            <span style={{ color: "var(--text-h)" }}>/design-loop http://localhost:3000 desktop 20</span>
-          </CodeBlock>
+          <div className="phase-timeline t mt-[var(--sp-card)]">
+            {PHASES.map((phase, i) => (
+              <div key={phase.range} className="phase-row t flex items-start gap-4 sm:gap-6" style={{ paddingBottom: i < PHASES.length - 1 ? "var(--sp-gap)" : 0 }}>
+                <div className="phase-marker t flex flex-col items-center">
+                  <div className="phase-dot t" />
+                  {i < PHASES.length - 1 && <div className="phase-line t" />}
+                </div>
+                <div className="flex-1" style={{ paddingBottom: i < PHASES.length - 1 ? "8px" : 0 }}>
+                  <div className="flex flex-wrap items-baseline gap-2 sm:gap-3">
+                    <span className="t font-mono text-xs font-bold" style={{ color: "var(--accent)", minWidth: "40px" }}>
+                      Iter {phase.range}
+                    </span>
+                    <span className="t font-semibold" style={{ color: "var(--text-h)", fontSize: "var(--b-size)" }}>
+                      {phase.focus}
+                    </span>
+                  </div>
+                  <p className="t mb-0 mt-1" style={{ fontSize: "calc(var(--b-size) * 0.88)", color: "var(--text-m)", lineHeight: 1.5 }}>
+                    {phase.why}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
         </Section>
 
         {/* ── The 8 Criteria ── */}
         <Section>
-          <SectionHeading>The 8 Criteria</SectionHeading>
+          <SectionHeading>8 design fundamentals</SectionHeading>
           <p className="t" style={{ color: "var(--text-m)", marginBottom: "var(--sp-gap)" }}>
-            Every screenshot is scored against these design fundamentals.
+            Every screenshot is scored. Every score has a reason.
           </p>
           <div
             className="t mt-[var(--sp-card)] grid"
@@ -300,6 +372,7 @@ export default function Home() {
                   <h3 className="t mb-0 flex-1 font-semibold" style={{ fontSize: "var(--b-size)", color: "var(--text-h)" }}>
                     {c.name}
                   </h3>
+                  <span className="phase-tag t">Phase {c.phase}</span>
                   <span
                     className="t font-mono text-xs font-bold"
                     style={{ color: "var(--accent)" }}
@@ -313,36 +386,169 @@ export default function Home() {
               </Card>
             ))}
           </div>
+
+          {/* Scorecard summary row */}
+          <div
+            className="scorecard-summary t mt-[var(--sp-card)] flex flex-wrap items-center justify-between gap-3 rounded-[var(--radius)]"
+            style={{
+              background: "var(--bg-card)",
+              border: `1px solid var(--border)`,
+              borderLeft: "3px solid var(--accent)",
+              padding: "var(--card-pad)",
+              boxShadow: "var(--shadow)",
+            }}
+          >
+            <div className="flex items-center gap-3">
+              <span className="t text-xs font-medium uppercase tracking-wider" style={{ fontFamily: "var(--font-mono)", color: "var(--text-m)" }}>
+                {ITER_LABELS[iter]}
+              </span>
+            </div>
+            <div className="flex items-center gap-3">
+              <span className="t font-mono font-bold" style={{ color: "var(--accent)", fontSize: "1.1em" }}>
+                {score}/5
+              </span>
+              <div className="h-1.5 w-20 overflow-hidden rounded-full" style={{ background: "var(--border)" }}>
+                <div className="score-fill h-full rounded-full" style={{ width: "var(--bar-w)", background: "var(--accent)" }} />
+              </div>
+              {iter === 4 && <span className="polished-badge">Polished</span>}
+            </div>
+          </div>
         </Section>
 
-        {/* ── Pull Quote ── */}
+        {/* ── Ecosystem Detection ── */}
         <Section>
-          <div className="pull-quote" style={{ padding: "var(--sp-gap) 0 var(--sp-gap) 20px" }}>
-            <p
-              className="t mb-0"
-              style={{
-                fontSize: "var(--h-size)",
-                fontFamily: "var(--font-heading)",
-                fontWeight: "var(--h-weight)",
-                fontStyle: "italic",
-                color: "var(--text-h)",
-                lineHeight: 1.5,
-              }}
-            >
-              A screenshot shows you pixels. It doesn&apos;t show you a
-              CSS reset fighting your spacing system, or a centered layout
-              that drifts at 1920px.
-            </p>
-            <p
-              className="t mt-3 mb-0"
-              style={{
-                fontFamily: "var(--font-mono)",
-                fontSize: "12px",
-                color: "var(--text-m)",
-                letterSpacing: "0.04em",
-              }}
-            >
-              — That&apos;s why design-loop measures, not just looks.
+          <SectionHeading>Knows your stack</SectionHeading>
+          <p className="t" style={{ color: "var(--text-m)", marginBottom: "var(--sp-gap)" }}>
+            Reads your package.json. Adapts automatically.
+          </p>
+          <div className="t mt-[var(--sp-card)]">
+            <div className="mb-4">
+              <span className="t mb-2 block text-xs font-medium uppercase tracking-wider" style={{ fontFamily: "var(--font-mono)", color: "var(--text-m)" }}>
+                Frameworks
+              </span>
+              <div className="flex flex-wrap gap-2">
+                {FRAMEWORKS.map((fw) => (
+                  <span key={fw} className="pill t">{fw}</span>
+                ))}
+                <span className="pill pill-muted t">+ more</span>
+              </div>
+            </div>
+            <div className="mb-6">
+              <span className="t mb-2 block text-xs font-medium uppercase tracking-wider" style={{ fontFamily: "var(--font-mono)", color: "var(--text-m)" }}>
+                Component Libraries
+              </span>
+              <div className="flex flex-wrap gap-2">
+                {COMPONENT_LIBS.map((lib) => (
+                  <span key={lib} className="pill t">{lib}</span>
+                ))}
+              </div>
+            </div>
+            <div className="t flex flex-col gap-3" style={{ fontSize: "calc(var(--b-size) * 0.92)" }}>
+              <div className="t flex items-start gap-3 rounded-[var(--radius)]" style={{ background: "var(--bg-card)", border: "1px solid var(--border)", padding: "var(--card-pad)" }}>
+                <span style={{ color: "var(--accent)" }}>→</span>
+                <span style={{ color: "var(--text)" }}>Reads your theme config, uses existing tokens — won&apos;t conflict</span>
+              </div>
+              <div className="t flex items-start gap-3 rounded-[var(--radius)]" style={{ background: "var(--bg-card)", border: "1px solid var(--border)", padding: "var(--card-pad)" }}>
+                <span style={{ color: "var(--accent)" }}>→</span>
+                <span style={{ color: "var(--text)" }}>Framer Motion detected → uses <code style={{ fontFamily: "var(--font-mono)", fontSize: "0.9em", color: "var(--accent)" }}>motion.*</code> components, respects <code style={{ fontFamily: "var(--font-mono)", fontSize: "0.9em", color: "var(--accent)" }}>AnimatePresence</code></span>
+              </div>
+              <div className="t flex items-start gap-3 rounded-[var(--radius)]" style={{ background: "var(--bg-card)", border: "1px solid var(--border)", padding: "var(--card-pad)" }}>
+                <span style={{ color: "var(--accent)" }}>→</span>
+                <span style={{ color: "var(--text)" }}>React Three Fiber detected → 3D scenes marked off-limits, only fixes 2D layer</span>
+              </div>
+            </div>
+          </div>
+        </Section>
+
+        {/* ── Context & Interview ── */}
+        <Section>
+          <SectionHeading>Understands before it starts</SectionHeading>
+          <p className="t" style={{ color: "var(--text-m)", marginBottom: "var(--sp-gap)" }}>
+            Scans your project. Asks smart questions. Then iterates.
+          </p>
+          <div className="t mt-[var(--sp-card)] grid gap-[var(--sp-gap)]" style={{ gridTemplateColumns: "repeat(var(--cols), 1fr)" }}>
+            {/* Context Scan */}
+            <Card>
+              <h3 className="t mb-3 text-xs font-medium uppercase tracking-wider" style={{ fontFamily: "var(--font-mono)", color: "var(--text-m)" }}>
+                Context Scan
+              </h3>
+              <div className="context-list">
+                {CONTEXT_FILES.map((file) => (
+                  <div key={file} className="t flex items-center gap-2" style={{ padding: "6px 0", fontFamily: "var(--font-mono)", fontSize: "13px", color: "var(--text-h)" }}>
+                    <span style={{ color: "var(--accent)" }}>$</span>
+                    <span>{file}</span>
+                  </div>
+                ))}
+              </div>
+            </Card>
+
+            {/* Interview */}
+            <Card>
+              <h3 className="t mb-3 text-xs font-medium uppercase tracking-wider" style={{ fontFamily: "var(--font-mono)", color: "var(--text-m)" }}>
+                Interview
+              </h3>
+              <div className="interview-chat">
+                {INTERVIEW_QA.map((qa, i) => (
+                  <div key={i} className="mb-3 last:mb-0">
+                    <div className="chat-bubble chat-q t" style={{ fontSize: "calc(var(--b-size) * 0.88)" }}>
+                      {qa.q}
+                    </div>
+                    <div className="chat-bubble chat-a t" style={{ fontSize: "calc(var(--b-size) * 0.88)" }}>
+                      {qa.a}
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <p className="t mt-2 mb-0" style={{ fontSize: "11px", fontFamily: "var(--font-mono)", color: "var(--text-m)" }}>
+                CLI args skip the interview
+              </p>
+            </Card>
+          </div>
+        </Section>
+
+        {/* ── Install + Usage ── */}
+        <Section id="install">
+          <SectionHeading>One command away</SectionHeading>
+          <p className="t" style={{ color: "var(--text-m)", marginBottom: "var(--sp-gap)" }}>
+            Requires{" "}
+            <a href="https://docs.anthropic.com/en/docs/claude-code" style={{ color: "var(--accent)" }}>
+              Claude Code
+            </a>
+            . Dependencies are auto-installed on first run.
+          </p>
+          <CodeBlock copyText="claude plugin add https://github.com/tonymfer/design-loop">
+            <span style={{ color: "var(--text-h)" }}>claude plugin add https://github.com/tonymfer/design-loop</span>
+          </CodeBlock>
+          <p className="t" style={{ marginTop: "var(--sp-gap)", color: "var(--text)", fontWeight: 600, fontSize: "calc(var(--b-size) * 0.95)" }}>
+            Usage
+          </p>
+          <CodeBlock copyText="/design-loop http://localhost:3000">
+            <span style={{ color: "var(--text-m)" }}># Start polishing</span>
+            {"\n"}
+            <span style={{ color: "var(--text-h)" }}>/design-loop http://localhost:3000</span>
+            {"\n\n"}
+            <span style={{ color: "var(--text-m)" }}># Desktop viewport, 20 iterations</span>
+            {"\n"}
+            <span style={{ color: "var(--text-h)" }}>/design-loop http://localhost:3000/dashboard --viewport desktop --iterations 20</span>
+            {"\n\n"}
+            <span style={{ color: "var(--text-m)" }}># Test both viewports</span>
+            {"\n"}
+            <span style={{ color: "var(--text-h)" }}>/design-loop http://localhost:5173 --viewport both</span>
+          </CodeBlock>
+
+          {/* Skill chain tip */}
+          <div
+            className="skill-chain-tip t mt-[var(--sp-card)] rounded-[var(--radius)]"
+            style={{
+              background: "var(--accent-bg)",
+              border: "1px solid var(--badge-border)",
+              padding: "var(--card-pad)",
+            }}
+          >
+            <p className="t mb-0" style={{ fontSize: "calc(var(--b-size) * 0.92)", color: "var(--text)", lineHeight: 1.6 }}>
+              <strong style={{ color: "var(--accent)", fontFamily: "var(--font-mono)", fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.08em" }}>Pro tip</strong>
+              <br />
+              Use <code style={{ fontFamily: "var(--font-mono)", fontSize: "0.9em", color: "var(--accent)" }}>frontend-design</code> → <code style={{ fontFamily: "var(--font-mono)", fontSize: "0.9em", color: "var(--accent)" }}>design-loop</code> to get creative direction first, then iterate visually.
             </p>
           </div>
         </Section>
@@ -351,7 +557,7 @@ export default function Home() {
         <Section>
           <SectionHeading>Features</SectionHeading>
           <p className="t" style={{ color: "var(--text-m)", marginBottom: "var(--sp-gap)" }}>
-            Standalone. Smarter. Framework-aware.
+            Autonomous. Framework-aware. Zero setup.
           </p>
           <div className="t mt-[var(--sp-card)]">
             {FEATURES.map((f, i) => (
@@ -382,76 +588,70 @@ export default function Home() {
           </div>
         </Section>
 
-        {/* ── Live Demo ── */}
-        <Section>
-          <SectionHeading>Live Demo</SectionHeading>
-          <div
-            className="t rounded-[var(--radius)] text-center"
+        {/* ── Final CTA ── */}
+        <section
+          className="final-cta t text-center"
+          style={{ padding: "var(--sp-section) 0", borderTop: "1px solid var(--border)" }}
+        >
+          <h2
+            className="t section-heading mb-4"
             style={{
-              background: "var(--accent-bg)",
-              border: `1px solid var(--badge-border)`,
-              padding: "clamp(20px, 4vw, 32px) clamp(16px, 3vw, 28px)",
+              fontSize: "var(--h-size)",
+              fontWeight: "var(--h-weight)",
+              color: "var(--text-h)",
+              fontFamily: "var(--font-heading)",
+              letterSpacing: "-0.01em",
             }}
           >
-            <p className="t mb-0 text-sm font-semibold sm:text-base" style={{ color: "var(--accent)", lineHeight: 1.6 }}>
-              You&apos;re looking at it. Click the iteration buttons above and
-              watch this page transform. That&apos;s design-loop polishing its
-              own landing page.
-            </p>
+            Stop guessing. Start measuring.
+          </h2>
+
+          <div className="t mx-auto mb-8 flex items-center justify-center gap-3" style={{ fontFamily: "var(--font-mono)", fontSize: "1.3em", fontWeight: 700 }}>
+            <span style={{ color: "var(--text-m)" }}>2.4/5</span>
+            <span className="cta-progress-track">
+              <span className="cta-progress-fill t" />
+            </span>
+            <span style={{ color: "var(--accent)" }}>4.6/5</span>
           </div>
 
-          {/* Scorecard */}
-          <Card className="mt-[var(--sp-card)]">
-            <h3
-              className="t mb-3 text-xs font-medium uppercase tracking-wider"
-              style={{ fontFamily: "var(--font-mono)", color: "var(--text-m)" }}
-            >
-              Scorecard — {ITER_LABELS[iter]}
-            </h3>
-            {CRITERIA.map((c) => {
-              const delta = s[c.key] - SCORES[0][c.key];
-              return (
-                <div
-                  key={c.key}
-                  className="t flex items-center justify-between"
-                  style={{
-                    padding: "8px 0",
-                    borderBottom: `1px solid var(--border)`,
-                    fontSize: "calc(var(--b-size) * 0.9)",
-                  }}
-                >
-                  <span style={{ color: "var(--text)" }}>{c.name}</span>
-                  <span style={{ fontFamily: "var(--font-mono)", fontWeight: 600, color: "var(--accent)" }}>
-                    {s[c.key]}/5
-                    {delta > 0 && <span className="score-up">+{delta}</span>}
-                  </span>
-                </div>
-              );
-            })}
-            <div
-              className="t mt-1 flex items-center justify-between pt-2.5 font-bold"
-              style={{ borderTop: `2px solid var(--accent)`, color: "var(--text-h)" }}
-            >
-              <span>Average</span>
-              <span className="flex items-center gap-2" style={{ fontFamily: "var(--font-mono)", color: "var(--accent)", fontSize: "1.2em" }}>
-                {score}/5
-                {iter === 4 && <span className="polished-badge">Polished</span>}
-              </span>
-            </div>
-          </Card>
-        </Section>
+          <CodeBlock copyText="claude plugin add https://github.com/tonymfer/design-loop">
+            <span style={{ color: "var(--text-h)" }}>claude plugin add https://github.com/tonymfer/design-loop</span>
+          </CodeBlock>
 
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-4">
+            <a
+              href="https://github.com/tonymfer/design-loop"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="t cta-glow inline-flex items-center cursor-pointer no-underline hover:-translate-y-0.5"
+              style={{
+                fontFamily: "var(--font-mono)",
+                fontSize: "var(--cta-font-size, 14px)",
+                fontWeight: "var(--cta-weight)",
+                padding: "var(--cta-pad)",
+                minHeight: "44px",
+                background: "var(--cta-bg)",
+                color: "var(--cta-text)",
+                borderRadius: "var(--cta-radius)",
+                border: "none",
+                letterSpacing: "0.03em",
+              }}
+            >
+              View on GitHub →
+            </a>
+          </div>
+        </section>
       </div>
 
       {/* ── Footer ── */}
-      <footer className="t text-center" style={{ padding: "calc(var(--sp-section) * 0.75) 0", borderTop: `1px solid var(--border)` }}>
-        <p className="text-sm" style={{ color: "var(--text-m)", fontFamily: "var(--font-mono)", fontSize: "12px", letterSpacing: "0.02em" }}>
+      <footer className="t text-center" style={{ padding: "calc(var(--sp-section) * 0.85) 0", borderTop: `1px solid var(--border)` }}>
+        <p className="text-sm" style={{ color: "var(--text-m)", fontFamily: "var(--font-mono)", fontSize: "12px", letterSpacing: "0.02em", lineHeight: 2.2 }}>
           Built by{" "}
-          <a href="https://github.com/tonymfer" style={{ color: "var(--accent)", textDecoration: "none", fontWeight: 600 }}>
+          <a href="https://github.com/tonymfer" style={{ color: "var(--accent)", textDecoration: "none", fontWeight: 600, padding: "4px 0" }}>
             tonymfer
           </a>
           {" · "}
-          <a href="https://github.com/tonymfer/design-loop" style={{ color: "var(--accent)", textDecoration: "none", fontWeight: 600 }}>
+          <a href="https://github.com/tonymfer/design-loop" style={{ color: "var(--accent)", textDecoration: "none", fontWeight: 600, padding: "4px 0" }}>
             GitHub
           </a>
           {" · "}
@@ -464,9 +664,9 @@ export default function Home() {
 
 /* ── Shared Components ── */
 
-function Section({ children }: { children: React.ReactNode }) {
+function Section({ children, id }: { children: React.ReactNode; id?: string }) {
   return (
-    <section className="t" style={{ padding: "var(--sp-section) 0", borderTop: `1px solid var(--border)` }}>
+    <section id={id} className="t" style={{ padding: "var(--sp-section) 0", borderTop: `1px solid var(--border)` }}>
       {children}
     </section>
   );
@@ -532,8 +732,8 @@ function CodeBlock({ children, copyText }: { children: React.ReactNode; copyText
             top: "8px",
             right: "8px",
             fontFamily: "var(--font-mono)",
-            fontSize: "10px",
-            padding: "4px 8px",
+            fontSize: "11px",
+            padding: "8px 12px",
             background: "var(--bg-card)",
             border: `1px solid var(--border)`,
             borderRadius: "3px",
