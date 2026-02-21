@@ -101,23 +101,23 @@
 }
 
 /* ═══════════════════════════════════════════════
-   Iteration 1 — Dark but flat
+   Iteration 1 — Dark, basic structure
    ═══════════════════════════════════════════════ */
 [data-iteration="1"] {
-  --page-bg: #111827;
-  --text-primary: #e5e7eb;
-  --text-secondary: #9ca3af;
-  --text-muted: #6b7280;
-  --accent: #6b7280;
-  --accent-rgb: 107, 114, 128;
-  --accent-2: #6b7280;
-  --accent-2-rgb: 107, 114, 128;
-  --border: rgba(55, 65, 81, 0.5);
-  --card-bg: rgba(31, 41, 55, 0.4);
-  --surface: rgba(31, 41, 55, 0.5);
-  --effects-opacity: 0;
-  --gradient-opacity: 0;
-  --dot-grid-opacity: 0;
+  --page-bg: #0f172a;
+  --text-primary: #e2e8f0;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --accent: #22d3ee;
+  --accent-rgb: 34, 211, 238;
+  --accent-2: #22d3ee;
+  --accent-2-rgb: 34, 211, 238;
+  --border: rgba(51, 65, 85, 0.5);
+  --card-bg: rgba(15, 23, 42, 0.5);
+  --surface: rgba(30, 41, 59, 0.4);
+  --effects-opacity: 0.15;
+  --gradient-opacity: 0.1;
+  --dot-grid-opacity: 0.03;
   --radius: 6px;
 }
 
@@ -195,22 +195,11 @@
    (solid color instead of gradient)
    ═══════════════════════════════════════════════ */
 [data-iteration="0"] .bg-gradient-to-r.bg-clip-text,
-[data-iteration="1"] .bg-gradient-to-r.bg-clip-text {
-  background: none !important;
-  -webkit-background-clip: unset !important;
-  background-clip: unset !important;
-  -webkit-text-fill-color: unset !important;
-  color: var(--text-primary);
-}
-
-/* Iterations 0-1: override serif headings to sans */
+/* Iteration 0: override serif headings to sans */
 [data-iteration="0"] .font-serif {
   font-family: var(--font-sans);
 }
-[data-iteration="1"] .font-serif {
-  font-family: var(--font-sans);
-}
-/* Iteration 2: keep sans */
+/* Iteration 2: display font (not yet serif) */
 [data-iteration="2"] .font-serif {
   font-family: var(--font-display);
 }

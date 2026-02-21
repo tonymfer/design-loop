@@ -28,7 +28,7 @@ export function Hero() {
           </span>
 
           {/* Wordmark */}
-          <span className="mb-6 font-mono text-sm font-bold tracking-tight text-[var(--text-primary)]">
+          <span className="mb-6 font-mono text-2xl sm:text-3xl font-bold tracking-tight text-[var(--text-primary)]">
             design<span className="text-[var(--accent)]">-</span>loop
           </span>
 
