@@ -1,7 +1,6 @@
 {
   "name": "design-loop",
   "description": "Autonomous visual iteration loop for frontend UI/UX. Takes section-level screenshots, scores against 5 anti-slop criteria, fixes issues, and repeats until polished. Discovers companion design skills and absorbs their guidelines to sharpen scoring.",
-  "version": "1.0.0",
   "author": {
     "name": "tonymfer",
     "email": "tony.base.eth@gmail.com"

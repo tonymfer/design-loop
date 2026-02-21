@@ -1,6 +1,16 @@
 {
-  "description": "Design Loop plugin stop hook for autonomous visual iteration",
+  "description": "Design Loop plugin hooks for autonomous visual iteration",
   "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/session-start-hook.sh"
+          }
+        ]
+      }
+    ],
     "Stop": [
       {
         "hooks": [
