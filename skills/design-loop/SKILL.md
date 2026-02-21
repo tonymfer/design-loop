@@ -21,9 +21,33 @@ Each iteration:
 ```
 1. CHECK Playwright MCP — try calling mcp__plugin_playwright_playwright__browser_navigate
    If unavailable: run `claude mcp add playwright -- npx -y @playwright/mcp@latest` via Bash
-2. CHECK dev server — verify target URL responds
-   If not running: tell user to start it and wait
+2. CHECK target URL — curl or navigate to verify it responds
+   If it responds: proceed
+   If not: run the dev server recovery sequence below
 ```
+
+### Dev Server Recovery
+
+When the target URL doesn't respond:
+
+```
+1. SCAN for running dev servers:
+   - Run: lsof -i :3000 -i :3001 -i :4321 -i :5173 -i :5174 -i :8080 -i :8081
+   - If a server is found on a different port, ask: "Found a dev server on port [X]. Use that instead?"
+
+2. If no server found, AUTO-START based on package.json:
+   - Read package.json scripts for "dev", "start", or "serve"
+   - Run the dev command in background: `npm run dev &` (or yarn/pnpm/bun equivalent)
+   - Wait up to 15 seconds, polling every 2s with curl
+   - If it starts: proceed with the detected URL
+   - If it fails: tell user "Could not start dev server. Run it manually and try again."
+
+3. VERIFY the URL actually serves HTML (not a JSON API or error page):
+   - Check Content-Type header contains "text/html"
+   - If not HTML: warn user "URL returns [content-type], not HTML. Is this the right page?"
+```
+
+This runs ONCE at the start. If the server dies mid-loop, the infrastructure stuck detection (Phase 4) handles it.
 
 ## Phase 1: Context Scan
 
