@@ -66,7 +66,12 @@ Options: [current page URL] / [enter URL] / [file path to component]
 **Q2: Focus**
 ```
 "What aspects need the most improvement?"
-Options: Layout & Spacing / Color & Contrast / Typography / Overall polish / All of the above
+Options (present in this exact order):
+1. Composition & Layout
+2. Typography
+3. Color & Contrast
+4. Visual Identity & Polish
+5. Full audit — all criteria (Recommended)
 ```
 
 **Q3: Iterations** (skip if `$ARGUMENTS[1]` provided)

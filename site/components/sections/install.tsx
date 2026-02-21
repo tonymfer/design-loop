@@ -46,18 +46,17 @@ export function Install() {
                 </span>
                 {"\n\n"}
                 <span className="text-[var(--text-muted)]">
-                  # Desktop viewport, 20 iterations
+                  # 20 iterations on a dashboard
                 </span>
                 {"\n"}
                 <span className="text-[var(--text-primary)]">
-                  /design-loop http://localhost:3000/dashboard --viewport
-                  desktop --iterations 20
+                  /design-loop http://localhost:3000/dashboard 20
                 </span>
                 {"\n\n"}
-                <span className="text-[var(--text-muted)]"># Test both viewports</span>
+                <span className="text-[var(--text-muted)]"># No limit — runs until all criteria hit 4/5+</span>
                 {"\n"}
                 <span className="text-[var(--text-primary)]">
-                  /design-loop http://localhost:5173 --viewport both
+                  /design-loop http://localhost:5173 0
                 </span>
               </code>
             </TerminalBlock>

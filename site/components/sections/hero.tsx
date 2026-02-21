@@ -4,10 +4,15 @@ import React from "react";
 import { Spotlight } from "@/components/ui/spotlight";
 import { AnimatedGroup } from "@/components/ui/animated-group";
 import { GlowButton } from "@/components/ui/glow-button";
+import { Threads } from "@/components/ui/threads";
+import { useIteration } from "@/lib/iteration-context";
 
 export function Hero() {
-  return (
-    <Spotlight className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
+  const { iteration } = useIteration();
+  const showPaths = iteration >= 3;
+
+  const heroContent = (
+    <>
       {/* Aurora gradient background + animated orb */}
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute inset-0 aurora-bg" />
@@ -80,6 +85,25 @@ export function Hero() {
           </p>
         </AnimatedGroup>
       </div>
+    </>
+  );
+
+  return (
+    <Spotlight className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
+      {showPaths && (
+        <div
+          className="pointer-events-none absolute inset-0"
+          style={{ opacity: "var(--effects-opacity)" }}
+        >
+          <Threads
+            color={[0.024, 0.714, 0.831]}
+            amplitude={2.9}
+            distance={0.5}
+            enableMouseInteraction
+          />
+        </div>
+      )}
+      {heroContent}
     </Spotlight>
   );
 }

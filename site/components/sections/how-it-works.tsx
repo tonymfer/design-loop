@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Camera, Ruler, BarChart3, Wrench, Repeat } from "lucide-react";
+import { Camera, BarChart3, Wrench, Repeat } from "lucide-react";
 import { ScrollReveal } from "@/components/ui/scroll-reveal";
 import type { LucideIcon } from "lucide-react";
 
@@ -20,36 +20,30 @@ const steps: Step[] = [
     number: "01",
   },
   {
-    icon: Ruler,
-    title: "Measure",
-    description: "JS checks layout metrics, centering drift, spacing consistency",
-    number: "02",
-  },
-  {
     icon: BarChart3,
     title: "Score",
     description: "5 anti-slop criteria rated 1–5 with companion skill enrichment",
-    number: "03",
+    number: "02",
   },
   {
     icon: Wrench,
     title: "Fix",
     description: "Top 3 issues fixed in code, build verified between each fix",
-    number: "04",
+    number: "03",
   },
   {
     icon: Repeat,
     title: "Repeat",
     description: "Loops until all criteria hit 4/5+ for two consecutive iterations",
-    number: "05",
+    number: "04",
   },
 ];
 
 const phases = [
-  { range: "1\u20133", focus: "Spacing & Layout", why: "Biggest visual impact first" },
-  { range: "4\u20136", focus: "Hierarchy & Contrast", why: "Typography and readability" },
-  { range: "7\u20139", focus: "Alignment & Consistency", why: "Edge alignment, pattern unification" },
-  { range: "10+", focus: "Density & Polish", why: "Content balance, final touches" },
+  { range: "1\u20133", focus: "Composition & Typography", why: "Layout rhythm and type hierarchy first" },
+  { range: "4\u20136", focus: "Color & Contrast", why: "Intentional palette, WCAG compliance" },
+  { range: "7\u20139", focus: "Visual Identity", why: "Distinctive, not generated-looking" },
+  { range: "10+", focus: "Polish", why: "Consistency, alignment, final details" },
 ];
 
 export function HowItWorks() {
@@ -66,11 +60,11 @@ export function HowItWorks() {
             </span>
           </h2>
           <p className="mt-5 max-w-lg text-base text-[var(--text-secondary)]">
-            Five steps per iteration. Each one makes the page measurably better.
+            Four steps per iteration. Each one makes the page measurably better.
           </p>
         </ScrollReveal>
 
-        <div className="mt-12 grid gap-4 sm:grid-cols-5">
+        <div className="mt-12 grid gap-4 sm:grid-cols-4">
           {steps.map((step, i) => {
             const Icon = step.icon;
             return (

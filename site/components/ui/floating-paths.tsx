@@ -22,7 +22,7 @@ export function FloatingPathsBackground({
     } ${343 - i * 6}C${616 - i * 5 * position} ${470 - i * 6} ${
       684 - i * 5 * position
     } ${875 - i * 6} ${684 - i * 5 * position} ${875 - i * 6}`,
-    color: `rgba(15,23,42,${0.1 + i * 0.03})`,
+    color: `rgba(6,182,212,${0.03 + i * 0.008})`,
     width: 0.5 + i * 0.05,
   }));
 

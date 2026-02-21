@@ -6,7 +6,7 @@
 
 **AI can code your UI. But it can't *see* it.**
 
-design-loop is a [Claude Code](https://docs.anthropic.com/en/docs/claude-code) plugin that captures **section-level screenshots** of your page — detecting semantic landmarks like `<header>`, `<main>`, `<section>`, and `<footer>`, or falling back to scroll-based captures with overlap — scores each section against 5 anti-slop design criteria, fixes the top issues, and repeats autonomously until your UI is polished. It also **discovers companion design skills** you've installed and absorbs their guidelines to sharpen its scoring — zero config, zero integration work.
+design-loop is a [Claude Code](https://docs.anthropic.com/en/docs/claude-code) plugin that gives Claude eyes. It captures **section-level screenshots** of your running page — detecting semantic landmarks like `<header>`, `<main>`, `<section>`, and `<footer>`, or falling back to scroll-based captures with overlap — scores each section against **5 anti-slop design criteria**, fixes the top issues, and repeats autonomously until your UI is polished. It also **discovers companion design skills** you've installed and absorbs their guidelines — zero config.
 
 **[See the interactive demo](https://design-loop.vercel.app)** — click the iteration buttons and watch the page transform.
 

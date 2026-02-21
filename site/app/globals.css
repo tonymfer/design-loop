@@ -80,10 +80,10 @@
 }
 
 /* ═══════════════════════════════════════════════
-   Iteration 0 — Before (light, bland AI slop)
+   Iteration 0 — Before (actively ugly AI slop)
    ═══════════════════════════════════════════════ */
 [data-iteration="0"] {
-  --page-bg: #f8fafc;
+  --page-bg: #ffffff;
   --text-primary: #1e293b;
   --text-secondary: #64748b;
   --text-muted: #94a3b8;
@@ -91,8 +91,8 @@
   --accent-rgb: 107, 114, 128;
   --accent-2: #6b7280;
   --accent-2-rgb: 107, 114, 128;
-  --border: rgba(203, 213, 225, 0.6);
-  --card-bg: rgba(241, 245, 249, 0.8);
+  --border: rgba(229, 231, 235, 1);
+  --card-bg: rgba(249, 250, 251, 1);
   --surface: rgba(226, 232, 240, 0.5);
   --effects-opacity: 0;
   --gradient-opacity: 0;
@@ -104,19 +104,19 @@
    Iteration 1 — Dark, basic structure
    ═══════════════════════════════════════════════ */
 [data-iteration="1"] {
-  --page-bg: #0f172a;
+  --page-bg: #111827;
   --text-primary: #e2e8f0;
   --text-secondary: #94a3b8;
   --text-muted: #64748b;
-  --accent: #22d3ee;
-  --accent-rgb: 34, 211, 238;
-  --accent-2: #22d3ee;
-  --accent-2-rgb: 34, 211, 238;
+  --accent: #6b7280;
+  --accent-rgb: 107, 114, 128;
+  --accent-2: #6b7280;
+  --accent-2-rgb: 107, 114, 128;
   --border: rgba(51, 65, 85, 0.5);
   --card-bg: rgba(15, 23, 42, 0.5);
   --surface: rgba(30, 41, 59, 0.4);
-  --effects-opacity: 0.15;
-  --gradient-opacity: 0.1;
+  --effects-opacity: 0;
+  --gradient-opacity: 0;
   --dot-grid-opacity: 0.03;
   --radius: 6px;
 }
@@ -191,17 +191,98 @@
 }
 
 /* ═══════════════════════════════════════════════
-   Gradient text handling for iterations 0-1
-   (solid color instead of gradient)
+   Gradient text — progressive coloring per state
    ═══════════════════════════════════════════════ */
-[data-iteration="0"] .bg-gradient-to-r.bg-clip-text,
-/* Iteration 0: override serif headings to sans */
-[data-iteration="0"] .font-serif {
+
+/* State 0: Solid flat gray — no gradient at all */
+[data-iteration="0"] .bg-gradient-to-r.bg-clip-text {
+  background: none !important;
+  -webkit-text-fill-color: #374151;
+  color: #374151;
+}
+
+/* State 1: Monochrome gradient (white→gray) — shows improvement */
+[data-iteration="1"] .bg-gradient-to-r.bg-clip-text {
+  background: linear-gradient(to right, #e2e8f0, #94a3b8) !important;
+  -webkit-text-fill-color: transparent;
+}
+
+/* State 2: First color in headings! white→cyan */
+[data-iteration="2"] .bg-gradient-to-r.bg-clip-text {
+  background: linear-gradient(to right, #e2e8f0, #22d3ee) !important;
+  -webkit-text-fill-color: transparent;
+}
+
+/* States 3-4: Keep existing behavior (cyan→violet gradients via Tailwind classes) */
+
+/* ═══════════════════════════════════════════════
+   Typography — progressive serif upgrade
+   ═══════════════════════════════════════════════ */
+
+/* Iterations 0-1: override serif headings to sans */
+[data-iteration="0"] .font-serif,
+[data-iteration="1"] .font-serif {
   font-family: var(--font-sans);
 }
 /* Iteration 2: display font (not yet serif) */
 [data-iteration="2"] .font-serif {
   font-family: var(--font-display);
+}
+
+/* State 0: Flatten heading weight — feels more "template" */
+[data-iteration="0"] h1,
+[data-iteration="0"] h2,
+[data-iteration="0"] h3 {
+  font-weight: 600 !important;
+}
+
+/* ═══════════════════════════════════════════════
+   State 0 — Kill all design polish
+   ═══════════════════════════════════════════════ */
+
+/* Kill hero badge pulse animation */
+[data-iteration="0"] .animate-pulse {
+  animation: none !important;
+}
+
+/* Hide aurora/orb completely (not just opacity) */
+[data-iteration="0"] .aurora-bg,
+[data-iteration="0"] .hero-orb {
+  display: none;
+}
+
+/* Kill card hover effects */
+[data-iteration="0"] .group:hover {
+  border-color: var(--border) !important;
+}
+[data-iteration="0"] .group .group-hover\:opacity-100 {
+  opacity: 0 !important;
+}
+
+/* Kill shimmer animation on gradient text */
+[data-iteration="0"] .animate-\[shimmer_4s_ease-in-out_infinite\] {
+  animation: none !important;
+}
+
+/* ═══════════════════════════════════════════════
+   State 1 — Subtle brightness only on hover
+   ═══════════════════════════════════════════════ */
+[data-iteration="1"] .group:hover {
+  border-color: rgba(75, 85, 99, 0.6) !important;
+}
+
+/* ═══════════════════════════════════════════════
+   Button radius progression via glow-btn class
+   ═══════════════════════════════════════════════ */
+[data-iteration="0"] .glow-btn { border-radius: 4px; }
+[data-iteration="1"] .glow-btn { border-radius: 6px; }
+
+/* ═══════════════════════════════════════════════
+   MockPreview frame glow (states 3-4)
+   ═══════════════════════════════════════════════ */
+[data-iteration="3"] .mock-preview-frame,
+[data-iteration="4"] .mock-preview-frame {
+  box-shadow: 0 0 40px rgba(6, 182, 212, 0.06), 0 0 80px rgba(139, 92, 246, 0.03);
 }
 
 /* ═══════════════════════════════════════════════
@@ -343,5 +424,5 @@
    ═══════════════════════════════════════════════ */
 [data-iteration="0"] .noise-overlay::after,
 [data-iteration="0"] .ambient-glow::before {
-  opacity: 0;
+  display: none;
 }

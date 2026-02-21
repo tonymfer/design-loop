@@ -29,10 +29,10 @@ const BUTTON_LABELS = ["Before", "Iter 1", "Iter 2", "Iter 3", "Final"];
 
 const ITERATION_LABELS = [
   "Before (AI default)",
-  "Iter 1 \u2014 Composition & Typography",
-  "Iter 2 \u2014 Color & Contrast",
-  "Iter 3 \u2014 Visual Identity",
-  "Final \u2014 Polished",
+  "Iter 1 — Composition & Typography",
+  "Iter 2 — Color & Contrast",
+  "Iter 3 — Visual Identity",
+  "Final — Polished",
 ];
 
 const CRITERIA_LABELS: Record<CriteriaKey, string> = {
@@ -50,6 +50,330 @@ const CRITERIA_KEYS: CriteriaKey[] = [
   "identity",
   "polish",
 ];
+
+/* ═══════════════════════════════════════════════
+   MockPreview — mini browser skeleton that morphs
+   between 5 visual states telling the design-loop story
+   ═══════════════════════════════════════════════ */
+
+interface MockState {
+  bg: string;
+  navBg: string;
+  dotColor: string;
+  logoBg: string;
+  navDotBg: string;
+  heroBg: string;
+  headingW: string;
+  headingH: string;
+  headingBg: string;
+  headingRadius: string;
+  subtitleW: string;
+  subtitleBg: string;
+  btnBg: string;
+  btnW: string;
+  btnRadius: string;
+  btnGlow: string;
+  cardBg: string;
+  cardBorder: string;
+  cardRadius: string;
+  barBg: string;
+  barAccentBg: string;
+  gridCols: string;
+  card3Span: string;
+  card3Bg: string;
+  // Deliberate misalignment for state 2
+  card2ExtraPadding: string;
+  // Accent bar at bottom
+  accentBarBg: string;
+  accentBarH: string;
+  accentBarRadius: string;
+}
+
+const MOCK_STATES: MockState[] = [
+  // State 0 — Before: Light, bland, uniform
+  {
+    bg: "#f1f5f9",
+    navBg: "#e2e8f0",
+    dotColor: "#94a3b8",
+    logoBg: "#cbd5e1",
+    navDotBg: "#cbd5e1",
+    heroBg: "#f1f5f9",
+    headingW: "60%",
+    headingH: "10px",
+    headingBg: "#94a3b8",
+    headingRadius: "2px",
+    subtitleW: "45%",
+    subtitleBg: "#cbd5e1",
+    btnBg: "#94a3b8",
+    btnW: "60px",
+    btnRadius: "4px",
+    btnGlow: "none",
+    cardBg: "#e2e8f0",
+    cardBorder: "1px solid #cbd5e1",
+    cardRadius: "4px",
+    barBg: "#cbd5e1",
+    barAccentBg: "#94a3b8",
+    gridCols: "repeat(3, 1fr)",
+    card3Span: "span 1",
+    card3Bg: "#e2e8f0",
+    card2ExtraPadding: "8px",
+    accentBarBg: "#cbd5e1",
+    accentBarH: "3px",
+    accentBarRadius: "0px",
+  },
+  // State 1 — Iter 1: Dark, spacing fixed, but still gray/flat
+  {
+    bg: "#1f2937",
+    navBg: "#111827",
+    dotColor: "#4b5563",
+    logoBg: "#4b5563",
+    navDotBg: "#374151",
+    heroBg: "#1f2937",
+    headingW: "70%",
+    headingH: "12px",
+    headingBg: "#6b7280",
+    headingRadius: "3px",
+    subtitleW: "50%",
+    subtitleBg: "#4b5563",
+    btnBg: "#6b7280",
+    btnW: "64px",
+    btnRadius: "6px",
+    btnGlow: "none",
+    cardBg: "#111827",
+    cardBorder: "1px solid #374151",
+    cardRadius: "6px",
+    barBg: "#374151",
+    barAccentBg: "#6b7280",
+    gridCols: "repeat(3, 1fr)",
+    card3Span: "span 1",
+    card3Bg: "#111827",
+    card2ExtraPadding: "8px",
+    accentBarBg: "#374151",
+    accentBarH: "3px",
+    accentBarRadius: "2px",
+  },
+  // State 2 — Iter 2: Cyan appears! But one card misaligned
+  {
+    bg: "#0f172a",
+    navBg: "#0a0f1a",
+    dotColor: "#334155",
+    logoBg: "#1e293b",
+    navDotBg: "#1e293b",
+    heroBg: "#0f172a",
+    headingW: "65%",
+    headingH: "12px",
+    headingBg: "#94a3b8",
+    headingRadius: "3px",
+    subtitleW: "48%",
+    subtitleBg: "#475569",
+    btnBg: "#22d3ee",
+    btnW: "68px",
+    btnRadius: "8px",
+    btnGlow: "0 0 12px rgba(34,211,238,0.3)",
+    cardBg: "#0f172a",
+    cardBorder: "1px solid rgba(34,211,238,0.15)",
+    cardRadius: "8px",
+    barBg: "#1e293b",
+    barAccentBg: "#22d3ee",
+    gridCols: "repeat(3, 1fr)",
+    card3Span: "span 1",
+    card3Bg: "#0f172a",
+    card2ExtraPadding: "12px", // deliberate misalignment!
+    accentBarBg: "#22d3ee",
+    accentBarH: "3px",
+    accentBarRadius: "2px",
+  },
+  // State 3 — Iter 3: Alignment fixed, gradient accent, bolder heading
+  {
+    bg: "#0a0f1a",
+    navBg: "#060b14",
+    dotColor: "#1e293b",
+    logoBg: "#0e7490",
+    navDotBg: "#1e293b",
+    heroBg: "#0a0f1a",
+    headingW: "72%",
+    headingH: "14px",
+    headingBg: "#e2e8f0",
+    headingRadius: "4px",
+    subtitleW: "52%",
+    subtitleBg: "#64748b",
+    btnBg: "linear-gradient(135deg, #06b6d4, #8b5cf6)",
+    btnW: "72px",
+    btnRadius: "10px",
+    btnGlow: "0 0 16px rgba(6,182,212,0.3)",
+    cardBg: "#0c1322",
+    cardBorder: "1px solid rgba(6,182,212,0.15)",
+    cardRadius: "10px",
+    barBg: "#1e293b",
+    barAccentBg: "linear-gradient(90deg, #06b6d4, #8b5cf6)",
+    gridCols: "repeat(3, 1fr)",
+    card3Span: "span 1",
+    card3Bg: "linear-gradient(135deg, rgba(6,182,212,0.08), rgba(139,92,246,0.08))",
+    card2ExtraPadding: "8px", // fixed!
+    accentBarBg: "linear-gradient(90deg, #06b6d4, #8b5cf6)",
+    accentBarH: "3px",
+    accentBarRadius: "4px",
+  },
+  // State 4 — Final: Polished bento, glow, asymmetric grid
+  {
+    bg: "#050a12",
+    navBg: "#030712",
+    dotColor: "#1e293b",
+    logoBg: "#06b6d4",
+    navDotBg: "#1e293b",
+    heroBg: "#050a12",
+    headingW: "75%",
+    headingH: "14px",
+    headingBg: "#f1f5f9",
+    headingRadius: "4px",
+    subtitleW: "55%",
+    subtitleBg: "#64748b",
+    btnBg: "linear-gradient(135deg, #06b6d4, #8b5cf6)",
+    btnW: "76px",
+    btnRadius: "12px",
+    btnGlow: "0 0 24px rgba(6,182,212,0.4), 0 0 48px rgba(139,92,246,0.2)",
+    cardBg: "#0a0f1a",
+    cardBorder: "1px solid rgba(6,182,212,0.2)",
+    cardRadius: "12px",
+    barBg: "#1e293b",
+    barAccentBg: "linear-gradient(90deg, #06b6d4, #8b5cf6)",
+    gridCols: "1fr 1fr",
+    card3Span: "span 2",
+    card3Bg: "linear-gradient(135deg, rgba(6,182,212,0.1), rgba(139,92,246,0.1))",
+    card2ExtraPadding: "8px",
+    accentBarBg: "linear-gradient(90deg, #06b6d4, #8b5cf6)",
+    accentBarH: "4px",
+    accentBarRadius: "6px",
+  },
+];
+
+function MockPreview({ iteration }: { iteration: number }) {
+  const s = MOCK_STATES[iteration];
+  const t = "transition-all duration-500 ease-out";
+
+  return (
+    <div
+      className={cn("mock-preview-frame overflow-hidden border", t)}
+      style={{
+        background: s.bg,
+        borderColor: s.navBg,
+        borderRadius: s.cardRadius,
+      }}
+    >
+      {/* ── Browser chrome ── */}
+      <div
+        className={cn("flex items-center gap-1.5 px-3 py-2", t)}
+        style={{ background: s.navBg }}
+      >
+        {[0, 1, 2].map((i) => (
+          <div
+            key={i}
+            className={cn("h-[6px] w-[6px] rounded-full", t)}
+            style={{ background: s.dotColor }}
+          />
+        ))}
+        <div
+          className={cn("ml-auto h-[6px] rounded-sm", t)}
+          style={{ width: "40px", background: s.logoBg }}
+        />
+      </div>
+
+      {/* ── Page content ── */}
+      <div className="px-4 pb-4 pt-3 space-y-3">
+        {/* Nav mock */}
+        <div className={cn("flex items-center justify-between", t)}>
+          <div
+            className={cn("h-[8px] w-[50px] rounded-sm", t)}
+            style={{ background: s.logoBg }}
+          />
+          <div className="flex gap-2">
+            {[28, 24, 32].map((w, i) => (
+              <div
+                key={i}
+                className={cn("h-[5px] rounded-sm", t)}
+                style={{ width: `${w}px`, background: s.navDotBg }}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* Hero */}
+        <div className="space-y-2 py-2">
+          <div
+            className={cn("rounded-sm", t)}
+            style={{
+              width: s.headingW,
+              height: s.headingH,
+              background: s.headingBg,
+              borderRadius: s.headingRadius,
+            }}
+          />
+          <div
+            className={cn("h-[6px] rounded-sm", t)}
+            style={{ width: s.subtitleW, background: s.subtitleBg }}
+          />
+          <div
+            className={cn("mt-2", t)}
+            style={{
+              width: s.btnW,
+              height: "18px",
+              background: s.btnBg,
+              borderRadius: s.btnRadius,
+              boxShadow: s.btnGlow,
+            }}
+          />
+        </div>
+
+        {/* Card grid */}
+        <div
+          className={cn("gap-2", t)}
+          style={{ display: "grid", gridTemplateColumns: s.gridCols }}
+        >
+          {[0, 1, 2].map((i) => (
+            <div
+              key={i}
+              className={cn("space-y-1.5", t)}
+              style={{
+                background: i === 2 ? s.card3Bg : s.cardBg,
+                border: s.cardBorder,
+                borderRadius: s.cardRadius,
+                padding: i === 1 ? s.card2ExtraPadding : "8px",
+                gridColumn: i === 2 ? s.card3Span : "span 1",
+              }}
+            >
+              <div
+                className={cn("h-[5px] rounded-sm", t)}
+                style={{ width: "60%", background: s.barAccentBg }}
+              />
+              <div
+                className={cn("h-[4px] rounded-sm", t)}
+                style={{ width: "85%", background: s.barBg }}
+              />
+              <div
+                className={cn("h-[4px] rounded-sm", t)}
+                style={{ width: "70%", background: s.barBg }}
+              />
+            </div>
+          ))}
+        </div>
+
+        {/* Bottom accent bar */}
+        <div
+          className={t}
+          style={{
+            height: s.accentBarH,
+            background: s.accentBarBg,
+            borderRadius: s.accentBarRadius,
+          }}
+        />
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════
+   IterationDemo — main section
+   ═══════════════════════════════════════════════ */
 
 export function IterationDemo() {
   const { iteration: iter, setIteration: setIter } = useIteration();
@@ -116,32 +440,38 @@ export function IterationDemo() {
               </div>
             </ScrollReveal>
 
-            {/* Score cards — full width */}
+            {/* Main content: MockPreview left, Score cards right */}
             <ScrollReveal delay={0.15}>
-              <div className="grid gap-2 sm:grid-cols-5">
-                {CRITERIA_KEYS.map((key) => (
-                  <div key={key} className="space-y-1.5 rounded-xl border border-[var(--border)] bg-[var(--card-bg)] px-4 py-3">
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs text-[var(--text-secondary)]">
-                        {CRITERIA_LABELS[key]}
-                      </span>
-                      <span className="font-mono text-xs font-semibold text-[var(--text-primary)]">
-                        {scores[key]}/5
-                      </span>
+              <div className="grid gap-4 lg:grid-cols-[1fr_280px]">
+                {/* Mock preview */}
+                <MockPreview iteration={iter} />
+
+                {/* Score cards stacked */}
+                <div className="grid gap-2 content-start">
+                  {CRITERIA_KEYS.map((key) => (
+                    <div key={key} className="space-y-1.5 rounded-xl border border-[var(--border)] bg-[var(--card-bg)] px-4 py-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs text-[var(--text-secondary)]">
+                          {CRITERIA_LABELS[key]}
+                        </span>
+                        <span className="font-mono text-xs font-semibold text-[var(--text-primary)]">
+                          {scores[key]}/5
+                        </span>
+                      </div>
+                      <div className="h-1.5 overflow-hidden rounded-full bg-[var(--surface)]">
+                        <motion.div
+                          className="h-full rounded-full bg-gradient-to-r from-[var(--accent)] to-[var(--accent-2)]"
+                          initial={false}
+                          animate={{ width: `${(scores[key] / 5) * 100}%` }}
+                          transition={{
+                            duration: 0.5,
+                            ease: [0.22, 1, 0.36, 1],
+                          }}
+                        />
+                      </div>
                     </div>
-                    <div className="h-1.5 overflow-hidden rounded-full bg-[var(--surface)]">
-                      <motion.div
-                        className="h-full rounded-full bg-gradient-to-r from-[var(--accent)] to-[var(--accent-2)]"
-                        initial={false}
-                        animate={{ width: `${(scores[key] / 5) * 100}%` }}
-                        transition={{
-                          duration: 0.5,
-                          ease: [0.22, 1, 0.36, 1],
-                        }}
-                      />
-                    </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
             </ScrollReveal>
 

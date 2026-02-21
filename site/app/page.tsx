@@ -15,7 +15,7 @@ function PageContent() {
   const { iteration } = useIteration();
   return (
     <div
-      className="noise-overlay ambient-glow min-h-dvh"
+      className="noise-overlay ambient-glow min-h-dvh bg-[var(--page-bg)]"
       data-iteration={iteration}
     >
       <Hero />
