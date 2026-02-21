@@ -244,7 +244,7 @@ DESIGN CRITERIA (check EVERY iteration):
 1. SPACING: Consistent scale (4/8/12/16/24/32px). No cramped elements. Breathing room.
 2. HIERARCHY: Clear visual weight order. Primary action obvious. Secondary muted.
 3. CONTRAST: Text readable against background. Interactive elements distinguishable.
-4. ALIGNMENT: Elements on consistent grid. No orphaned items. Edges line up.
+4. ALIGNMENT: Elements on consistent grid. No orphaned items. Edges line up. Connected patterns (timelines, steppers, progress bars) visually continuous.
 5. DENSITY: Right amount of content per viewport. Not too sparse, not too cluttered.
 6. CONSISTENCY: Same patterns for same concepts. Colors meaningful, not random.
 7. TOUCH TARGETS: Buttons/links >= 44px touch area on mobile.
@@ -320,6 +320,62 @@ PROCESS (each iteration):
          selector: el.className.split(' ').slice(0, 3).join(' ')
        };
      }
+     // Check for connectivity gaps between adjacent siblings in flex/grid containers
+     const flexGridParents = document.querySelectorAll('[class*="flex"], [class*="grid"]');
+     const gapIssues = [];
+     flexGridParents.forEach(parent => {
+       const kids = Array.from(parent.children).filter(c => getComputedStyle(c).display !== 'none');
+       const hasGapClass = /gap-|space-[xy]-/.test(parent.className);
+       for (let i = 0; i < kids.length - 1; i++) {
+         const a = kids[i].getBoundingClientRect();
+         const b = kids[i + 1].getBoundingClientRect();
+         const isCol = getComputedStyle(parent).flexDirection?.includes('column') || parent.className.includes('flex-col');
+         const gap = isCol ? (b.top - a.bottom) : (b.left - a.right);
+         if (gap > 4 && !hasGapClass) {
+           gapIssues.push({ parent: parent.className.split(' ').slice(0, 3).join(' '), childIndex: i, gap: Math.round(gap), direction: isCol ? 'vertical' : 'horizontal' });
+         }
+       }
+     });
+     if (gapIssues.length) results.connectivityGaps = gapIssues.slice(0, 5);
+     // Check spacing inconsistency among same-type siblings
+     const repeatingParents = document.querySelectorAll('ul, ol, [class*="grid"], [class*="flex-col"], [class*="space-y"]');
+     const inconsistencies = [];
+     repeatingParents.forEach(parent => {
+       const kids = Array.from(parent.children).filter(c => getComputedStyle(c).display !== 'none');
+       if (kids.length < 3) return;
+       const gaps = [];
+       for (let i = 0; i < kids.length - 1; i++) {
+         const a = kids[i].getBoundingClientRect();
+         const b = kids[i + 1].getBoundingClientRect();
+         gaps.push(Math.round(b.top - a.bottom));
+       }
+       const avg = gaps.reduce((s, g) => s + g, 0) / gaps.length;
+       const variance = gaps.reduce((s, g) => s + Math.pow(g - avg, 2), 0) / gaps.length;
+       if (variance > 4) { // variance > 2px^2
+         inconsistencies.push({ parent: parent.className.split(' ').slice(0, 3).join(' '), gaps, variance: Math.round(variance * 10) / 10 });
+       }
+     });
+     if (inconsistencies.length) results.spacingInconsistency = inconsistencies.slice(0, 3);
+     // Check for pattern disconnections (connectors not spanning parent)
+     const connectors = document.querySelectorAll('[class*="flex-1"], [class*="grow"], [class*="border-l"], [class*="border-r"], [class*="border-t"], [class*="border-b"]');
+     const disconnections = [];
+     connectors.forEach(el => {
+       const cs = getComputedStyle(el);
+       const rect = el.getBoundingClientRect();
+       const parentRect = el.parentElement?.getBoundingClientRect();
+       if (!parentRect) return;
+       const isThin = rect.width < 4 || rect.height < 4 || (cs.flexGrow === '1' && (rect.width < 4 || rect.height < 4));
+       const isConnector = isThin || /border-[lrtb]/.test(el.className);
+       if (!isConnector) return;
+       const vCoverage = parentRect.height > 0 ? (rect.height / parentRect.height) * 100 : 100;
+       const hCoverage = parentRect.width > 0 ? (rect.width / parentRect.width) * 100 : 100;
+       const isVertical = rect.height > rect.width;
+       const coverage = isVertical ? vCoverage : hCoverage;
+       if (coverage < 90 || rect.height === 0 || rect.width === 0) {
+         disconnections.push({ element: el.className.split(' ').slice(0, 3).join(' '), coverage: Math.round(coverage), collapsed: rect.height === 0 || rect.width === 0, direction: isVertical ? 'vertical' : 'horizontal' });
+       }
+     });
+     if (disconnections.length) results.patternDisconnections = disconnections.slice(0, 5);
      return JSON.stringify(results, null, 2);
    })()
    ```
@@ -327,11 +383,27 @@ PROCESS (each iteration):
    - centering.drift > 20px → container is NOT centered, investigate CSS cascade
    - mx-auto element with marginLeft: "0px" → utility is being overridden
    - Any layout property showing "0px" when Tailwind class expects otherwise
+   - connectivityGaps found gap > 4px between visually-connected siblings → investigate padding/margin pushing elements apart
+   - spacingInconsistency variance > 2px among same-type siblings → standardize spacing with consistent gap-* or space-* classes
+   - patternDisconnections connector coverage < 90% of parent → flex child not reaching full extent (likely parent padding issue)
+   - Any visual connector (line/dot pattern) with collapsed: true (height: 0px or width: 0px) → element is collapsed, CSS rule conflict
    If a red flag fires, CHECK global CSS for unlayered resets before proceeding.
 
 3. ANALYZE: Review the screenshot AND measurement data against all 8 criteria.
    Score each criterion 1-5. List the top 3 issues by severity.
    Show score DELTAS from previous iteration (e.g., Spacing: 3→4 (+1)).
+
+   ZOOMED SECTION CHECK (conditional — triggered by MEASURE red flags):
+   If MEASURE detected connectivityGaps, spacingInconsistency, or patternDisconnections:
+   a. Use browser_evaluate to scroll the affected element into view:
+      `() => { document.querySelector('[selector]').scrollIntoView({ block: 'center' }); return 'scrolled'; }`
+   b. Resize viewport to focus on the section (e.g., 800x600 for a narrow component view)
+   c. Take a zoomed screenshot of just that section
+   d. Compare against expected visual continuity — gaps, disconnected lines/dots,
+      uneven spacing are visible at this zoom level but invisible at full-page scale
+   e. Restore original viewport size before continuing
+   This catches 2px gaps between dots and lines, hairline disconnections, and
+   sub-element misalignment that full-page screenshots cannot reveal.
 
 4. FIX: Make targeted CSS/component edits to address the top 3 issues.
    - Edit ONLY the component file(s) — don't refactor architecture
@@ -405,6 +477,8 @@ Strategy rotation (try the alternative approach):
   single-element fix failed  →  try parent-container restructure
   utility class not working  →  check CSS cascade (unlayered resets override @layer)
   centering broken           →  run MEASURE step, check for global * resets
+  connectivity gap persists  →  remove parent padding/margin that pushes children apart, use gap-* on parent instead
+  visual connector not reaching → check if connector uses flex:1 inside a padded parent; move padding to children or use absolute positioning
 
 Terminal skip: After 3 attempts on the same criterion with no score improvement,
 SKIP with documented reason in the LOG and a TODO comment in code.
@@ -454,7 +528,7 @@ After each iteration, the Stop hook intercepts session exit:
 | Spacing | Cramped/inconsistent | Mostly ok, some tight spots | Consistent scale, room to breathe |
 | Hierarchy | Everything same weight | Primary clear, secondary unclear | Clear 3-level hierarchy |
 | Contrast | Text hard to read | Readable but dull | Clear contrast, vibrant where needed |
-| Alignment | Random placement | Mostly aligned, verify with MEASURE | Pixel-perfect grid, centered at 1920px |
+| Alignment | Random placement | Mostly aligned, verify with MEASURE | Pixel-perfect grid, centered at 1920px, connected patterns continuous |
 | Density | Too sparse or cluttered | Acceptable | Right info per viewport |
 | Consistency | Random patterns | Mostly consistent | Same pattern = same meaning |
 | Touch | Tiny targets | Most ok | All >= 44px |

@@ -46,6 +46,23 @@ Tool: mcp__plugin_playwright_playwright__browser_evaluate
 Parameters: { "function": "() => { ... }" }
 ```
 
+### Zoomed section screenshot (connectivity check)
+```
+1. Scroll to element:
+   Tool: mcp__plugin_playwright_playwright__browser_evaluate
+   Parameters: { "function": "() => { document.querySelector('[selector]').scrollIntoView({ block: 'center' }); return 'scrolled'; }" }
+
+2. Resize to narrow viewport for focused view:
+   Tool: mcp__plugin_playwright_playwright__browser_resize
+   Parameters: { "width": 800, "height": 600 }
+
+3. Take zoomed screenshot:
+   Tool: mcp__plugin_playwright_playwright__browser_take_screenshot
+   Parameters: {}
+
+4. Restore original viewport after inspection.
+```
+
 ## Reference Screenshot Comparison
 
 When the user provides a reference URL in Q9, capture it alongside the target for visual benchmarking.
@@ -161,6 +178,37 @@ Add consistent px-3 or px-4 across sections
 /* Grid snap */
 gap-3 → gap-4 (4px grid)
 Use consistent max-w-* containers
+```
+
+### Visual Connectivity
+```css
+/* Timeline dots/lines disconnected */
+/* Root cause: pb-* on row pushes connector outside flex reach */
+Remove pb-* from timeline row → add gap-* to timeline container instead
+Connector element: add self-stretch to ensure full parent coverage
+
+/* Flex connector not reaching full height/width */
+/* Root cause: parent padding reduces available space for flex-1 children */
+Option A: Move padding from parent to content children (not connector)
+Option B: Use self-stretch on connector + remove parent padding
+Option C: Use absolute positioning for connector:
+  parent: relative
+  connector: absolute inset-y-0 left-[midpoint] w-px bg-border
+
+/* Stepper / progress bar gaps */
+/* Root cause: separate line segments instead of single bar */
+Use single bg-* bar spanning full width with positioned dots on top
+Not: individual line segments between each dot
+
+/* Border-based connector lines */
+/* Root cause: individual border elements instead of parent border */
+Use border-l on parent container with relative children
+Not: separate border elements between each child
+
+/* Collapsed connector (height: 0px or width: 0px) */
+Check for: min-h-0 overriding flex-1, hidden overflow on parent,
+  missing flex-grow, or conditional rendering hiding the element
+Fix: ensure connector has min-h-[2px] or min-w-[2px] as fallback
 ```
 
 ### Density
