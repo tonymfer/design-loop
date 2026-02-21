@@ -248,6 +248,16 @@ Execute iterations. After each:
 
 On completion, update state to `status: completed`.
 
+### Cleanup
+
+On completion (POLISHED or max iterations reached), delete all screenshot files created during this run:
+
+```bash
+rm -f design-loop-*.png
+```
+
+These are ephemeral working files — the scores and changes are preserved in `.claude/design-loop-history.md`.
+
 ### Completion Message
 
 Output this at the end of a successful run:
@@ -255,6 +265,7 @@ Output this at the end of a successful run:
 ```
 ✓ POLISHED — all criteria ≥ 4/5 for 2 consecutive iterations.
   [start avg]/5 → [final avg]/5 across [N] iterations.
+  Cleaned up [N] screenshot files.
 
 Run /design-loop:export-loop to generate a shareable summary with score progression.
 ```
