@@ -15,9 +15,13 @@
         "name": "tonymfer",
         "email": "tony.base.eth@gmail.com"
       },
-      "source": ".",
+      "source": "./",
       "category": "development",
-      "homepage": "https://github.com/tonymfer/design-loop"
+      "homepage": "https://design-loop.vercel.app",
+      "repository": "https://github.com/tonymfer/design-loop",
+      "license": "MIT",
+      "keywords": ["design", "ui", "ux", "visual-polish", "screenshots", "playwright", "autonomous"],
+      "tags": ["frontend", "visual-iteration", "design-polish"]
     }
   ]
 }
