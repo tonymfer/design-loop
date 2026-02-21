@@ -3,7 +3,7 @@
   "name": "design-loop",
   "metadata": {
     "description": "Autonomous visual iteration loop for frontend UI/UX polish",
-    "version": "2.0.0"
+    "version": "0.1.0"
   },
   "owner": {
     "name": "tonymfer",
@@ -13,7 +13,7 @@
     {
       "name": "design-loop",
       "description": "Autonomous visual iteration loop for frontend UI/UX. Screenshots your page, scores it against 8 design criteria, fixes issues, repeats until polished.",
-      "version": "2.0.0",
+      "version": "0.1.0",
       "author": {
         "name": "tonymfer",
         "email": "tony.base.eth@gmail.com"
