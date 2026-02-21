@@ -1,5 +1,7 @@
 # Design Loop — Reference
 
+> Lookup reference for design-loop. The core workflow and detection logic lives in [SKILL.md](SKILL.md). This file contains tool commands, templates, CSS fix snippets, and framework-specific implementation guidance.
+
 ## Playwright Screenshot Commands
 
 ### Navigate to page
@@ -44,106 +46,6 @@ Tool: mcp__plugin_playwright_playwright__browser_evaluate
 Parameters: { "function": "() => { ... }" }
 ```
 
-## Layout Measurement (MEASURE step)
-
-Run this after each screenshot to catch CSS cascade bugs that are invisible visually:
-
-```js
-// Playwright: mcp__plugin_playwright_playwright__browser_evaluate
-// Chrome: mcp__claude-in-chrome__javascript_tool
-(() => {
-  const results = {};
-  const container = document.querySelector(
-    '[class*="container"], [class*="max-w"], main, [style*="max-width"]'
-  ) || document.body.firstElementChild;
-  if (container) {
-    const rect = container.getBoundingClientRect();
-    const vw = window.innerWidth;
-    results.centering = {
-      left: Math.round(rect.left),
-      right: Math.round(vw - rect.right),
-      drift: Math.round(Math.abs(rect.left - (vw - rect.right))),
-      centered: Math.abs(rect.left - (vw - rect.right)) < 20
-    };
-  }
-  const el = document.querySelector('.mx-auto, .px-4, .gap-4');
-  if (el) {
-    const cs = getComputedStyle(el);
-    results.utilityCheck = {
-      marginLeft: cs.marginLeft,
-      marginRight: cs.marginRight
-    };
-  }
-  return JSON.stringify(results, null, 2);
-})()
-```
-
-### Red Flags
-
-| Measurement | Threshold | Likely Cause |
-|-------------|-----------|-------------|
-| `centering.drift > 20` | Container NOT centered | Unlayered CSS reset overriding `mx-auto` |
-| `marginLeft: "0px"` on `.mx-auto` | Utility overridden | `* { margin: 0 }` outside `@layer` |
-| Different at 1280 vs 1920 | Max-width not working | Missing `mx-auto` or cascade conflict |
-
-## CSS Cascade Audit (Phase 1)
-
-Before iterating, check for CSS cascade conflicts — especially in Tailwind v4 projects:
-
-```
-GREP for these patterns in globals.css / global stylesheets:
-  * {           ← Universal reset
-  body {        ← Body override
-  html {        ← Root override
-
-If found OUTSIDE @layer block:
-  → Unlayered styles ALWAYS beat @layer utilities (CSS spec)
-  → Tailwind v4 utilities live in @layer utilities
-  → Result: mx-auto, px-*, py-*, gap-* silently fail
-
-Fix: Delete redundant resets (Tailwind preflight handles them in @layer base)
-     or wrap in @layer base { ... }
-```
-
-## Project Detection for Interview Skip
-
-Phase 1 scans for signals that auto-skip strategic interview questions. Detection is keyword-based — extract the relevant context, don't just detect presence.
-
-### Keyword Patterns
-
-| Signal | Scan Location | Keywords (regex) | Maps To |
-|--------|--------------|------------------|---------|
-| Vision | CLAUDE.md, docs/DESIGN.md | `goal\|vision\|objective\|brief\|purpose` near "design" context | Q5 default |
-| Audience | CLAUDE.md, docs/DESIGN.md | `audience\|users\|demographic\|persona\|target` | Q6 default |
-| References | CLAUDE.md, docs/DESIGN.md | `reference\|inspiration\|like the design\|emulate` + URL pattern | Q7 default |
-| Metrics | CLAUDE.md, docs/DESIGN.md | `success\|metric\|KPI\|done when\|acceptance` | Q10 default |
-
-### DESIGN.md Section Mapping
-
-If `docs/DESIGN.md` or `docs/design-brief.md` exists, parse these sections:
-
-| Document Section Header | Maps To |
-|------------------------|---------|
-| `## Vision` / `## Goal` / `## Objective` | DETECTED_VISION |
-| `## Audience` / `## Users` / `## Personas` | DETECTED_AUDIENCE |
-| `## References` / `## Inspiration` | DETECTED_REFERENCES |
-| `## Success` / `## Metrics` / `## KPIs` | DETECTED_METRICS |
-
-### Previous Run Detection
-
-If `.claude/design-loop-history.md` exists:
-1. Parse the most recent run's summary block
-2. Extract: focus areas, final average, skipped issues
-3. Present as Q2 default: "Continue from previous run ([previous focus areas])?"
-
-### frontend-design Detection
-
-If the `frontend-design` skill was invoked in this session:
-1. Check for `.claude/design-direction.md` or equivalent output
-2. Extract: palette, typography, layout strategy, creative tone
-3. Auto-skip Q7 (Inspirations) and Q9 (Creative Direction)
-4. Inject creative direction into PROJECT_CONTEXT
-
 ## Reference Screenshot Comparison
 
 When the user provides a reference URL in Q7, capture it alongside the target for visual benchmarking.
@@ -175,39 +77,6 @@ Only compare what the user described. Common patterns:
 | "overall feel" | All visual aspects | Content, functionality |
 | "card design" | Card components specifically | Page-level layout |
 
-## Audience-Aware Criterion Weighting
-
-Based on Q5 (Vision) and Q6 (Audience), adjust which criteria get priority in scoring and fixing.
-
-### Vision-Based Weights
-
-| Vision | Primary Criteria | Secondary Criteria | De-prioritize |
-|--------|-----------------|-------------------|---------------|
-| Usability | Hierarchy, Touch Targets | Spacing, Density | Consistency |
-| Aesthetics | Spacing, Consistency | Contrast, Alignment | Touch Targets |
-| Conversion | Contrast, Density | Hierarchy, Touch Targets | Empty States |
-| Accessibility | Contrast, Touch Targets | Hierarchy, Spacing | Density |
-| General polish | All equal | — | — |
-
-### Audience-Based Adjustments
-
-| Audience | Adjustment |
-|----------|------------|
-| General web users | No adjustment (baseline weights) |
-| Mobile-first young (18-35) | Touch Targets MUST be 5/5. Bold colors preferred. Higher Density tolerance. |
-| Enterprise / business | Higher Density expected (more info-dense). Conservative aesthetics. Consistency critical. |
-| Developers / technical | Clean/minimal aesthetic. Hierarchy paramount. Low Density (breathing room). |
-
-### How Weighting Applies
-
-In the ANALYZE step of each iteration:
-1. Score all 8 criteria normally (1-5)
-2. When selecting "top 3 issues", prefer issues in Primary Criteria
-3. If all Primary Criteria are >=4, then fix Secondary Criteria
-4. De-prioritized criteria are still scored but only fixed after others are >=4
-
-This is soft weighting — all 8 criteria must still reach >=4/5 for POLISHED status.
-
 ## Fallback: Chrome MCP (if Playwright unavailable)
 
 ```
@@ -236,7 +105,7 @@ Use this template after each screenshot:
 | Touch Targets |  ?   | ?/5   |  ±?   |                                |
 | Empty States  |  ?   | ?/5   |  ±?   |                                |
 
-**Average: ?/5 (Δ ±? from previous)**
+**Average: ?/5 (change +/- ? from previous)**
 
 ### Top 3 Issues (by severity):
 1. [issue] — [which criterion] — [fix approach]
@@ -329,45 +198,6 @@ Add padding, not just relying on text size
 Illustration or icon for visual warmth
 Match the page's design language
 ```
-
-## Phase-Aware Iteration Strategy
-
-| Phase | Iterations | Focus | Why first? |
-|-------|-----------|-------|------------|
-| Layout | 1-3 | Spacing, alignment, grid | Biggest visual impact, foundation for everything |
-| Hierarchy | 4-6 | Contrast, typography, visual weight | Readable content requires solid layout first |
-| Polish | 7-9 | Consistency, density, edge cases | Fine-tuning after structure is solid |
-| Final | 10+ | Touch targets, empty states, micro-adjustments | Last mile polish |
-
-## Stuck Detection
-
-**Objective trigger**: criterion score unchanged AND same criterion targeted → rotate strategy.
-
-### Strategy Rotation Table
-
-| Failed Approach | Rotate To | Example |
-|----------------|-----------|---------|
-| Padding/margin adjustment | Layout restructure | `gap-4` didn't help → switch from flex to grid |
-| Color change | Font size/weight change | Contrast still low → increase font-size or weight instead |
-| Border styling | Background/shadow change | Border not helping → add subtle bg tint or shadow |
-| Single-element fix | Parent container restructure | Button padding didn't help → restructure the card layout |
-| Spacing scale tweak | Section reorder/removal | Spacing still off → remove or reorder elements |
-| Typography change | Hierarchy restructure | Font change didn't clarify → reorganize visual weight order |
-| Utility class not applied | CSS cascade audit | `mx-auto` not centering → check for unlayered `* { margin: 0 }` |
-| Centering broken | Wide viewport + MEASURE | Looks fine at 1280px → test at 1920px, run JS measurement |
-
-### Escalation Path
-
-1. **Iteration N**: Fix attempted, score unchanged → flag criterion
-2. **Iteration N+1**: Rotate strategy per table above
-3. **Iteration N+2**: Broaden scope — fix criterion in context of the whole page, not one component
-4. **Iteration N+3 (terminal)**: SKIP criterion with documented reason. Add TODO comment. Log in history.
-
-### Additional Tactics
-
-- **Skip and return**: Move to a different criterion. Sometimes fixing hierarchy reveals the spacing fix.
-- **Context shift**: Look at the criterion from a different viewport (mobile vs desktop).
-- **Simplify**: Remove decorative elements that may be causing the issue.
 
 ## Viewport Reference
 
