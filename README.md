@@ -10,16 +10,8 @@ design-loop is a [Claude Code](https://docs.anthropic.com/en/docs/claude-code) p
 
 ## How it works
 
-```
-┌──────────────┐     ┌──────────────┐     ┌──────────────┐     ┌──────────────┐
-│  Screenshot  │────▶│    Score     │────▶│     Fix      │────▶│   Repeat     │
-│  (Playwright)│     │ (8 criteria) │     │ (top 3 fixes)│     │ (until 4/5+) │
-└──────────────┘     └──────────────┘     └──────────────┘     └──────────────┘
-```
-
-Each iteration:
 1. **Screenshot** — Playwright captures the current page
-2. **Score** — 8 design criteria evaluated 1-5
+2. **Score** — 8 design criteria evaluated 1–5
 3. **Fix** — Top 3 issues fixed in code, build verified
 4. **Repeat** — Loop continues until all criteria hit 4/5+
 
@@ -29,9 +21,9 @@ design-loop doesn't fix everything at once. It follows a structured progression:
 
 | Iterations | Focus | Why first |
 |-----------|-------|-----------|
-| 1-3 | Spacing & Layout | Biggest visual impact |
-| 4-6 | Hierarchy & Contrast | Typography and readability |
-| 7-9 | Alignment & Consistency | Edge alignment, pattern unification |
+| 1–3 | Spacing & Layout | Biggest visual impact |
+| 4–6 | Hierarchy & Contrast | Typography and readability |
+| 7–9 | Alignment & Consistency | Edge alignment, pattern unification |
 | 10+ | Density & Polish | Content balance, empty states, final touches |
 
 ---
@@ -50,12 +42,6 @@ Every screenshot is scored against these design fundamentals:
 | 6 | **Consistency** | Same patterns for same concepts. Colors meaningful, not random. |
 | 7 | **Touch Targets** | Buttons/links >= 44px touch area on mobile. |
 | 8 | **Empty States** | Graceful when data is missing. Not broken, not blank. |
-
----
-
-## Requirements
-
-- [Claude Code](https://docs.anthropic.com/en/docs/claude-code) CLI
 
 ---
 
@@ -91,71 +77,49 @@ That's it. Playwright MCP is auto-installed on first run. No other dependencies.
 ### What happens
 
 1. **Context scan** — Reads your `package.json`, `tailwind.config`, and `CLAUDE.md` to understand your design system
-2. **Interview** — 3-5 questions about target, focus areas, and constraints
+2. **Interview** — 3–5 questions about target, focus areas, and constraints
 3. **Loop** — Autonomous iteration cycle: screenshot → score → fix → repeat
 4. **Completion** — Stops when all 8 criteria score 4/5+ for two consecutive iterations
 
-### Stuck handling
-
-If the same issue persists for 2 iterations, design-loop:
-1. Tries an alternative approach (different layout strategy, color approach)
-2. If still stuck, skips the issue and moves on
-3. Documents skipped issues as TODO comments
+If the same issue persists for 2 iterations, design-loop tries an alternative approach. If still stuck, it skips the issue, documents it as a TODO comment, and moves on.
 
 ---
 
-## Framework support
+## Ecosystem Detection
 
-design-loop auto-detects your framework and adapts:
+design-loop auto-detects your stack from `package.json` and adapts its fixes accordingly.
+
+### Frameworks
 
 | Framework | Detection | Default viewport |
 |-----------|-----------|-----------------|
-| Next.js | `next` in package.json | Mobile-first |
-| Nuxt | `nuxt` in package.json | Mobile-first |
-| SvelteKit | `@sveltejs/kit` in package.json | Mobile-first |
-| React SPA | `react` (no next) | Desktop |
-| Vue | `vue` in package.json | Desktop |
-| Astro | `astro` in package.json | Desktop |
+| **Next.js** | `next` in package.json | Mobile-first |
+| **Nuxt** | `nuxt` in package.json | Mobile-first |
+| **SvelteKit** | `@sveltejs/kit` in package.json | Mobile-first |
+| **React SPA** | `react` (no next) | Desktop |
+| **Vue** | `vue` in package.json | Desktop |
+| **Astro** | `astro` in package.json | Desktop |
+| **Plain HTML/CSS** | No framework detected | Desktop |
 
-It also reads your design tokens (Tailwind config, CSS variables, theme files) and component library (shadcn, Radix, etc.) to make fixes that match your existing system.
+SSR frameworks (Next.js, Nuxt, SvelteKit) wait for hydration before taking screenshots.
 
-### Stack compatibility
+### Component libraries
 
-| Stack | SSR Handling | Notes |
-|-------|-------------|-------|
-| **Next.js (App Router)** | Waits for hydration before screenshot | Detects `app/` dir, respects `"use client"` boundaries |
-| **Next.js (Pages Router)** | Screenshots after client render | Detects `pages/` dir |
-| **Vite + React** | Direct client render | Standard SPA flow |
-| **Nuxt 3** | Waits for hydration | Detects `nuxt.config.ts` |
-| **SvelteKit** | Waits for hydration | Detects `svelte.config.js` |
-| **Astro** | Screenshots static output | Works with islands architecture |
-| **Plain HTML/CSS** | Direct screenshot | No framework detection needed |
+Detected automatically: **shadcn/ui**, **Radix UI**, **Chakra UI**, **Material UI**, **Ant Design**, **DaisyUI**. design-loop reads your theme config and uses your existing tokens — it won't introduce conflicting styles.
 
-### Recommended skill chains
+### Animation libraries
 
-| Chain | Use Case |
-|-------|----------|
-| `frontend-design` → `design-loop` | Get creative direction first, then iterate visually |
+**Framer Motion** (`framer-motion`) — When detected, design-loop prefers `motion.*` components over CSS transitions and respects `AnimatePresence` patterns. It won't mix Framer Motion and CSS transitions on the same element.
+
+### 3D / WebGL (off-limits)
+
+**React Three Fiber** (`@react-three/fiber`) and **Drei** (`@react-three/drei`) — `<Canvas>` elements are marked as untouchable. design-loop will screenshot them for scoring context but never modify 3D scene code. Three.js and other WebGL libraries follow the same rule.
 
 ---
 
-## How it compares
+## Skill Chains
 
-| | design-loop | Generic UI testing |
-|---|---|---|
-| **Focus** | Visual polish only | Functional + visual |
-| **Iterations** | Configurable (5/10/20+) | Fixed limit |
-| **Phase-aware** | Layout → hierarchy → polish | All at once |
-| **Criteria** | 8 design-specific, opinionated | General categories |
-| **Project-aware** | Reads your design system | Generic fixes |
-
-> Generic UI testing checks if your UI *works*. design-loop makes it *beautiful*. They're complementary.
-
----
-
-## Meta
-
-The [interactive demo site](https://design-loop.vercel.app) was polished by design-loop itself. The tool built its own marketing material.
+Use `frontend-design` → `design-loop` to get creative direction first, then iterate visually.
 
 ---
 
