@@ -247,4 +247,14 @@ Execute iterations. After each:
    - Otherwise → same prompt fed back for next iteration
 
 On completion, update state to `status: completed`.
-Suggest: "Run /export-loop to generate a shareable summary of this run."
+
+### Completion Message
+
+Output this at the end of a successful run:
+
+```
+✓ POLISHED — all criteria ≥ 4/5 for 2 consecutive iterations.
+  [start avg]/5 → [final avg]/5 across [N] iterations.
+
+Run /design-loop:export-loop to generate a shareable summary with score progression.
+```
