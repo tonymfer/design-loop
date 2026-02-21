@@ -1,6 +1,8 @@
 ---
 name: design-loop
 description: Use when user wants to visually iterate on UI/UX design using screenshots, when they say "design loop", "visual loop", "polish the UI", or want autonomous screenshot-driven frontend refinement
+argument-hint: "[url] [viewport] [iterations]"
+allowed-tools: Read, Write, Edit, Glob, Grep, Bash, mcp__plugin_playwright_playwright__browser_navigate, mcp__plugin_playwright_playwright__browser_resize, mcp__plugin_playwright_playwright__browser_take_screenshot, mcp__plugin_playwright_playwright__browser_snapshot, mcp__plugin_playwright_playwright__browser_close, mcp__claude-in-chrome__navigate, mcp__claude-in-chrome__computer, mcp__claude-in-chrome__read_page, mcp__claude-in-chrome__find
 ---
 
 # Design Loop
@@ -91,7 +93,12 @@ Store findings as `PROJECT_CONTEXT` — inject into the generated prompt.
 
 ## Phase 2: Interview (3-5 questions via AskUserQuestion)
 
-**Q1: Target**
+If arguments were passed via `$ARGUMENTS`, use them to skip questions:
+- `$ARGUMENTS[0]` (url) → skip Q1, use as target URL
+- `$ARGUMENTS[1]` (viewport) → skip Q4, use as viewport mode (mobile/desktop/both)
+- `$ARGUMENTS[2]` (iterations) → skip Q3, use as max iterations
+
+**Q1: Target** (skip if `$ARGUMENTS[0]` provided)
 ```
 "Which page should I iterate on?"
 Options: [current page URL] / [enter URL] / [file path to component]
@@ -103,13 +110,13 @@ Options: [current page URL] / [enter URL] / [file path to component]
 Options: Layout & Spacing / Color & Contrast / Typography / Visual Hierarchy / All of the above
 ```
 
-**Q3: Iterations**
+**Q3: Iterations** (skip if `$ARGUMENTS[2]` provided)
 ```
 "How many visual iterations?"
 Options: 5 (quick polish) / 10 (thorough) / 20 (deep redesign)
 ```
 
-**Q4: Viewport**
+**Q4: Viewport** (skip if `$ARGUMENTS[1]` provided)
 ```
 "Which viewport(s)?"
 Options: Mobile (390px) / Desktop (1280px) / Both (mobile-first, verify desktop)

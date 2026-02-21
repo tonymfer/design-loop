@@ -32,10 +32,10 @@ const CRITERIA = [
 ];
 
 const STEPS = [
-  { num: "1", title: "Screenshot", desc: "Playwright captures the current page state" },
-  { num: "2", title: "Score", desc: "8 design criteria evaluated 1-5 each" },
-  { num: "3", title: "Fix", desc: "Top 3 issues fixed in code, build verified" },
-  { num: "4", title: "Repeat", desc: "Loop until polished or max iterations reached" },
+  { num: "1", title: "Screenshot", desc: "Playwright captures the page" },
+  { num: "2", title: "Score", desc: "8 criteria evaluated 1–5" },
+  { num: "3", title: "Fix", desc: "Top 3 issues fixed in code" },
+  { num: "4", title: "Repeat", desc: "Loop until polished" },
 ];
 
 function avg(s: Record<string, number>) {
@@ -124,7 +124,7 @@ export default function Home() {
 
       <div className="mx-auto max-w-[860px] px-6">
         {/* ── Hero ── */}
-        <section className="t text-center" style={{ padding: `calc(var(--sp-section) * 1.8) 0 calc(var(--sp-section) * 1.2)` }}>
+        <section className="t text-center" style={{ padding: `calc(var(--sp-section) * 1.2) 0 calc(var(--sp-section) * 0.6)` }}>
           <div
             className="t mb-6 inline-block rounded-full text-[11px] font-medium uppercase tracking-widest"
             style={{
@@ -147,15 +147,16 @@ export default function Home() {
               fontFamily: "var(--font-heading)",
               letterSpacing: "var(--hero-tracking, -0.02em)",
               maxWidth: "var(--hero-max-w, 640px)",
-            }}
+              textWrap: "balance",
+            } as React.CSSProperties}
           >
             AI can code your UI.
             <br />
-            But it can&apos;t <em style={{ color: "var(--accent)", fontStyle: "italic" }}>see</em> it.
+            But it can&apos;t <em className="accent-glow" style={{ color: "var(--accent)", fontStyle: "italic" }}>see</em> it.
           </h1>
           <p
             className="t mx-auto mb-10"
-            style={{ fontSize: "var(--sub-size, calc(var(--b-size) * 1.15))", lineHeight: 1.7, color: "var(--text-m)", maxWidth: "var(--sub-max-w, 480px)" }}
+            style={{ fontSize: "var(--sub-size, calc(var(--b-size) * 1.15))", lineHeight: 1.7, color: "var(--text-m)", maxWidth: "var(--sub-max-w, 480px)", textWrap: "balance", textAlign: "center" } as React.CSSProperties}
           >
             design-loop gives Claude eyes. It screenshots your page, scores it
             against 8 design criteria, fixes the issues, and repeats —
@@ -202,7 +203,7 @@ export default function Home() {
                 }}
               >
                 <div
-                  className="t flex h-9 w-9 shrink-0 items-center justify-center rounded-full font-mono text-sm font-bold sm:mb-3 sm:h-[var(--step-size)] sm:w-[var(--step-size)] sm:text-base"
+                  className="t flex h-9 w-9 shrink-0 items-center justify-center rounded-full font-mono text-sm font-bold sm:mb-2.5 sm:h-[var(--step-size)] sm:w-[var(--step-size)] sm:text-base"
                   style={{
                     background: "var(--accent-bg)",
                     color: "var(--accent)",

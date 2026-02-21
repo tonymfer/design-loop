@@ -54,8 +54,12 @@ body {
   --card-pad: 22px;
   --card-pad-lg: 28px;
   --hero-size: 2.5rem;
+  --hero-max-w: 600px;
+  --sub-size: 15px;
+  --sub-max-w: 480px;
   --cta-pad: 13px 28px; --cta-radius: 10px;
   --cta-bg: #2563eb; --cta-text: #fff; --cta-weight: 600;
+  --cta-font-size: 14px;
   --cols: 2; --step-size: 40px;
   --badge-bg: #eff6ff; --badge-border: #bfdbfe; --badge-text: #2563eb;
   --bar-w: 25%; --code-border: #e4e4e7;
@@ -119,21 +123,21 @@ body {
 /* ── Iteration 4 (Final): Polished dark editorial — the showpiece ── */
 [data-iteration="4"] {
   --bg: #09090b; --bg-card: #111113; --bg-code: #0d0d0f;
-  --text: #b8b5ad; --text-h: #fafaf9; --text-m: #87847c;
+  --text: #b8b5ad; --text-h: #fafaf9; --text-m: #a8a29e;
   --accent: #eab308; --accent-bg: rgba(234,179,8,0.06);
   --border: #1c1c20; --radius: 2px;
   --shadow: 0 8px 32px rgba(234,179,8,0.04), 0 2px 8px rgba(0,0,0,0.5);
-  --sp-section: 88px; --sp-card: 28px; --sp-gap: 20px;
+  --sp-section: 72px; --sp-card: 24px; --sp-gap: 18px;
   --h-size: 1.6rem; --h-weight: 700;
   --b-size: 16px; --b-lh: 1.7;
-  --card-pad: 32px;
-  --card-pad-lg: 40px;
+  --card-pad: 28px;
+  --card-pad-lg: 36px;
   --hero-size: clamp(2.8rem, 5.5vw, 4rem);
   --hero-tracking: -0.03em;
   --hero-max-w: 720px;
-  --sub-size: 1.15rem;
-  --sub-max-w: 540px;
-  --cta-pad: 16px 48px; --cta-radius: 2px;
+  --sub-size: 1.1rem;
+  --sub-max-w: 520px;
+  --cta-pad: 14px 36px; --cta-radius: 2px;
   --cta-bg: #eab308; --cta-text: #09090b; --cta-weight: 800;
   --cta-font-size: 15px;
   --cols: 2; --step-size: 52px;
@@ -160,8 +164,8 @@ body {
 
 [data-iteration="4"]::before {
   background:
-    radial-gradient(ellipse 70% 45% at 50% -5%, rgba(234,179,8,0.10) 0%, transparent 55%),
-    radial-gradient(ellipse 50% 30% at 50% 100%, rgba(234,179,8,0.04) 0%, transparent 50%);
+    radial-gradient(ellipse 80% 50% at 50% -5%, rgba(234,179,8,0.13) 0%, transparent 55%),
+    radial-gradient(ellipse 50% 30% at 50% 100%, rgba(234,179,8,0.05) 0%, transparent 50%);
 }
 
 /* Ensure content stacks above the glow */
@@ -194,22 +198,51 @@ body {
 /* ── CTA glow on dark modes ── */
 [data-iteration="3"] .cta-glow,
 [data-iteration="4"] .cta-glow {
-  box-shadow: 0 0 24px rgba(234,179,8,0.15), 0 0 48px rgba(234,179,8,0.05);
+  box-shadow: 0 0 30px rgba(234,179,8,0.2), 0 0 60px rgba(234,179,8,0.08);
 }
 [data-iteration="3"] .cta-glow:hover,
 [data-iteration="4"] .cta-glow:hover {
-  box-shadow: 0 0 32px rgba(234,179,8,0.25), 0 0 64px rgba(234,179,8,0.1);
+  box-shadow: 0 0 40px rgba(234,179,8,0.35), 0 0 80px rgba(234,179,8,0.12);
+}
+
+/* ── Accent text glow on final iteration ── */
+[data-iteration="4"] .accent-glow {
+  text-shadow: 0 0 24px rgba(234,179,8,0.4), 0 0 48px rgba(234,179,8,0.15);
+}
+
+/* ── Nav border glow on final ── */
+[data-iteration="4"] nav {
+  border-bottom-color: rgba(234,179,8,0.12) !important;
+}
+
+/* ── Section divider glow on final ── */
+[data-iteration="4"] section {
+  border-top-color: rgba(234,179,8,0.06) !important;
 }
 
 /* ── Mobile ── */
 @media (max-width: 640px) {
-  [data-iteration="0"],
-  [data-iteration="1"],
-  [data-iteration="2"],
-  [data-iteration="3"],
+  [data-iteration="0"] {
+    --cols: 1;
+    --hero-size: 1.5rem;
+  }
+  [data-iteration="1"] {
+    --cols: 1;
+    --hero-size: 1.85rem;
+  }
+  [data-iteration="2"] {
+    --cols: 1;
+    --hero-size: 2rem;
+  }
+  [data-iteration="3"] {
+    --cols: 1;
+    --hero-size: 2.2rem;
+  }
   [data-iteration="4"] {
     --cols: 1;
-    --hero-size: clamp(1.5rem, 8vw, var(--hero-size));
+    --hero-size: 2.4rem;
+    --sp-section: 56px;
+    --card-pad: 20px;
   }
 }
 

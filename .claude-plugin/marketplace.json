@@ -1,7 +1,10 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "design-loop",
-  "description": "Autonomous visual iteration loop for frontend UI/UX polish",
+  "metadata": {
+    "description": "Autonomous visual iteration loop for frontend UI/UX polish",
+    "version": "2.0.0"
+  },
   "owner": {
     "name": "tonymfer",
     "email": "tony.base.eth@gmail.com"
