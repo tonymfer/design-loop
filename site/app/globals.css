@@ -3,6 +3,7 @@
 @theme {
   --font-sans: "DM Sans", system-ui, sans-serif;
   --font-display: "Space Grotesk", system-ui, sans-serif;
+  --font-serif: "Instrument Serif", Georgia, serif;
   --font-mono: "JetBrains Mono", monospace;
 }
 
@@ -16,6 +17,43 @@
 
 /* ── Shared transition ── */
 .t { transition: all 400ms cubic-bezier(0.4, 0, 0.2, 1); }
+
+/* ── Hero entrance stagger ── */
+@keyframes hero-enter {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.hero-stagger > * {
+  opacity: 0;
+  animation: hero-enter 600ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.hero-stagger > *:nth-child(1) { animation-delay: 100ms; }
+.hero-stagger > *:nth-child(2) { animation-delay: 250ms; }
+.hero-stagger > *:nth-child(3) { animation-delay: 400ms; }
+.hero-stagger > *:nth-child(4) { animation-delay: 550ms; }
+.hero-stagger > *:nth-child(5) { animation-delay: 650ms; }
+
+/* ── Pull quote ── */
+.pull-quote {
+  position: relative;
+  padding-left: 20px;
+}
+
+.pull-quote::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--accent);
+}
+
+[data-iteration="3"] .pull-quote::before,
+[data-iteration="4"] .pull-quote::before {
+  box-shadow: 0 0 12px rgba(234,179,8,0.3);
+}
 
 /* ── Iteration 0: Typical AI default — clean, competent, boring ── */
 [data-iteration="0"] {
@@ -116,7 +154,8 @@
   --cols: 2; --step-size: 48px;
   --badge-bg: rgba(245,158,11,0.06); --badge-border: rgba(245,158,11,0.2); --badge-text: #f59e0b;
   --bar-w: 78%; --code-border: #292524;
-  --font-heading: var(--font-display);
+  --font-heading: var(--font-serif);
+  --h-weight: 400;
   --nav-bg: rgba(10,10,10,0.95); --nav-border: #292524;
 }
 
@@ -143,7 +182,8 @@
   --cols: 2; --step-size: 52px;
   --badge-bg: rgba(234,179,8,0.04); --badge-border: rgba(234,179,8,0.15); --badge-text: #eab308;
   --bar-w: 100%; --code-border: #1c1c20;
-  --font-heading: var(--font-display);
+  --font-heading: var(--font-serif);
+  --h-weight: 400;
   --nav-bg: rgba(9,9,11,0.97); --nav-border: rgba(234,179,8,0.08);
 }
 
@@ -339,6 +379,12 @@
   transform: translateY(-2px);
 }
 
+/* ── Iteration button hover ── */
+.iter-btn:hover {
+  border-color: var(--accent) !important;
+  color: var(--accent) !important;
+}
+
 /* ── POLISHED badge ── */
 @keyframes pulse-glow {
   0%, 100% { box-shadow: 0 0 4px rgba(234,179,8,0.3); }
@@ -373,6 +419,17 @@
 [data-iteration="3"] .score-up,
 [data-iteration="4"] .score-up {
   color: #4ade80;
+}
+
+/* ── Copy button ── */
+.copy-btn:hover {
+  border-color: var(--accent) !important;
+  color: var(--accent) !important;
+}
+
+[data-iteration="3"] .copy-btn,
+[data-iteration="4"] .copy-btn {
+  top: 34px !important;
 }
 
 /* ── Rhythm text (hero tagline) ── */

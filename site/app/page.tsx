@@ -40,12 +40,10 @@ const STEPS = [
 ];
 
 const FEATURES = [
-  { icon: "⚡", title: "Standalone", desc: "Zero dependencies. Native iteration engine with structured 4-phase progression." },
-  { icon: "📐", title: "MEASURE Step", desc: "JavaScript layout probing catches what screenshots miss — viewport drift, overflow, cascade bugs." },
-  { icon: "🔍", title: "CSS Cascade Audit", desc: "Detects unlayered CSS resets overriding Tailwind v4 utilities. Catches specificity conflicts." },
-  { icon: "🎯", title: "9 Frameworks", desc: "Auto-detects Next.js, Vite, Remix, Astro, SvelteKit, and more from package.json." },
-  { icon: "📊", title: "Phase-Aware", desc: "Structured 4-phase progression: Layout → Polish → Accessibility → Final review." },
-  { icon: "🔄", title: "Stuck Detection", desc: "Detects score plateaus and rotates strategies — skips what's working, focuses on what's not." },
+  { num: "01", title: "Standalone", desc: "Zero dependencies. Native iteration engine — no external scoring service or API." },
+  { num: "02", title: "CSS Cascade Audit", desc: "Detects unlayered resets overriding Tailwind v4 utilities. Catches specificity conflicts." },
+  { num: "03", title: "9 Frameworks", desc: "Auto-detects Next.js, Vite, Remix, Astro, SvelteKit, and more from package.json." },
+  { num: "04", title: "Stuck Detection", desc: "Detects score plateaus and rotates strategies — skips what's working, focuses on what's not." },
 ];
 
 function avg(s: Record<string, number>) {
@@ -54,7 +52,7 @@ function avg(s: Record<string, number>) {
 }
 
 export default function Home() {
-  const [iter, setIter] = useState(0);
+  const [iter, setIter] = useState(4);
   const [playing, setPlaying] = useState(false);
 
   const next = useCallback(() => {
@@ -84,57 +82,64 @@ export default function Home() {
     <div data-iteration={iter} className="min-h-screen" style={{ background: "var(--bg)", color: "var(--text)", fontSize: "var(--b-size)", lineHeight: "var(--b-lh)" }}>
       {/* ── Switcher Bar ── */}
       <nav
-        className="sticky top-0 z-50 flex flex-wrap items-center justify-center gap-2 backdrop-blur-md sm:gap-3"
-        style={{ background: "var(--nav-bg)", borderBottom: "1px solid var(--nav-border)", padding: "14px 24px" }}
+        className="sticky top-0 z-50 backdrop-blur-md"
+        style={{ background: "var(--nav-bg)", borderBottom: "1px solid var(--nav-border)", padding: "12px 24px" }}
       >
-        <span className="mr-2 hidden text-[11px] font-medium uppercase tracking-wider whitespace-nowrap sm:block" style={{ fontFamily: "var(--font-mono)", color: "var(--text-m)", letterSpacing: "0.12em" }}>
-          design-loop
-        </span>
-        {BTN_LABELS.map((label, i) => (
-          <button
-            key={i}
-            onClick={() => { setIter(i); setPlaying(false); }}
-            className="t cursor-pointer whitespace-nowrap"
-            style={{
-              fontFamily: "var(--font-mono)",
-              fontSize: "12px",
-              fontWeight: iter === i ? 700 : 500,
-              padding: "7px 16px",
-              border: `1px solid ${iter === i ? "var(--accent)" : "var(--border)"}`,
-              borderRadius: "6px",
-              background: iter === i ? "var(--cta-bg)" : "transparent",
-              color: iter === i ? "var(--cta-text)" : "var(--text-m)",
-            }}
-          >
-            {label}
-          </button>
-        ))}
-        <button
-          onClick={() => setPlaying(!playing)}
-          className="t cursor-pointer whitespace-nowrap"
-          style={{
-            fontFamily: "var(--font-mono)",
-            fontSize: "11px",
-            padding: "6px 12px",
-            border: `1px solid ${playing ? "var(--accent)" : "var(--border)"}`,
-            borderRadius: "4px",
-            background: "transparent",
-            color: playing ? "var(--accent)" : "var(--text-m)",
-          }}
-        >
-          {playing ? "⏸ Stop" : "▶ Auto"}
-        </button>
-        <div className="ml-auto hidden items-center gap-2.5 whitespace-nowrap sm:flex" style={{ fontFamily: "var(--font-mono)", fontSize: "12px", fontWeight: 600, color: "var(--accent)" }}>
-          <span>{score} / 5</span>
-          <div className="h-1.5 w-24 overflow-hidden rounded-full" style={{ background: "var(--border)" }}>
-            <div className="score-fill h-full rounded-full" style={{ width: "var(--bar-w)", background: "var(--accent)" }} />
+        <div className="mx-auto flex max-w-[860px] flex-wrap items-center justify-between gap-3">
+          <span className="hidden text-[11px] font-medium uppercase tracking-wider whitespace-nowrap sm:block" style={{ fontFamily: "var(--font-mono)", color: "var(--text-m)", letterSpacing: "0.12em" }}>
+            design-loop
+          </span>
+          <div className="flex flex-1 flex-wrap items-center justify-center gap-1.5 sm:gap-2">
+            <span className="mr-1 hidden text-[10px] uppercase tracking-widest sm:block" style={{ fontFamily: "var(--font-mono)", color: "var(--text-m)", letterSpacing: "0.1em" }}>
+              Try it:
+            </span>
+            {BTN_LABELS.map((label, i) => (
+              <button
+                key={i}
+                onClick={() => { setIter(i); setPlaying(false); }}
+                className="t iter-btn cursor-pointer whitespace-nowrap"
+                style={{
+                  fontFamily: "var(--font-mono)",
+                  fontSize: "13px",
+                  fontWeight: iter === i ? 700 : 500,
+                  padding: "8px 18px",
+                  border: iter === i ? "2px solid var(--accent)" : "1px solid var(--border)",
+                  borderRadius: "6px",
+                  background: iter === i ? "var(--cta-bg)" : "transparent",
+                  color: iter === i ? "var(--cta-text)" : "var(--text-m)",
+                }}
+              >
+                {label}
+              </button>
+            ))}
+            <button
+              onClick={() => setPlaying(!playing)}
+              className="t cursor-pointer whitespace-nowrap"
+              style={{
+                fontFamily: "var(--font-mono)",
+                fontSize: "12px",
+                padding: "7px 14px",
+                border: `1px solid ${playing ? "var(--accent)" : "var(--border)"}`,
+                borderRadius: "4px",
+                background: "transparent",
+                color: playing ? "var(--accent)" : "var(--text-m)",
+              }}
+            >
+              {playing ? "⏸ Stop" : "▶ Auto"}
+            </button>
+          </div>
+          <div className="hidden items-center gap-2.5 whitespace-nowrap sm:flex" style={{ fontFamily: "var(--font-mono)", fontSize: "12px", fontWeight: 600, color: "var(--accent)" }}>
+            <span>{score}/5</span>
+            <div className="h-1.5 w-24 overflow-hidden rounded-full" style={{ background: "var(--border)" }}>
+              <div className="score-fill h-full rounded-full" style={{ width: "var(--bar-w)", background: "var(--accent)" }} />
+            </div>
           </div>
         </div>
       </nav>
 
       <div className="mx-auto max-w-[860px] px-6">
         {/* ── Hero ── */}
-        <section className="t text-center" style={{ padding: `calc(var(--sp-section) * 1.2) 0 calc(var(--sp-section) * 0.6)` }}>
+        <section className="hero-stagger t text-center" style={{ padding: `calc(var(--sp-section) * 1.2) 0 calc(var(--sp-section) * 0.6)` }}>
           <div
             className="t mb-6 inline-block rounded-full text-[11px] font-medium uppercase tracking-widest"
             style={{
@@ -252,59 +257,31 @@ export default function Home() {
           </div>
         </Section>
 
-        {/* ── What Screenshots Miss ── */}
+        {/* ── Install ── */}
         <Section>
-          <SectionHeading>What Screenshots Miss</SectionHeading>
+          <SectionHeading>Install</SectionHeading>
           <p className="t" style={{ color: "var(--text-m)", marginBottom: "var(--sp-gap)" }}>
-            A screenshot looks fine. The layout is broken. v2.0 catches what pixels can&apos;t show.
+            One command. Requires{" "}
+            <a href="https://docs.anthropic.com/en/docs/claude-code" style={{ color: "var(--accent)" }}>
+              Claude Code
+            </a>
+            . Dependencies are auto-installed on first run.
           </p>
-          <div
-            className="t mt-[var(--sp-card)] grid grid-cols-1 gap-[var(--sp-gap)] sm:grid-cols-2"
-          >
-            <Card className="card-lift">
-              <h3
-                className="t mb-2 font-semibold"
-                style={{ fontSize: "var(--b-size)", color: "var(--text-h)" }}
-              >
-                <span style={{ color: "var(--accent)", marginRight: "8px" }}>01</span>
-                CSS Cascade Bugs
-              </h3>
-              <p className="t mb-0" style={{ fontSize: "calc(var(--b-size) * 0.88)", color: "var(--text-m)", lineHeight: 1.55 }}>
-                Unlayered CSS resets silently override Tailwind v4 utilities.
-                Everything looks correct in the screenshot — but <code style={{ fontFamily: "var(--font-mono)", fontSize: "0.9em", color: "var(--accent)" }}>margin: 0</code> is
-                fighting your spacing system. MEASURE catches it.
-              </p>
-            </Card>
-            <Card className="card-lift">
-              <h3
-                className="t mb-2 font-semibold"
-                style={{ fontSize: "var(--b-size)", color: "var(--text-h)" }}
-              >
-                <span style={{ color: "var(--accent)", marginRight: "8px" }}>02</span>
-                Wide Viewport Drift
-              </h3>
-              <p className="t mb-0" style={{ fontSize: "calc(var(--b-size) * 0.88)", color: "var(--text-m)", lineHeight: 1.55 }}>
-                Your 1280px screenshot is centered. At 1920px, everything drifts
-                left. MEASURE checks the real <code style={{ fontFamily: "var(--font-mono)", fontSize: "0.9em", color: "var(--accent)" }}>offsetLeft</code> against the
-                expected center — no screenshot needed.
-              </p>
-            </Card>
-          </div>
-          <div
-            className="t mt-[var(--sp-gap)] rounded-[var(--radius)] text-center"
-            style={{
-              background: "var(--accent-bg)",
-              border: `1px solid var(--badge-border)`,
-              padding: "clamp(14px, 3vw, 20px) clamp(16px, 3vw, 28px)",
-            }}
-          >
-            <p
-              className="t mb-0 text-sm font-medium sm:text-base"
-              style={{ color: "var(--accent)", fontFamily: "var(--font-mono)", fontSize: "13px", letterSpacing: "0.02em" }}
-            >
-              This is why design-loop doesn&apos;t just look. It measures.
-            </p>
-          </div>
+          <CodeBlock copyText="claude plugin add https://github.com/tonymfer/design-loop">
+            <span style={{ color: "var(--text-h)" }}>claude plugin add https://github.com/tonymfer/design-loop</span>
+          </CodeBlock>
+          <p className="t" style={{ marginTop: "var(--sp-gap)", color: "var(--text)" }}>
+            Then in any project:
+          </p>
+          <CodeBlock copyText="/design-loop http://localhost:3000">
+            <span style={{ color: "var(--text-m)" }}># Start polishing</span>
+            {"\n"}
+            <span style={{ color: "var(--text-h)" }}>/design-loop http://localhost:3000</span>
+            {"\n\n"}
+            <span style={{ color: "var(--text-m)" }}># With viewport and iteration limit</span>
+            {"\n"}
+            <span style={{ color: "var(--text-h)" }}>/design-loop http://localhost:3000 desktop 20</span>
+          </CodeBlock>
         </Section>
 
         {/* ── The 8 Criteria ── */}
@@ -341,27 +318,69 @@ export default function Home() {
           </div>
         </Section>
 
+        {/* ── Pull Quote ── */}
+        <Section>
+          <div className="pull-quote" style={{ padding: "var(--sp-gap) 0 var(--sp-gap) 20px" }}>
+            <p
+              className="t mb-0"
+              style={{
+                fontSize: "var(--h-size)",
+                fontFamily: "var(--font-heading)",
+                fontWeight: "var(--h-weight)",
+                fontStyle: "italic",
+                color: "var(--text-h)",
+                lineHeight: 1.5,
+              }}
+            >
+              A screenshot shows you pixels. It doesn&apos;t show you a
+              CSS reset fighting your spacing system, or a centered layout
+              that drifts at 1920px.
+            </p>
+            <p
+              className="t mt-3 mb-0"
+              style={{
+                fontFamily: "var(--font-mono)",
+                fontSize: "12px",
+                color: "var(--text-m)",
+                letterSpacing: "0.04em",
+              }}
+            >
+              — That&apos;s why v2.0 measures, not just looks.
+            </p>
+          </div>
+        </Section>
+
         {/* ── v2.0 Features ── */}
         <Section>
           <SectionHeading>v2.0</SectionHeading>
           <p className="t" style={{ color: "var(--text-m)", marginBottom: "var(--sp-gap)" }}>
             Standalone. Smarter. Framework-aware.
           </p>
-          <div
-            className="t mt-[var(--sp-card)] grid grid-cols-1 gap-[var(--sp-gap)] sm:grid-cols-2"
-          >
-            {FEATURES.map((f) => (
-              <Card key={f.title} className="card-lift">
-                <div className="mb-1.5 flex items-center gap-2.5">
-                  <span className="text-base">{f.icon}</span>
-                  <h3 className="t mb-0 font-semibold" style={{ fontSize: "var(--b-size)", color: "var(--text-h)" }}>
+          <div className="t mt-[var(--sp-card)]">
+            {FEATURES.map((f, i) => (
+              <div
+                key={f.title}
+                className="t flex items-baseline gap-4 sm:gap-6"
+                style={{
+                  padding: "var(--sp-gap) 0",
+                  borderBottom: i < FEATURES.length - 1 ? `1px solid var(--border)` : "none",
+                }}
+              >
+                <span
+                  className="t shrink-0 font-mono text-xs font-bold"
+                  style={{ color: "var(--accent)", minWidth: "24px" }}
+                >
+                  {f.num}
+                </span>
+                <div>
+                  <span className="t font-semibold" style={{ color: "var(--text-h)" }}>
                     {f.title}
-                  </h3>
+                  </span>
+                  <span className="t" style={{ color: "var(--text-m)", marginLeft: "8px", fontSize: "calc(var(--b-size) * 0.88)" }}>
+                    — {f.desc}
+                  </span>
                 </div>
-                <p className="t mb-0" style={{ fontSize: "calc(var(--b-size) * 0.88)", color: "var(--text-m)", lineHeight: 1.55 }}>
-                  {f.desc}
-                </p>
-              </Card>
+              </div>
             ))}
           </div>
         </Section>
@@ -425,32 +444,6 @@ export default function Home() {
           </Card>
         </Section>
 
-        {/* ── Install ── */}
-        <Section>
-          <SectionHeading>Install</SectionHeading>
-          <p className="t" style={{ color: "var(--text-m)", marginBottom: "var(--sp-gap)" }}>
-            One command. Requires{" "}
-            <a href="https://docs.anthropic.com/en/docs/claude-code" style={{ color: "var(--accent)" }}>
-              Claude Code
-            </a>
-            . Dependencies are auto-installed on first run.
-          </p>
-          <CodeBlock>
-            <span style={{ color: "var(--text-h)" }}>claude plugin add https://github.com/tonymfer/design-loop</span>
-          </CodeBlock>
-          <p className="t" style={{ marginTop: "var(--sp-gap)", color: "var(--text)" }}>
-            Then in any project:
-          </p>
-          <CodeBlock>
-            <span style={{ color: "var(--text-m)" }}># Start polishing</span>
-            {"\n"}
-            <span style={{ color: "var(--text-h)" }}>/design-loop http://localhost:3000</span>
-            {"\n\n"}
-            <span style={{ color: "var(--text-m)" }}># With viewport and iteration limit</span>
-            {"\n"}
-            <span style={{ color: "var(--text-h)" }}>/design-loop http://localhost:3000 desktop 20</span>
-          </CodeBlock>
-        </Section>
       </div>
 
       {/* ── Footer ── */}
@@ -510,21 +503,53 @@ function Card({ children, className = "", style = {} }: { children: React.ReactN
   );
 }
 
-function CodeBlock({ children }: { children: React.ReactNode }) {
+function CodeBlock({ children, copyText }: { children: React.ReactNode; copyText?: string }) {
+  const [copied, setCopied] = useState(false);
+  const handleCopy = () => {
+    if (!copyText) return;
+    navigator.clipboard.writeText(copyText).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    });
+  };
   return (
-    <pre
-      className="t code-block overflow-x-auto whitespace-pre"
-      style={{
-        fontFamily: "var(--font-mono)",
-        fontSize: "13px",
-        lineHeight: 1.7,
-        background: "var(--bg-code)",
-        border: `1px solid var(--code-border)`,
-        borderRadius: "var(--radius)",
-        padding: "var(--card-pad)",
-      }}
-    >
-      {children}
-    </pre>
+    <div className="relative">
+      <pre
+        className="t code-block overflow-x-auto whitespace-pre"
+        style={{
+          fontFamily: "var(--font-mono)",
+          fontSize: "13px",
+          lineHeight: 1.7,
+          background: "var(--bg-code)",
+          border: `1px solid var(--code-border)`,
+          borderRadius: "var(--radius)",
+          padding: "var(--card-pad)",
+        }}
+      >
+        {children}
+      </pre>
+      {copyText && (
+        <button
+          onClick={handleCopy}
+          className="copy-btn"
+          style={{
+            position: "absolute",
+            top: "8px",
+            right: "8px",
+            fontFamily: "var(--font-mono)",
+            fontSize: "10px",
+            padding: "4px 8px",
+            background: "var(--bg-card)",
+            border: `1px solid var(--border)`,
+            borderRadius: "3px",
+            color: copied ? "var(--accent)" : "var(--text-m)",
+            cursor: "pointer",
+            transition: "all 200ms ease",
+          }}
+        >
+          {copied ? "Copied" : "Copy"}
+        </button>
+      )}
+    </div>
   );
 }
