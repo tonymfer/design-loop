@@ -105,6 +105,109 @@ Fix: Delete redundant resets (Tailwind preflight handles them in @layer base)
      or wrap in @layer base { ... }
 ```
 
+## Project Detection for Interview Skip
+
+Phase 1 scans for signals that auto-skip strategic interview questions. Detection is keyword-based — extract the relevant context, don't just detect presence.
+
+### Keyword Patterns
+
+| Signal | Scan Location | Keywords (regex) | Maps To |
+|--------|--------------|------------------|---------|
+| Vision | CLAUDE.md, docs/DESIGN.md | `goal\|vision\|objective\|brief\|purpose` near "design" context | Q5 default |
+| Audience | CLAUDE.md, docs/DESIGN.md | `audience\|users\|demographic\|persona\|target` | Q6 default |
+| References | CLAUDE.md, docs/DESIGN.md | `reference\|inspiration\|like the design\|emulate` + URL pattern | Q7 default |
+| Metrics | CLAUDE.md, docs/DESIGN.md | `success\|metric\|KPI\|done when\|acceptance` | Q10 default |
+
+### DESIGN.md Section Mapping
+
+If `docs/DESIGN.md` or `docs/design-brief.md` exists, parse these sections:
+
+| Document Section Header | Maps To |
+|------------------------|---------|
+| `## Vision` / `## Goal` / `## Objective` | DETECTED_VISION |
+| `## Audience` / `## Users` / `## Personas` | DETECTED_AUDIENCE |
+| `## References` / `## Inspiration` | DETECTED_REFERENCES |
+| `## Success` / `## Metrics` / `## KPIs` | DETECTED_METRICS |
+
+### Previous Run Detection
+
+If `.claude/design-loop-history.md` exists:
+1. Parse the most recent run's summary block
+2. Extract: focus areas, final average, skipped issues
+3. Present as Q2 default: "Continue from previous run ([previous focus areas])?"
+
+### frontend-design Detection
+
+If the `frontend-design` skill was invoked in this session:
+1. Check for `.claude/design-direction.md` or equivalent output
+2. Extract: palette, typography, layout strategy, creative tone
+3. Auto-skip Q7 (Inspirations) and Q9 (Creative Direction)
+4. Inject creative direction into PROJECT_CONTEXT
+
+## Reference Screenshot Comparison
+
+When the user provides a reference URL in Q7, capture it alongside the target for visual benchmarking.
+
+### Capture Protocol
+
+**Iteration 1 (initial comparison):**
+1. Navigate to reference URL via Playwright
+2. Resize to same viewport as target
+3. Take screenshot → save as `.claude/design-loop-reference.png`
+4. Navigate back to target URL
+5. Take target screenshot as usual
+6. In ANALYZE step, note key differences between target and reference for the DESCRIBED aspects only
+
+**Phase boundaries (iter 4, 7, 10):**
+1. Re-screenshot reference URL (design may be dynamic)
+2. Compare progress: how much closer is the target to the reference on the described aspects?
+3. Log comparison notes in design-loop-history.md
+
+### Comparison Scope
+
+Only compare what the user described. Common patterns:
+
+| User Description | Compare | Ignore |
+|-----------------|---------|--------|
+| "clean spacing" | Padding, margins, whitespace | Colors, fonts, content |
+| "typography" | Font sizes, weights, hierarchy | Layout, colors, imagery |
+| "layout" | Grid, flow, component arrangement | Colors, fonts, content |
+| "overall feel" | All visual aspects | Content, functionality |
+| "card design" | Card components specifically | Page-level layout |
+
+## Audience-Aware Criterion Weighting
+
+Based on Q5 (Vision) and Q6 (Audience), adjust which criteria get priority in scoring and fixing.
+
+### Vision-Based Weights
+
+| Vision | Primary Criteria | Secondary Criteria | De-prioritize |
+|--------|-----------------|-------------------|---------------|
+| Usability | Hierarchy, Touch Targets | Spacing, Density | Consistency |
+| Aesthetics | Spacing, Consistency | Contrast, Alignment | Touch Targets |
+| Conversion | Contrast, Density | Hierarchy, Touch Targets | Empty States |
+| Accessibility | Contrast, Touch Targets | Hierarchy, Spacing | Density |
+| General polish | All equal | — | — |
+
+### Audience-Based Adjustments
+
+| Audience | Adjustment |
+|----------|------------|
+| General web users | No adjustment (baseline weights) |
+| Mobile-first young (18-35) | Touch Targets MUST be 5/5. Bold colors preferred. Higher Density tolerance. |
+| Enterprise / business | Higher Density expected (more info-dense). Conservative aesthetics. Consistency critical. |
+| Developers / technical | Clean/minimal aesthetic. Hierarchy paramount. Low Density (breathing room). |
+
+### How Weighting Applies
+
+In the ANALYZE step of each iteration:
+1. Score all 8 criteria normally (1-5)
+2. When selecting "top 3 issues", prefer issues in Primary Criteria
+3. If all Primary Criteria are >=4, then fix Secondary Criteria
+4. De-prioritized criteria are still scored but only fixed after others are >=4
+
+This is soft weighting — all 8 criteria must still reach >=4/5 for POLISHED status.
+
 ## Fallback: Chrome MCP (if Playwright unavailable)
 
 ```

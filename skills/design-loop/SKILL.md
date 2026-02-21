@@ -98,11 +98,32 @@ Before interviewing the user, auto-detect the project's design system:
    - If detected: FIX IMMEDIATELY before starting iterations (wrap in @layer
      base or delete if redundant with Tailwind preflight)
    - Also check for CSS-in-JS global styles that inject unlayered resets
+
+8. SCAN CLAUDE.md and docs/DESIGN.md for design brief signals:
+   - Keywords "goal|vision|objective|brief" near design context → store as DETECTED_VISION
+   - Keywords "audience|users|demographic|persona" → store as DETECTED_AUDIENCE
+   - Keywords "reference|inspiration|like the design of" + URLs → store as DETECTED_REFERENCES
+   - Keywords "success|metric|KPI|done when" → store as DETECTED_METRICS
+   - If docs/DESIGN.md or docs/design-brief.md exists, parse its sections:
+     Vision, Audience, References, Success Criteria → use as defaults
+
+9. CHECK for previous design-loop runs:
+   - If .claude/design-loop-history.md exists, extract the most recent run's
+     focus areas and final scores
+   - Store as PREVIOUS_RUN — suggest "Continue from previous focus?" in Q2
+
+10. CHECK for frontend-design creative direction:
+    - If frontend-design skill was invoked earlier in this session, or if
+      .claude/design-direction.md exists, store as DETECTED_CREATIVE_DIRECTION
+    - This auto-skips Q7 (Inspirations) and Q9 (Creative Direction)
 ```
 
 Store findings as `PROJECT_CONTEXT` — inject into the generated prompt.
 
-## Phase 2: Interview (3-5 questions via AskUserQuestion)
+## Phase 2: Interview (3-8 questions via AskUserQuestion)
+
+Adaptive interview: 10 questions total, but most are auto-skipped via Phase 1 detection
+and `$ARGUMENTS`. Well-configured projects see 3-5 questions. New projects see 6-8.
 
 If arguments were passed via `$ARGUMENTS`, use them to skip questions:
 - `$ARGUMENTS[0]` (url) → skip Q1, use as target URL
@@ -115,11 +136,35 @@ If arguments were passed via `$ARGUMENTS`, use them to skip questions:
 Options: [current page URL] / [enter URL] / [file path to component]
 ```
 
+**Q5: Vision** (skip if `DETECTED_VISION` found in Phase 1)
+```
+"What's the primary goal of this iteration?"
+Options:
+  - Improve usability (clearer navigation, better flows)
+  - Enhance aesthetics (look more polished/premium)
+  - Boost conversion (CTAs, trust signals, engagement)
+  - Accessibility compliance (WCAG AA/AAA)
+  - All of the above — general polish
+```
+If skipped, use `DETECTED_VISION`. Default if no signal: "All of the above — general polish".
+
 **Q2: Focus**
 ```
 "What aspects need improvement?"
 Options: Layout & Spacing / Color & Contrast / Typography / Visual Hierarchy / All of the above
 ```
+If `PREVIOUS_RUN` exists, prepend option: "Continue from previous run ([previous focus areas])".
+
+**Q6: Audience** (skip if `DETECTED_AUDIENCE` found in Phase 1)
+```
+"Who's the target audience?"
+Options:
+  - General web users
+  - Mobile-first young audience (18-35)
+  - Enterprise / business users
+  - Developers / technical audience
+```
+If skipped, use `DETECTED_AUDIENCE`. Default if no signal: "General web users".
 
 **Q3: Iterations** (skip if `$ARGUMENTS[2]` provided)
 ```
@@ -127,19 +172,40 @@ Options: Layout & Spacing / Color & Contrast / Typography / Visual Hierarchy / A
 Options: 5 (quick polish) / 10 (thorough) / 20 (deep redesign)
 ```
 
+**Q10: Success Metrics** (skip if user chose default focus + iterations)
+```
+"Beyond the 8 criteria scores, what defines success?"
+Options:
+  - Score threshold is enough (>=4/5 on all criteria)
+  - Specific UX goal (e.g., "hero section must draw eye first")
+  - Match the reference design closely
+  - Production-ready (a11y, responsive, edge cases handled)
+```
+If skipped, default: "Score threshold is enough". If `DETECTED_METRICS` found, use that.
+
 **Q4: Viewport** (skip if `$ARGUMENTS[1]` provided)
 ```
 "Which viewport(s)?"
 Options: Mobile (390px) / Desktop (1280px) / Both (mobile-first, verify desktop)
 ```
 
-**Q5: Constraints** (optional — only if CLAUDE.md doesn't specify)
+**Q8: Constraints** (skip if CLAUDE.md specifies theme/mode)
 ```
 "Any design constraints?"
 Options: Dark mode only / Light mode only / Both modes / No preference
 ```
 
-**Q6: Creative Direction** (optional — only if frontend-design skill is NOT available)
+**Q7: Inspirations** (skip if `DETECTED_CREATIVE_DIRECTION` or `DETECTED_REFERENCES` found)
+```
+"Any design inspiration? Paste a URL and describe what you like about it."
+Options:
+  - [enter URL + description] (e.g., "stripe.com — clean spacing and typography")
+  - Use detected design system conventions
+  - Skip — let design-loop decide
+```
+If a reference URL is provided, Claude will screenshot it at iteration 1 for visual comparison.
+
+**Q9: Creative Direction** (skip if frontend-design skill is available or `DETECTED_CREATIVE_DIRECTION` found)
 ```
 "Any creative direction?"
 Options: Conservative (safe, professional) / Editorial (bold, opinionated) / Playful (colorful, energetic) / Let design-loop decide
@@ -151,9 +217,14 @@ Generate a prompt containing these EXACT sections, filled with project context:
 
 ```
 TASK: Visual polish iteration on [PAGE] — [FOCUS AREAS]
+VISION: [from Q5 — e.g., "Enhance aesthetics" or "All of the above — general polish"]
 
 URL: [target URL, e.g., http://localhost:3000/page]
 COMPONENT: [primary component file path(s)]
+REFERENCE: [from Q7 — URL + description, or "none"]
+
+TARGET AUDIENCE: [from Q6 — e.g., "Mobile-first young audience (18-35)"]
+SUCCESS METRICS: [from Q10 — e.g., ">=4/5 all criteria + hero section draws eye first"]
 
 PROJECT CONTEXT:
 - Framework: [detected framework]
@@ -180,6 +251,28 @@ WIDE VIEWPORT CHECK (run once at iteration 1 and again at final iteration):
   invisible at narrow widths but obvious at wide viewports
 - If the main container is not centered at 1920px, the CSS is broken
   even if it looks fine at 1280px
+
+AUDIENCE-AWARE WEIGHTING:
+Based on VISION and TARGET AUDIENCE, adjust criterion priority:
+- Usability vision → weight HIERARCHY and TOUCH TARGETS higher
+- Aesthetics vision → weight SPACING and CONSISTENCY higher
+- Conversion vision → weight CONTRAST and DENSITY higher
+- Accessibility vision → enforce WCAG AA on all CONTRAST scores, weight TOUCH TARGETS
+- Mobile-first audience → TOUCH TARGETS must score 5/5, DENSITY adjusted for small screens
+- Enterprise audience → DENSITY can be higher (more info-dense is expected)
+- Developer audience → prefer clean/minimal aesthetic, high CONSISTENCY weight
+
+REFERENCE COMPARISON (only if Q7 provided a URL):
+At iteration 1, screenshot the reference URL at the same viewport as the target.
+At each phase boundary (iter 4, 7, 10), re-screenshot the reference.
+Compare ONLY the described aspects (e.g., "spacing and typography" means
+ignore the reference's colors and imagery).
+Note differences and incorporate into the next iteration's fix priorities.
+
+CUSTOM SUCCESS CHECK (only if Q10 specified custom metrics):
+At each phase boundary, evaluate custom success metrics in addition to
+the 8 criteria scores. If the custom metric is subjective (e.g., "hero draws eye"),
+assess it against the screenshot and note progress.
 
 PROCESS (each iteration):
 1. SCREENSHOT: Use Playwright MCP to screenshot the page:
@@ -320,6 +413,10 @@ status: running
 iteration: 0
 max_iterations: [from Q3]
 started_at: "[ISO timestamp]"
+vision: "[from Q5]"
+audience: "[from Q6]"
+reference_url: "[from Q7, or null]"
+success_metrics: "[from Q10]"
 ---
 
 [generated prompt from Phase 3]
