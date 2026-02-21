@@ -2,7 +2,7 @@
 name: design-loop
 description: Use when user wants to visually iterate on UI/UX design using screenshots, when they say "design loop", "visual loop", "polish the UI", or want autonomous screenshot-driven frontend refinement
 argument-hint: "[url] [iterations]"
-allowed-tools: Read, Write, Edit, Glob, Grep, Bash, mcp__plugin_playwright_playwright__browser_navigate, mcp__plugin_playwright_playwright__browser_resize, mcp__plugin_playwright_playwright__browser_take_screenshot, mcp__plugin_playwright_playwright__browser_snapshot, mcp__plugin_playwright_playwright__browser_evaluate, mcp__plugin_playwright_playwright__browser_run_code, mcp__plugin_playwright_playwright__browser_close, mcp__claude-in-chrome__navigate, mcp__claude-in-chrome__computer, mcp__claude-in-chrome__read_page, mcp__claude-in-chrome__find, mcp__claude-in-chrome__javascript_tool
+allowed-tools: Read, Write, Edit, Glob, Grep, Bash, mcp__claude-in-chrome__navigate, mcp__claude-in-chrome__computer, mcp__claude-in-chrome__read_page, mcp__claude-in-chrome__find, mcp__claude-in-chrome__javascript_tool
 ---
 
 # design-loop
@@ -19,9 +19,10 @@ Each iteration:
 ## Phase 0: Dependency Check
 
 ```
-1. CHECK Playwright MCP — try calling mcp__plugin_playwright_playwright__browser_navigate
-   If unavailable: run `claude mcp add playwright -- npx -y @playwright/mcp@latest` via Bash
-2. CHECK target URL — curl or navigate to verify it responds
+1. CHECK Playwright CLI — run `playwright-cli --help` via Bash
+   If unavailable: run `npm install -g @playwright/cli@latest` via Bash
+2. OPEN browser session: `playwright-cli open <url> --headed`
+3. CHECK target URL — curl or navigate to verify it responds
    If it responds: proceed
    If not: run the dev server recovery sequence below
 ```
@@ -112,7 +113,7 @@ The core innovation — high-resolution section-level captures instead of tiny f
 
 ### Screenshot Strategy
 
-Run this JS via `browser_run_code` or `browser_evaluate` to find semantic landmarks:
+Run this JS via `playwright-cli eval` to find semantic landmarks:
 
 ```js
 (() => {
@@ -140,7 +141,7 @@ Run this JS via `browser_run_code` or `browser_evaluate` to find semantic landma
   // For each section:
   el.scrollIntoView({ block: 'start', behavior: 'instant' });
   ```
-  Then call `browser_take_screenshot` for each.
+  Then run `playwright-cli screenshot --filename=section-N.png` for each. Use `Read` tool to view the saved image.
 
 - **< 3 landmarks → SCROLL MODE**: Take viewport-sized screenshots stepping down the page with 30% overlap.
   ```js
@@ -155,9 +156,9 @@ Run this JS via `browser_run_code` or `browser_evaluate` to find semantic landma
     return JSON.stringify({ totalHeight, viewportHeight, step, positions });
   })()
   ```
-  For each position: `window.scrollTo(0, position)` then `browser_take_screenshot`.
+  For each position: `playwright-cli eval 'window.scrollTo(0, <position>)'` then `playwright-cli screenshot --filename=scroll-N.png`. Use `Read` tool to view the saved image.
 
-**Always take 1 overview shot** at the default viewport (no scroll) for context.
+**Always take 1 overview shot** via `playwright-cli screenshot --filename=overview.png` at the default viewport (no scroll) for context. Use `Read` tool to view the saved image.
 
 ## Phase 4: Evaluate & Fix
 
@@ -209,7 +210,7 @@ criteria table above are the sole design guidance.
 
 ### CSS Layout Audit
 
-Run this JS via `browser_evaluate` once per iteration alongside screenshots. It catches structural bugs that are invisible at screenshot scale (e.g., unequal card heights in grids, overflow clipping):
+Run this JS via `playwright-cli eval` once per iteration alongside screenshots. It catches structural bugs that are invisible at screenshot scale (e.g., unequal card heights in grids, overflow clipping):
 
 ```js
 (() => {
@@ -345,10 +346,11 @@ On completion, update state to `status: completed`.
 
 ### Cleanup
 
-On completion (POLISHED or max iterations reached), delete all screenshot files created during this run:
+On completion (POLISHED or max iterations reached), close the browser and delete all screenshot files created during this run:
 
 ```bash
-rm -f design-loop-*.png
+playwright-cli close
+rm -f design-loop-*.png section-*.png scroll-*.png overview.png
 ```
 
 These are ephemeral working files — the scores and changes are preserved in `.claude/design-loop-history.md`.

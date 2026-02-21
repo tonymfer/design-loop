@@ -21,7 +21,7 @@ You are about to start an autonomous visual iteration loop. This command:
 ## Instructions
 
 Invoke the `design-loop` skill. It will handle the full workflow:
-- Phase 0: Dependency check (auto-install Playwright MCP)
+- Phase 0: Dependency check (auto-install Playwright CLI)
 - Phase 1: Context scan (package.json, tailwind config, component libraries)
 - Phase 2: Interview (target page, focus area, max iterations)
 - Phase 3: Section screenshots (node mode or scroll mode)
@@ -36,8 +36,8 @@ If arguments were provided:
 
 Before starting, check and auto-install missing dependencies:
 
-1. **Playwright MCP** — try calling any `mcp__plugin_playwright_playwright__*` tool. If unavailable, run:
-   `claude mcp add playwright -- npx -y @playwright/mcp@latest`
+1. **Playwright CLI** — run `playwright-cli --help` via Bash. If unavailable, run:
+   `npm install -g @playwright/cli@latest`
 2. **Dev server** — verify it's running at the target URL. If not, tell the user to start it.
 
-Only stop if the dev server isn't running — Playwright MCP is installed automatically.
+Only stop if the dev server isn't running — Playwright CLI is installed automatically.

@@ -27,7 +27,7 @@ design-loop is a [Claude Code](https://docs.anthropic.com/en/docs/claude-code) p
 
 ## How it works
 
-1. **Screenshot** — Section-level captures via Playwright. Detects semantic HTML landmarks (`header`, `main`, `section`, `footer`, `article`) and screenshots each one individually. If the page lacks landmarks, falls back to scroll-based captures with 30% overlap so nothing is missed. This gives Claude real visual context for *each section*, not just a single full-page blob.
+1. **Screenshot** — Section-level captures via Playwright CLI. Detects semantic HTML landmarks (`header`, `main`, `section`, `footer`, `article`) and screenshots each one individually to disk. If the page lacks landmarks, falls back to scroll-based captures with 30% overlap so nothing is missed. This gives Claude real visual context for *each section*, not just a single full-page blob — while saving ~4x on context tokens compared to MCP-based approaches.
 2. **Score** — 5 design criteria evaluated 1–5 with anti-slop detection
 3. **Fix** — Top 3 issues fixed in code, build verified
 4. **Repeat** — Loop continues until all criteria hit 4/5+
@@ -64,7 +64,7 @@ Every screenshot set is scored against these design fundamentals, with built-in 
 claude plugin add https://github.com/tonymfer/design-loop
 ```
 
-That's it. Playwright MCP is auto-installed on first run. No other dependencies.
+That's it. Playwright CLI is auto-installed on first run (`npm install -g @playwright/cli@latest`). No other dependencies.
 
 ---
 
@@ -89,12 +89,13 @@ That's it. Playwright MCP is auto-installed on first run. No other dependencies.
 
 ### What happens
 
-1. **Dev server check** — Verifies the target URL responds. If not, scans common ports for a running server or auto-starts one via `package.json`
-2. **Context scan** — Reads your `package.json` and `tailwind.config`, discovers companion design skills
-3. **Interview** — 3 questions about target, focus areas, and iterations
-4. **Section screenshots** — High-resolution captures of each page section (semantic landmarks or scroll fallback)
-5. **Loop** — Autonomous iteration: screenshot, score against 5 criteria, fix, repeat
-6. **Completion** — Stops when all 5 criteria score 4/5+ for two consecutive iterations. Cleans up all screenshot files automatically.
+1. **Playwright CLI check** — Installs Playwright CLI if missing, opens a headed browser session
+2. **Dev server check** — Verifies the target URL responds. If not, scans common ports for a running server or auto-starts one via `package.json`
+3. **Context scan** — Reads your `package.json` and `tailwind.config`, discovers companion design skills
+4. **Interview** — 3 questions about target, focus areas, and iterations
+5. **Section screenshots** — High-resolution captures of each page section (semantic landmarks or scroll fallback)
+6. **Loop** — Autonomous iteration: screenshot, score against 5 criteria, fix, repeat
+7. **Completion** — Stops when all 5 criteria score 4/5+ for two consecutive iterations. Cleans up all screenshot files automatically.
 
 ### Export results
 
