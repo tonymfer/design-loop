@@ -1,0 +1,165 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "DM Sans", system-ui, sans-serif;
+  --font-display: "Space Grotesk", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+}
+
+/* ── Base ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Shared transition ── */
+.t { transition: all 300ms ease; }
+
+/* ── Iteration 0: Typical AI default — clean, competent, boring ── */
+[data-iteration="0"] {
+  --bg: #ffffff; --bg-card: #f8fafc; --bg-code: #f1f5f9;
+  --text: #475569; --text-h: #334155; --text-m: #94a3b8;
+  --accent: #2563eb; --accent-bg: #eff6ff;
+  --border: #e2e8f0; --radius: 8px;
+  --shadow: 0 1px 2px rgba(0,0,0,0.05);
+  --sp-section: 48px; --sp-card: 12px; --sp-gap: 10px;
+  --h-size: 1.25rem; --h-weight: 600;
+  --b-size: 14px; --b-lh: 1.5;
+  --card-pad: 16px;
+  --hero-size: 2rem;
+  --cta-pad: 10px 20px; --cta-radius: 8px;
+  --cta-bg: #2563eb; --cta-text: #fff; --cta-weight: 500;
+  --cols: 2; --step-size: 36px;
+  --badge-bg: #eff6ff; --badge-border: #bfdbfe; --badge-text: #2563eb;
+  --bar-w: 0%; --code-border: #e2e8f0;
+  --font-heading: var(--font-sans);
+  --nav-bg: rgba(255,255,255,0.92); --nav-border: #e2e8f0;
+}
+
+/* ── Iteration 1: Better spacing & breathing room ── */
+[data-iteration="1"] {
+  --bg: #ffffff; --bg-card: #f8fafc; --bg-code: #f1f5f9;
+  --text: #475569; --text-h: #334155; --text-m: #94a3b8;
+  --accent: #2563eb; --accent-bg: #eff6ff;
+  --border: #e2e8f0; --radius: 8px;
+  --shadow: 0 1px 3px rgba(0,0,0,0.06);
+  --sp-section: 64px; --sp-card: 16px; --sp-gap: 14px;
+  --h-size: 1.3rem; --h-weight: 600;
+  --b-size: 15px; --b-lh: 1.6;
+  --card-pad: 20px;
+  --hero-size: 2.2rem;
+  --cta-pad: 12px 24px; --cta-radius: 8px;
+  --cta-bg: #2563eb; --cta-text: #fff; --cta-weight: 500;
+  --cols: 2; --step-size: 38px;
+  --badge-bg: #eff6ff; --badge-border: #bfdbfe; --badge-text: #2563eb;
+  --bar-w: 25%; --code-border: #e2e8f0;
+  --font-heading: var(--font-sans);
+  --nav-bg: rgba(255,255,255,0.92); --nav-border: #e2e8f0;
+}
+
+/* ── Iteration 2: Clear hierarchy & stronger contrast ── */
+[data-iteration="2"] {
+  --bg: #ffffff; --bg-card: #f8fafc; --bg-code: #f1f5f9;
+  --text: #334155; --text-h: #1e293b; --text-m: #64748b;
+  --accent: #1d4ed8; --accent-bg: #eff6ff;
+  --border: #e2e8f0; --radius: 10px;
+  --shadow: 0 2px 6px rgba(0,0,0,0.06);
+  --sp-section: 72px; --sp-card: 18px; --sp-gap: 16px;
+  --h-size: 1.4rem; --h-weight: 700;
+  --b-size: 15px; --b-lh: 1.6;
+  --card-pad: 24px;
+  --hero-size: 2.5rem;
+  --cta-pad: 14px 28px; --cta-radius: 10px;
+  --cta-bg: #1d4ed8; --cta-text: #fff; --cta-weight: 600;
+  --cols: 2; --step-size: 42px;
+  --badge-bg: #eff6ff; --badge-border: #93c5fd; --badge-text: #1d4ed8;
+  --bar-w: 55%; --code-border: #cbd5e1;
+  --font-heading: var(--font-sans);
+  --nav-bg: rgba(255,255,255,0.95); --nav-border: #e2e8f0;
+}
+
+/* ── Iteration 3: Dark editorial shift — the transformation ── */
+[data-iteration="3"] {
+  --bg: #0f0f0f; --bg-card: #1a1a1a; --bg-code: #141414;
+  --text: #c8c0b4; --text-h: #f5f0e8; --text-m: #8a8278;
+  --accent: #e5a853; --accent-bg: rgba(229,168,83,0.08);
+  --border: #2a2724; --radius: 4px;
+  --shadow: 0 2px 8px rgba(0,0,0,0.3);
+  --sp-section: 80px; --sp-card: 20px; --sp-gap: 16px;
+  --h-size: 1.5rem; --h-weight: 700;
+  --b-size: 15px; --b-lh: 1.65;
+  --card-pad: 24px;
+  --hero-size: 2.8rem;
+  --cta-pad: 14px 28px; --cta-radius: 4px;
+  --cta-bg: #e5a853; --cta-text: #0f0f0f; --cta-weight: 600;
+  --cols: 2; --step-size: 44px;
+  --badge-bg: rgba(229,168,83,0.08); --badge-border: #3d3529; --badge-text: #e5a853;
+  --bar-w: 78%; --code-border: #2a2724;
+  --font-heading: var(--font-display);
+  --nav-bg: rgba(15,15,15,0.92); --nav-border: #2a2724;
+}
+
+/* ── Iteration 4 (Final): Polished dark editorial ── */
+[data-iteration="4"] {
+  --bg: #0b0b0b; --bg-card: #141414; --bg-code: #101010;
+  --text: #d4ccc0; --text-h: #faf5ed; --text-m: #918a7e;
+  --accent: #d4a04a; --accent-bg: rgba(212,160,74,0.06);
+  --border: #222018; --radius: 2px;
+  --shadow: 0 4px 20px rgba(212,160,74,0.05), 0 1px 4px rgba(0,0,0,0.4);
+  --sp-section: 88px; --sp-card: 22px; --sp-gap: 18px;
+  --h-size: 1.5rem; --h-weight: 700;
+  --b-size: 16px; --b-lh: 1.65;
+  --card-pad: 32px;
+  --hero-size: 3rem;
+  --cta-pad: 16px 32px; --cta-radius: 2px;
+  --cta-bg: #d4a04a; --cta-text: #0b0b0b; --cta-weight: 700;
+  --cols: 2; --step-size: 48px;
+  --badge-bg: rgba(212,160,74,0.06); --badge-border: #302b24; --badge-text: #d4a04a;
+  --bar-w: 100%; --code-border: #222018;
+  --font-heading: var(--font-display);
+  --nav-bg: rgba(11,11,11,0.96); --nav-border: #222018;
+}
+
+/* ── Ambient glow for dark editorial states ── */
+[data-iteration="3"]::before,
+[data-iteration="4"]::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+[data-iteration="3"]::before {
+  background: radial-gradient(ellipse 80% 50% at 50% 0%, rgba(229,168,83,0.03) 0%, transparent 70%);
+}
+
+[data-iteration="4"]::before {
+  background: radial-gradient(ellipse 70% 45% at 50% -5%, rgba(212,160,74,0.05) 0%, transparent 65%),
+              radial-gradient(ellipse 50% 30% at 50% 100%, rgba(212,160,74,0.02) 0%, transparent 60%);
+}
+
+/* Ensure content stacks above the glow */
+[data-iteration="3"] > *,
+[data-iteration="4"] > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Score bar animation ── */
+.score-fill {
+  transition: width 300ms ease, background 300ms ease;
+}
+
+/* ── Mobile ── */
+@media (max-width: 640px) {
+  [data-iteration="0"],
+  [data-iteration="1"],
+  [data-iteration="2"],
+  [data-iteration="3"],
+  [data-iteration="4"] {
+    --cols: 1;
+  }
+}
