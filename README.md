@@ -36,7 +36,11 @@ design-loop prioritizes the highest-impact issues first and adapts its focus as 
 
 ### Stuck detection
 
-If the same issue persists for 2 iterations, design-loop tries an alternative approach (e.g., switching from padding fixes to layout restructuring). After 3 failed attempts on the same criterion, it documents a TODO and moves on — no wasted iterations.
+Three levels of protection against wasted iterations:
+
+- **Per-criterion** — If the same issue persists for 2 iterations, tries an alternative approach (e.g., padding fixes → layout restructuring). After 3 failed attempts, documents a TODO and moves on.
+- **Plateau** — If the average score hasn't improved for 3 consecutive iterations, stops early. Further iterations are unlikely to help.
+- **Infrastructure** — If a screenshot or navigation fails, retries once. If it fails again, stops with a clear error ("is the dev server still running?") instead of iterating blindly.
 
 ---
 
@@ -85,11 +89,12 @@ That's it. Playwright MCP is auto-installed on first run. No other dependencies.
 
 ### What happens
 
-1. **Context scan** — Reads your `package.json` and `tailwind.config`, discovers companion design skills
-2. **Interview** — 3 questions about target, focus areas, and iterations
-3. **Section screenshots** — High-resolution captures of each page section (semantic landmarks or scroll fallback)
-4. **Loop** — Autonomous iteration: screenshot, score against 5 criteria, fix, repeat
-5. **Completion** — Stops when all 5 criteria score 4/5+ for two consecutive iterations
+1. **Dev server check** — Verifies the target URL responds. If not, scans common ports for a running server or auto-starts one via `package.json`
+2. **Context scan** — Reads your `package.json` and `tailwind.config`, discovers companion design skills
+3. **Interview** — 3 questions about target, focus areas, and iterations
+4. **Section screenshots** — High-resolution captures of each page section (semantic landmarks or scroll fallback)
+5. **Loop** — Autonomous iteration: screenshot, score against 5 criteria, fix, repeat
+6. **Completion** — Stops when all 5 criteria score 4/5+ for two consecutive iterations. Cleans up all screenshot files automatically.
 
 ### Export results
 
@@ -99,7 +104,7 @@ After a loop completes, generate a shareable summary:
 /export-loop
 ```
 
-This produces a markdown summary with score progression, key improvements, and iteration count — ready for PR descriptions or social sharing.
+This produces a rich summary with ASCII score progression bars, an iteration log with deltas, key improvements ranked by impact, and stats — ready for PR descriptions or social sharing.
 
 ### Check for updates
 
