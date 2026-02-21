@@ -59,3 +59,20 @@ Duration: 8 iterations (POLISHED at iteration 8, 2 iterations early)
 8. **Chat bubble distinction** — amber left-border on answers in dark mode
 9. **CTA score comparison** — enlarged 1.6em with faded "before" and wider progress track
 10. **Wide viewport verified** — centered at 1920px, 15px drift (under threshold)
+
+---
+
+## Run 3 — Post-iteration-demo CSS variable polish
+
+| Iter | S | H | C | A | D | Co | T | E | Avg | Focus | Changes |
+|------|---|---|---|---|---|----|---|---|-----|-------|---------|
+| 0 | 3 | 3 | 3 | 4 | 4 | 4 | 4 | 4 | 3.6 | Baseline | Initial screenshot + analysis after CSS variable migration |
+| 1 | 4 | 4 | 3 | 4 | 4 | 4 | 4 | 4 | 3.9 | Hierarchy, Contrast, Spacing | Wordmark 2xl→5xl, --text-muted #71717a→#8b8b96, phase cards padding+font |
+| 2 | 4 | 4 | 4 | 4 | 4 | 4 | 4 | 4 | 4.0 | Contrast, Hierarchy, Consistency | Ghost button border visible, step descriptions→text-secondary, feature card hover |
+| 3 | 4 | 4 | 4 | 4 | 4 | 4 | 4 | 4 | 4.0 | Confirmation | Wide viewport check (1920px) — 0px drift. All sections verified. |
+
+### Summary
+Started: 3.6/5 → Finished: 4.0/5
+Key improvements: Hierarchy (wordmark sizing), Contrast (muted text legibility), Spacing (phase cards)
+Skipped issues: none
+Duration: 3 iterations (POLISHED at iteration 3)

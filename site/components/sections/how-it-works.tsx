@@ -65,7 +65,7 @@ export function HowItWorks() {
               How it works
             </span>
           </h2>
-          <p className="mt-4 max-w-lg text-[var(--text-secondary)]">
+          <p className="mt-5 max-w-lg text-base text-[var(--text-secondary)]">
             Five steps per iteration. Each one makes the page measurably better.
           </p>
         </ScrollReveal>
@@ -85,7 +85,7 @@ export function HowItWorks() {
                   <h3 className="mt-4 text-sm font-semibold text-[var(--text-primary)]">
                     {step.title}
                   </h3>
-                  <p className="mt-2 text-xs leading-relaxed text-[var(--text-muted)]">
+                  <p className="mt-2 text-xs leading-relaxed text-[var(--text-secondary)]">
                     {step.description}
                   </p>
                   {i < steps.length - 1 && (
@@ -101,19 +101,19 @@ export function HowItWorks() {
 
         {/* Phase strategy — inline */}
         <ScrollReveal delay={0.4}>
-          <div className="mt-10 grid grid-cols-4 gap-3">
+          <div className="mt-10 grid grid-cols-2 gap-3 lg:grid-cols-4">
             {phases.map((phase) => (
               <div
                 key={phase.range}
-                className="rounded-lg border border-[var(--border)] bg-[var(--card-bg)] px-4 py-3"
+                className="rounded-lg border border-[var(--border)] bg-[var(--card-bg)] px-5 py-4"
               >
                 <span className="font-mono text-[10px] font-bold text-[color-mix(in_srgb,var(--accent),transparent_40%)]">
                   Iter {phase.range}
                 </span>
-                <p className="mt-1 text-xs font-semibold text-[var(--text-primary)]">
+                <p className="mt-1.5 text-sm font-semibold text-[var(--text-primary)]">
                   {phase.focus}
                 </p>
-                <p className="mt-0.5 text-[11px] text-[var(--text-muted)]">
+                <p className="mt-1 text-xs text-[var(--text-muted)]">
                   {phase.why}
                 </p>
               </div>

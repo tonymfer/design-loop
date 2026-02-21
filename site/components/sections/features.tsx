@@ -84,7 +84,7 @@ export function Features() {
                   className={`group relative rounded-xl border p-5 transition-all ${
                     feature.highlight
                       ? "border-[rgba(var(--accent-rgb),0.2)] bg-gradient-to-br from-[rgba(var(--accent-rgb),0.06)] to-[rgba(var(--accent-2-rgb),0.03)]"
-                      : "border-[var(--border)] bg-[var(--card-bg)] hover:border-[color-mix(in_srgb,var(--border),white_20%)]"
+                      : "border-[var(--border)] bg-[var(--card-bg)] hover:border-[color-mix(in_srgb,var(--accent),transparent_70%)]"
                   }`}
                 >
                   <div className="flex items-start gap-4">

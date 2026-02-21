@@ -20,7 +20,7 @@ export function GlowButton({
         variant === "primary" &&
           "rounded-lg bg-gradient-to-r from-[var(--accent)] to-[var(--accent-2)] px-6 py-3 text-white font-medium hover:-translate-y-0.5 hover:shadow-[0_0_32px_rgba(var(--accent-rgb),0.4)]",
         variant === "ghost" &&
-          "border-b border-[var(--border)] text-[var(--text-secondary)] hover:border-[var(--accent)] hover:text-[var(--accent)]",
+          "border-b border-[var(--text-muted)] text-[var(--text-secondary)] hover:border-[var(--accent)] hover:text-[var(--accent)]",
         className
       )}
     >

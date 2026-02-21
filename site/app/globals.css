@@ -30,7 +30,7 @@
 @property --text-muted {
   syntax: "<color>";
   inherits: true;
-  initial-value: #71717a;
+  initial-value: #8b8b96;
 }
 @property --accent {
   syntax: "<color>";
@@ -65,14 +65,14 @@
   --page-bg: #030712;
   --text-primary: #fafaf9;
   --text-secondary: #a1a1aa;
-  --text-muted: #71717a;
+  --text-muted: #8b8b96;
   --accent: #06b6d4;
   --accent-rgb: 6, 182, 212;
   --accent-2: #8b5cf6;
   --accent-2-rgb: 139, 92, 246;
-  --border: rgba(39, 39, 42, 0.4);
-  --card-bg: rgba(24, 24, 27, 0.3);
-  --surface: rgba(24, 24, 27, 0.4);
+  --border: rgba(39, 39, 42, 0.5);
+  --card-bg: rgba(24, 24, 27, 0.35);
+  --surface: rgba(24, 24, 27, 0.45);
   --effects-opacity: 1;
   --gradient-opacity: 1;
   --dot-grid-opacity: 0.15;
