@@ -145,17 +145,17 @@
   --accent: #eab308; --accent-bg: rgba(234,179,8,0.06);
   --border: #1c1c20; --radius: 2px;
   --shadow: 0 8px 32px rgba(234,179,8,0.04), 0 2px 8px rgba(0,0,0,0.5);
-  --sp-section: 72px; --sp-card: 24px; --sp-gap: 18px;
-  --h-size: 1.6rem; --h-weight: 700;
+  --sp-section: 80px; --sp-card: 24px; --sp-gap: 20px;
+  --h-size: 2rem; --h-weight: 700;
   --b-size: 16px; --b-lh: 1.7;
   --card-pad: 28px;
   --card-pad-lg: 36px;
-  --hero-size: clamp(2.8rem, 5.5vw, 4rem);
-  --hero-tracking: -0.03em;
-  --hero-max-w: 720px;
-  --sub-size: 1.1rem;
-  --sub-max-w: 520px;
-  --cta-pad: 14px 36px; --cta-radius: 2px;
+  --hero-size: clamp(3.2rem, 6vw, 4.5rem);
+  --hero-tracking: -0.035em;
+  --hero-max-w: 760px;
+  --sub-size: 1.15rem;
+  --sub-max-w: 540px;
+  --cta-pad: 15px 40px; --cta-radius: 2px;
   --cta-bg: #eab308; --cta-text: #09090b; --cta-weight: 800;
   --cta-font-size: 15px;
   --cols: 2; --step-size: 52px;
@@ -418,10 +418,7 @@
   transition: all 400ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.phase-line {
-  width: 2px;
-  flex: 1;
-  min-height: 24px;
+.phase-line-continuous {
   background: var(--border);
   transition: all 400ms cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -433,8 +430,8 @@
   box-shadow: 0 0 8px rgba(234,179,8,0.3);
 }
 
-[data-iteration="3"] .phase-line,
-[data-iteration="4"] .phase-line {
+[data-iteration="3"] .phase-line-continuous,
+[data-iteration="4"] .phase-line-continuous {
   background: var(--accent);
   box-shadow: 0 0 6px rgba(234,179,8,0.2);
 }
@@ -528,6 +525,7 @@
 [data-iteration="3"] .chat-a,
 [data-iteration="4"] .chat-a {
   border-radius: 2px;
+  border-left: 2px solid var(--accent);
 }
 
 /* ── Final CTA section ── */
@@ -576,6 +574,13 @@
 [data-iteration="4"] .skill-chain-tip {
   border-color: rgba(234,179,8,0.15) !important;
 }
+
+/* ── Floating paths opacity per theme ── */
+[data-iteration="0"] .floating-paths-svg { opacity: 0.25; }
+[data-iteration="1"] .floating-paths-svg { opacity: 0.3; }
+[data-iteration="2"] .floating-paths-svg { opacity: 0.35; }
+[data-iteration="3"] .floating-paths-svg { opacity: 0.6; }
+[data-iteration="4"] .floating-paths-svg { opacity: 0.7; }
 
 /* ── Mobile ── */
 @media (max-width: 640px) {

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { FloatingPathsBackground } from "@/components/ui/floating-paths";
 
 const SCORES: Record<number, Record<string, number>> = {
   0: { spacing: 3, hierarchy: 2, contrast: 3, alignment: 3, density: 3, consistency: 3, touch: 3, empty: 2 },
@@ -124,16 +125,16 @@ export default function Home() {
       {/* ── Sticky Nav ── */}
       <nav
         className="sticky top-0 z-50 backdrop-blur-md"
-        style={{ background: "var(--nav-bg)", borderBottom: "1px solid var(--nav-border)", padding: "12px 24px" }}
+        style={{ background: "var(--nav-bg)", borderBottom: "1px solid var(--nav-border)", padding: "10px 24px" }}
       >
-        <div className="mx-auto flex max-w-[860px] flex-wrap items-center justify-between gap-3">
+        <div className="mx-auto flex max-w-[860px] items-center justify-between gap-3">
           <span className="hidden text-[11px] font-medium uppercase tracking-wider whitespace-nowrap sm:block" style={{ fontFamily: "var(--font-mono)", color: "var(--text-m)", letterSpacing: "0.12em" }}>
             design-loop
           </span>
-          <div className="flex flex-1 flex-wrap items-center justify-center gap-2 sm:gap-2">
+          <div className="flex flex-1 items-center justify-center gap-1.5">
             {navHintVisible && (
-              <span className="nav-hint mr-1 hidden text-[10px] tracking-wide sm:block" style={{ fontFamily: "var(--font-mono)", color: "var(--accent)" }}>
-                This page is the demo — try switching iterations
+              <span className="nav-hint mr-1 hidden whitespace-nowrap text-[10px] tracking-wide lg:block" style={{ fontFamily: "var(--font-mono)", color: "var(--accent)" }}>
+                Try switching →
               </span>
             )}
             {!navHintVisible && (
@@ -148,10 +149,10 @@ export default function Home() {
                 className="t iter-btn cursor-pointer whitespace-nowrap"
                 style={{
                   fontFamily: "var(--font-mono)",
-                  fontSize: "13px",
+                  fontSize: "12px",
                   fontWeight: iter === i ? 700 : 500,
-                  padding: "10px 18px",
-                  minHeight: "44px",
+                  padding: "7px 14px",
+                  minHeight: "36px",
                   border: iter === i ? "2px solid var(--accent)" : "1px solid var(--border)",
                   borderRadius: "6px",
                   background: iter === i ? "var(--cta-bg)" : "transparent",
@@ -166,9 +167,9 @@ export default function Home() {
               className="t cursor-pointer whitespace-nowrap"
               style={{
                 fontFamily: "var(--font-mono)",
-                fontSize: "12px",
-                padding: "10px 16px",
-                minHeight: "44px",
+                fontSize: "11px",
+                padding: "7px 12px",
+                minHeight: "36px",
                 border: `1px solid ${playing ? "var(--accent)" : "var(--border)"}`,
                 borderRadius: "4px",
                 background: "transparent",
@@ -192,91 +193,93 @@ export default function Home() {
 
       <div className="mx-auto max-w-[860px] px-6">
         {/* ── Hero ── */}
-        <section className="hero-stagger t text-center" style={{ padding: `calc(var(--sp-section) * 1.2) 0 calc(var(--sp-section) * 0.6)` }}>
-          <div
-            className="t mb-6 inline-block rounded-full text-[11px] font-medium uppercase tracking-widest"
-            style={{
-              fontFamily: "var(--font-mono)",
-              padding: "6px 16px",
-              border: `1px solid var(--badge-border)`,
-              color: "var(--badge-text)",
-              background: "var(--badge-bg)",
-              letterSpacing: "0.12em",
-            }}
-          >
-            Claude Code Plugin
-          </div>
-          <h1
-            className="t mx-auto mb-6 font-[800]"
-            style={{
-              fontSize: "var(--hero-size)",
-              lineHeight: 1.08,
-              color: "var(--text-h)",
-              fontFamily: "var(--font-heading)",
-              letterSpacing: "var(--hero-tracking, -0.02em)",
-              maxWidth: "var(--hero-max-w, 640px)",
-              textWrap: "balance",
-            } as React.CSSProperties}
-          >
-            AI can code your UI.
-            <br />
-            But it can&apos;t <em className="accent-glow" style={{ color: "var(--accent)", fontStyle: "italic" }}>see</em> it.
-          </h1>
-          <p
-            className="t mx-auto mb-10"
-            style={{ fontSize: "var(--sub-size, calc(var(--b-size) * 1.15))", lineHeight: 1.7, color: "var(--text-m)", maxWidth: "var(--sub-max-w, 480px)", textWrap: "balance", textAlign: "center" } as React.CSSProperties}
-          >
-            design-loop gives Claude eyes. Screenshot. Measure. Score. Fix.
-            Repeat — fully autonomous — until your UI is polished. No
-            babysitting. It loops until done.
-          </p>
-          <div className="flex flex-wrap items-center justify-center gap-4">
-            <a
-              href="#install"
-              className="t cta-glow inline-flex items-center cursor-pointer no-underline hover:-translate-y-0.5"
+        <FloatingPathsBackground position={-1} className="overflow-hidden">
+          <section className="hero-stagger t relative z-10 text-center" style={{ padding: `calc(var(--sp-section) * 1.5) 0 calc(var(--sp-section) * 0.8)` }}>
+            <div
+              className="t mb-8 inline-block rounded-full text-[11px] font-medium uppercase tracking-widest"
               style={{
                 fontFamily: "var(--font-mono)",
-                fontSize: "var(--cta-font-size, 14px)",
-                fontWeight: "var(--cta-weight)",
-                padding: "var(--cta-pad)",
-                minHeight: "44px",
-                background: "var(--cta-bg)",
-                color: "var(--cta-text)",
-                borderRadius: "var(--cta-radius)",
-                border: "none",
-                letterSpacing: "0.03em",
+                padding: "6px 16px",
+                border: `1px solid var(--badge-border)`,
+                color: "var(--badge-text)",
+                background: "var(--badge-bg)",
+                letterSpacing: "0.12em",
               }}
             >
-              Get Started →
-            </a>
-            <a
-              href="#how-it-works"
-              className="t inline-flex items-center cursor-pointer no-underline"
+              Claude Code Plugin
+            </div>
+            <h1
+              className="t mx-auto mb-8 font-[800]"
+              style={{
+                fontSize: "var(--hero-size)",
+                lineHeight: 1.08,
+                color: "var(--text-h)",
+                fontFamily: "var(--font-heading)",
+                letterSpacing: "var(--hero-tracking, -0.02em)",
+                maxWidth: "var(--hero-max-w, 640px)",
+                textWrap: "balance",
+              } as React.CSSProperties}
+            >
+              AI can code your UI.
+              <br />
+              But it can&apos;t <em className="accent-glow" style={{ color: "var(--accent)", fontStyle: "italic" }}>see</em> it.
+            </h1>
+            <p
+              className="t mx-auto mb-12"
+              style={{ fontSize: "var(--sub-size, calc(var(--b-size) * 1.15))", lineHeight: 1.8, color: "var(--text-m)", maxWidth: "var(--sub-max-w, 480px)", textWrap: "balance", textAlign: "center", letterSpacing: "0.01em" } as React.CSSProperties}
+            >
+              design-loop gives Claude eyes. Screenshot. Measure. Score. Fix.
+              Repeat — fully autonomous — until your UI is polished. No
+              babysitting. It loops until done.
+            </p>
+            <div className="flex flex-wrap items-center justify-center gap-4">
+              <a
+                href="#install"
+                className="t cta-glow inline-flex items-center cursor-pointer no-underline hover:-translate-y-0.5"
+                style={{
+                  fontFamily: "var(--font-mono)",
+                  fontSize: "var(--cta-font-size, 14px)",
+                  fontWeight: "var(--cta-weight)",
+                  padding: "var(--cta-pad)",
+                  minHeight: "44px",
+                  background: "var(--cta-bg)",
+                  color: "var(--cta-text)",
+                  borderRadius: "var(--cta-radius)",
+                  border: "none",
+                  letterSpacing: "0.03em",
+                }}
+              >
+                Get Started →
+              </a>
+              <a
+                href="#how-it-works"
+                className="t inline-flex items-center cursor-pointer no-underline"
+                style={{
+                  fontFamily: "var(--font-mono)",
+                  fontSize: "13px",
+                  color: "var(--text-m)",
+                  letterSpacing: "0.02em",
+                  borderBottom: "1px solid var(--border)",
+                  paddingBottom: "2px",
+                  minHeight: "44px",
+                }}
+              >
+                Watch it work ↓
+              </a>
+            </div>
+            <p
+              className="t mt-8"
               style={{
                 fontFamily: "var(--font-mono)",
-                fontSize: "13px",
+                fontSize: "12px",
+                letterSpacing: "0.04em",
                 color: "var(--text-m)",
-                letterSpacing: "0.02em",
-                borderBottom: "1px solid var(--border)",
-                paddingBottom: "2px",
-                minHeight: "44px",
               }}
             >
-              Watch it work ↓
-            </a>
-          </div>
-          <p
-            className="t mt-8"
-            style={{
-              fontFamily: "var(--font-mono)",
-              fontSize: "12px",
-              letterSpacing: "0.04em",
-              color: "var(--text-m)",
-            }}
-          >
-            Works with Next.js, Nuxt, SvelteKit, React, Vue, Astro, and more.
-          </p>
-        </section>
+              Works with Next.js, Nuxt, SvelteKit, React, Vue, Astro, and more.
+            </p>
+          </section>
+        </FloatingPathsBackground>
 
         {/* ── How It Works ── */}
         <Section id="how-it-works">
@@ -290,7 +293,7 @@ export default function Home() {
             {STEPS.map((step) => (
               <div
                 key={step.num}
-                className="step-card t relative flex items-start gap-3 rounded-[var(--radius)] p-4 sm:flex-col sm:items-center sm:gap-0 sm:p-5 sm:text-center"
+                className="step-card t relative flex items-start gap-3 rounded-[var(--radius)] p-4 sm:flex-col sm:items-center sm:gap-0 sm:px-5 sm:py-7 sm:text-center"
                 style={{
                   background: "var(--bg-card)",
                   border: `1px solid var(--border)`,
@@ -298,7 +301,7 @@ export default function Home() {
                 }}
               >
                 <div
-                  className="t flex h-9 w-9 shrink-0 items-center justify-center rounded-full font-mono text-sm font-bold sm:mb-2.5 sm:h-[var(--step-size)] sm:w-[var(--step-size)] sm:text-base"
+                  className="t flex h-9 w-9 shrink-0 items-center justify-center rounded-full font-mono text-sm font-bold sm:mb-3 sm:h-[var(--step-size)] sm:w-[var(--step-size)] sm:text-base"
                   style={{
                     background: "var(--accent-bg)",
                     color: "var(--accent)",
@@ -328,13 +331,12 @@ export default function Home() {
           <p className="t" style={{ color: "var(--text-m)", marginBottom: "var(--sp-gap)" }}>
             design-loop follows a deliberate progression — spacing first because layout problems cascade, typography second, alignment and polish last.
           </p>
-          <div className="phase-timeline t mt-[var(--sp-card)]">
+          <div className="phase-timeline t mt-[var(--sp-card)] relative">
+            {/* Continuous vertical line connecting all dots */}
+            <div className="phase-line-continuous absolute" style={{ left: '5px', top: '6px', bottom: '6px', width: '2px' }} />
             {PHASES.map((phase, i) => (
               <div key={phase.range} className="phase-row t flex items-start gap-4 sm:gap-6" style={{ paddingBottom: i < PHASES.length - 1 ? "var(--sp-gap)" : 0 }}>
-                <div className="phase-marker t flex flex-col items-center">
-                  <div className="phase-dot t" />
-                  {i < PHASES.length - 1 && <div className="phase-line t" />}
-                </div>
+                <div className="phase-dot t relative z-10" />
                 <div className="flex-1" style={{ paddingBottom: i < PHASES.length - 1 ? "8px" : 0 }}>
                   <div className="flex flex-wrap items-baseline gap-2 sm:gap-3">
                     <span className="t font-mono text-xs font-bold" style={{ color: "var(--accent)", minWidth: "40px" }}>
@@ -391,11 +393,11 @@ export default function Home() {
           <div
             className="scorecard-summary t mt-[var(--sp-card)] flex flex-wrap items-center justify-between gap-3 rounded-[var(--radius)]"
             style={{
-              background: "var(--bg-card)",
-              border: `1px solid var(--border)`,
-              borderLeft: "3px solid var(--accent)",
-              padding: "var(--card-pad)",
-              boxShadow: "var(--shadow)",
+              background: "var(--accent-bg)",
+              border: `1px solid var(--accent)`,
+              borderLeft: "4px solid var(--accent)",
+              padding: "calc(var(--card-pad) * 1.1)",
+              boxShadow: "0 0 20px rgba(234,179,8,0.06)",
             }}
           >
             <div className="flex items-center gap-3">
@@ -404,7 +406,7 @@ export default function Home() {
               </span>
             </div>
             <div className="flex items-center gap-3">
-              <span className="t font-mono font-bold" style={{ color: "var(--accent)", fontSize: "1.1em" }}>
+              <span className="t font-mono font-bold" style={{ color: "var(--accent)", fontSize: "1.3em" }}>
                 {score}/5
               </span>
               <div className="h-1.5 w-20 overflow-hidden rounded-full" style={{ background: "var(--border)" }}>
@@ -576,10 +578,10 @@ export default function Home() {
                   {f.num}
                 </span>
                 <div>
-                  <span className="t font-semibold" style={{ color: "var(--text-h)" }}>
+                  <span className="t font-bold" style={{ color: "var(--text-h)", fontSize: "calc(var(--b-size) * 1.05)" }}>
                     {f.title}
                   </span>
-                  <span className="t" style={{ color: "var(--text-m)", marginLeft: "8px", fontSize: "calc(var(--b-size) * 0.88)" }}>
+                  <span className="t" style={{ color: "var(--text-m)", marginLeft: "12px", fontSize: "calc(var(--b-size) * 0.88)", lineHeight: 1.6 }}>
                     — {f.desc}
                   </span>
                 </div>
@@ -591,10 +593,10 @@ export default function Home() {
         {/* ── Final CTA ── */}
         <section
           className="final-cta t text-center"
-          style={{ padding: "var(--sp-section) 0", borderTop: "1px solid var(--border)" }}
+          style={{ padding: "calc(var(--sp-section) * 1.3) 0 var(--sp-section)", borderTop: "1px solid var(--border)" }}
         >
           <h2
-            className="t section-heading mb-4"
+            className="t section-heading mb-6"
             style={{
               fontSize: "var(--h-size)",
               fontWeight: "var(--h-weight)",
@@ -606,9 +608,9 @@ export default function Home() {
             Stop guessing. Start measuring.
           </h2>
 
-          <div className="t mx-auto mb-8 flex items-center justify-center gap-3" style={{ fontFamily: "var(--font-mono)", fontSize: "1.3em", fontWeight: 700 }}>
-            <span style={{ color: "var(--text-m)" }}>2.4/5</span>
-            <span className="cta-progress-track">
+          <div className="t mx-auto mb-10 flex items-center justify-center gap-4" style={{ fontFamily: "var(--font-mono)", fontSize: "1.6em", fontWeight: 700 }}>
+            <span style={{ color: "var(--text-m)", opacity: 0.5 }}>2.4/5</span>
+            <span className="cta-progress-track" style={{ width: "160px" }}>
               <span className="cta-progress-fill t" />
             </span>
             <span style={{ color: "var(--accent)" }}>4.6/5</span>
@@ -644,7 +646,7 @@ export default function Home() {
       </div>
 
       {/* ── Footer ── */}
-      <footer className="t text-center" style={{ padding: "calc(var(--sp-section) * 0.85) 0", borderTop: `1px solid var(--border)` }}>
+      <footer className="t text-center" style={{ padding: "calc(var(--sp-section) * 1) 0", borderTop: `1px solid var(--border)` }}>
         <p className="text-sm" style={{ color: "var(--text-m)", fontFamily: "var(--font-mono)", fontSize: "12px", letterSpacing: "0.02em", lineHeight: 2.2 }}>
           Built by{" "}
           <a href="https://github.com/tonymfer" style={{ color: "var(--accent)", textDecoration: "none", fontWeight: 600, padding: "4px 0" }}>
@@ -674,7 +676,7 @@ function Section({ children, id }: { children: React.ReactNode; id?: string }) {
 
 function SectionHeading({ children }: { children: React.ReactNode }) {
   return (
-    <h2 className="t section-heading" style={{ fontSize: "var(--h-size)", fontWeight: "var(--h-weight)", color: "var(--text-h)", marginBottom: "var(--sp-gap)", fontFamily: "var(--font-heading)", letterSpacing: "-0.01em" }}>
+    <h2 className="t section-heading" style={{ fontSize: "var(--h-size)", fontWeight: "var(--h-weight)", color: "var(--text-h)", marginBottom: "calc(var(--sp-gap) * 0.6)", fontFamily: "var(--font-heading)", letterSpacing: "-0.015em" }}>
       {children}
     </h2>
   );
@@ -733,7 +735,8 @@ function CodeBlock({ children, copyText }: { children: React.ReactNode; copyText
             right: "8px",
             fontFamily: "var(--font-mono)",
             fontSize: "11px",
-            padding: "8px 12px",
+            padding: "10px 14px",
+            minHeight: "36px",
             background: "var(--bg-card)",
             border: `1px solid var(--border)`,
             borderRadius: "3px",
