@@ -32,6 +32,79 @@ Tool: mcp__plugin_playwright_playwright__browser_snapshot
 Parameters: {}
 ```
 
+### Resize to wide viewport (centering check)
+```
+Tool: mcp__plugin_playwright_playwright__browser_resize
+Parameters: { "width": 1920, "height": 1080 }
+```
+
+### Evaluate JS on page (layout measurement)
+```
+Tool: mcp__plugin_playwright_playwright__browser_evaluate
+Parameters: { "function": "() => { ... }" }
+```
+
+## Layout Measurement (MEASURE step)
+
+Run this after each screenshot to catch CSS cascade bugs that are invisible visually:
+
+```js
+// Playwright: mcp__plugin_playwright_playwright__browser_evaluate
+// Chrome: mcp__claude-in-chrome__javascript_tool
+(() => {
+  const results = {};
+  const container = document.querySelector(
+    '[class*="container"], [class*="max-w"], main, [style*="max-width"]'
+  ) || document.body.firstElementChild;
+  if (container) {
+    const rect = container.getBoundingClientRect();
+    const vw = window.innerWidth;
+    results.centering = {
+      left: Math.round(rect.left),
+      right: Math.round(vw - rect.right),
+      drift: Math.round(Math.abs(rect.left - (vw - rect.right))),
+      centered: Math.abs(rect.left - (vw - rect.right)) < 20
+    };
+  }
+  const el = document.querySelector('.mx-auto, .px-4, .gap-4');
+  if (el) {
+    const cs = getComputedStyle(el);
+    results.utilityCheck = {
+      marginLeft: cs.marginLeft,
+      marginRight: cs.marginRight
+    };
+  }
+  return JSON.stringify(results, null, 2);
+})()
+```
+
+### Red Flags
+
+| Measurement | Threshold | Likely Cause |
+|-------------|-----------|-------------|
+| `centering.drift > 20` | Container NOT centered | Unlayered CSS reset overriding `mx-auto` |
+| `marginLeft: "0px"` on `.mx-auto` | Utility overridden | `* { margin: 0 }` outside `@layer` |
+| Different at 1280 vs 1920 | Max-width not working | Missing `mx-auto` or cascade conflict |
+
+## CSS Cascade Audit (Phase 1)
+
+Before iterating, check for CSS cascade conflicts — especially in Tailwind v4 projects:
+
+```
+GREP for these patterns in globals.css / global stylesheets:
+  * {           ← Universal reset
+  body {        ← Body override
+  html {        ← Root override
+
+If found OUTSIDE @layer block:
+  → Unlayered styles ALWAYS beat @layer utilities (CSS spec)
+  → Tailwind v4 utilities live in @layer utilities
+  → Result: mx-auto, px-*, py-*, gap-* silently fail
+
+Fix: Delete redundant resets (Tailwind preflight handles them in @layer base)
+     or wrap in @layer base { ... }
+```
+
 ## Fallback: Chrome MCP (if Playwright unavailable)
 
 ```
@@ -177,6 +250,8 @@ Match the page's design language
 | Single-element fix | Parent container restructure | Button padding didn't help → restructure the card layout |
 | Spacing scale tweak | Section reorder/removal | Spacing still off → remove or reorder elements |
 | Typography change | Hierarchy restructure | Font change didn't clarify → reorganize visual weight order |
+| Utility class not applied | CSS cascade audit | `mx-auto` not centering → check for unlayered `* { margin: 0 }` |
+| Centering broken | Wide viewport + MEASURE | Looks fine at 1280px → test at 1920px, run JS measurement |
 
 ### Escalation Path
 

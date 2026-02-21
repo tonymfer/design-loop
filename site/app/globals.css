@@ -6,12 +6,12 @@
   --font-mono: "JetBrains Mono", monospace;
 }
 
-/* ── Base ── */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-body {
-  font-family: var(--font-sans);
-  -webkit-font-smoothing: antialiased;
+/* ── Base (inside layer so Tailwind utilities can override) ── */
+@layer base {
+  body {
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
 }
 
 /* ── Shared transition ── */

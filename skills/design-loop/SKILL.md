@@ -2,7 +2,7 @@
 name: design-loop
 description: Use when user wants to visually iterate on UI/UX design using screenshots, when they say "design loop", "visual loop", "polish the UI", or want autonomous screenshot-driven frontend refinement
 argument-hint: "[url] [viewport] [iterations]"
-allowed-tools: Read, Write, Edit, Glob, Grep, Bash, mcp__plugin_playwright_playwright__browser_navigate, mcp__plugin_playwright_playwright__browser_resize, mcp__plugin_playwright_playwright__browser_take_screenshot, mcp__plugin_playwright_playwright__browser_snapshot, mcp__plugin_playwright_playwright__browser_close, mcp__claude-in-chrome__navigate, mcp__claude-in-chrome__computer, mcp__claude-in-chrome__read_page, mcp__claude-in-chrome__find
+allowed-tools: Read, Write, Edit, Glob, Grep, Bash, mcp__plugin_playwright_playwright__browser_navigate, mcp__plugin_playwright_playwright__browser_resize, mcp__plugin_playwright_playwright__browser_take_screenshot, mcp__plugin_playwright_playwright__browser_snapshot, mcp__plugin_playwright_playwright__browser_evaluate, mcp__plugin_playwright_playwright__browser_close, mcp__claude-in-chrome__navigate, mcp__claude-in-chrome__computer, mcp__claude-in-chrome__read_page, mcp__claude-in-chrome__find, mcp__claude-in-chrome__javascript_tool
 ---
 
 # Design Loop
@@ -87,6 +87,17 @@ Before interviewing the user, auto-detect the project's design system:
    - **/ui/**/*.{tsx,vue,svelte}
 5. CHECK for component libraries (from list above)
 6. DETECT available skills: check if frontend-design is installed for optional chaining
+7. CSS CASCADE AUDIT — critical for Tailwind v4 projects:
+   - GREP globals.css / global stylesheets for unlayered resets: `* {`, `body {`, `html {`
+   - If found OUTSIDE a `@layer` block, flag as HIGH RISK — unlayered styles
+     always beat `@layer utilities` in CSS cascade regardless of specificity
+   - Check for: margin: 0, padding: 0, box-sizing resets outside @layer
+   - Tailwind v4 preflight already handles resets inside @layer base —
+     redundant unlayered resets will silently break utility classes like
+     mx-auto, px-*, py-*, gap-*, etc.
+   - If detected: FIX IMMEDIATELY before starting iterations (wrap in @layer
+     base or delete if redundant with Tailwind preflight)
+   - Also check for CSS-in-JS global styles that inject unlayered resets
 ```
 
 Store findings as `PROJECT_CONTEXT` — inject into the generated prompt.
@@ -163,6 +174,13 @@ DESIGN CRITERIA (check EVERY iteration):
 
 VIEWPORT: [mobile 390x844 | desktop 1280x800 | both]
 
+WIDE VIEWPORT CHECK (run once at iteration 1 and again at final iteration):
+- Screenshot at 1920x1080 in addition to the normal viewport
+- Centering bugs, alignment drift, and max-width failures are
+  invisible at narrow widths but obvious at wide viewports
+- If the main container is not centered at 1920px, the CSS is broken
+  even if it looks fine at 1280px
+
 PROCESS (each iteration):
 1. SCREENSHOT: Use Playwright MCP to screenshot the page:
    - Call mcp__plugin_playwright_playwright__browser_navigate to open the URL
@@ -170,11 +188,52 @@ PROCESS (each iteration):
    - Call mcp__plugin_playwright_playwright__browser_take_screenshot
    - If Playwright unavailable, use mcp__claude-in-chrome tools as fallback
 
-2. ANALYZE: Review the screenshot against all 8 design criteria above.
+2. MEASURE: Use browser_evaluate (Playwright) or javascript_tool (Chrome) to
+   programmatically check layout properties. Screenshots can miss CSS cascade bugs.
+   Run this JS on the page and check for anomalies:
+   ```js
+   (() => {
+     const results = {};
+     // Check main container centering
+     const container = document.querySelector('[class*="container"], [class*="max-w"], main, [style*="max-width"]')
+       || document.body.firstElementChild;
+     if (container) {
+       const rect = container.getBoundingClientRect();
+       const vw = window.innerWidth;
+       const leftGap = rect.left;
+       const rightGap = vw - rect.right;
+       const drift = Math.abs(leftGap - rightGap);
+       results.centering = {
+         left: Math.round(leftGap),
+         right: Math.round(rightGap),
+         drift: Math.round(drift),
+         centered: drift < 20
+       };
+     }
+     // Check if Tailwind utilities are actually applied
+     const el = document.querySelector('.mx-auto, .px-4, .gap-4');
+     if (el) {
+       const cs = getComputedStyle(el);
+       results.utilityCheck = {
+         marginLeft: cs.marginLeft,
+         marginRight: cs.marginRight,
+         selector: el.className.split(' ').slice(0, 3).join(' ')
+       };
+     }
+     return JSON.stringify(results, null, 2);
+   })()
+   ```
+   RED FLAGS:
+   - centering.drift > 20px → container is NOT centered, investigate CSS cascade
+   - mx-auto element with marginLeft: "0px" → utility is being overridden
+   - Any layout property showing "0px" when Tailwind class expects otherwise
+   If a red flag fires, CHECK global CSS for unlayered resets before proceeding.
+
+3. ANALYZE: Review the screenshot AND measurement data against all 8 criteria.
    Score each criterion 1-5. List the top 3 issues by severity.
    Show score DELTAS from previous iteration (e.g., Spacing: 3→4 (+1)).
 
-3. FIX: Make targeted CSS/component edits to address the top 3 issues.
+4. FIX: Make targeted CSS/component edits to address the top 3 issues.
    - Edit ONLY the component file(s) — don't refactor architecture
    - Prefer existing design tokens and utility classes over new CSS
    - Use project's icon system, component library, and conventions
@@ -184,17 +243,18 @@ PROCESS (each iteration):
      "Darkened body text #94a3b8→#64748b — WCAG AA requires 4.5:1 ratio (Contrast)"
      "Bumped h1 to 700 weight — primary heading must dominate secondary (Hierarchy)"
 
-4. VERIFY: Re-screenshot after fixes. Confirm issues resolved.
+5. VERIFY: Re-screenshot after fixes. Confirm issues resolved.
    If new issues introduced, fix those first.
+   Re-run MEASURE step to confirm layout metrics are healthy.
 
-5. REPORT: After each iteration, output:
+6. REPORT: After each iteration, output:
    ```
    ITERATION [N]/[MAX]: Fixed [issue1], [issue2], [issue3]
    Scores: S:[x] H:[x] C:[x] A:[x] D:[x] Co:[x] T:[x] E:[x] = Avg [x.x]/5
    Trend: [↑/↓/→] from [prev avg] → [current avg]
    ```
 
-6. LOG: Append iteration data to `.claude/design-loop-history.md`:
+7. LOG: Append iteration data to `.claude/design-loop-history.md`:
    - Create file with header on first iteration if it doesn't exist
    - Add row: `| [N] | [S] | [H] | [C] | [A] | [D] | [Co] | [T] | [E] | [Avg] | [Focus] | [Changes] |`
    - On completion, append summary block:
@@ -206,7 +266,7 @@ PROCESS (each iteration):
      Duration: [iteration count] iterations
      ```
 
-7. PHASE MARKERS: At phase boundaries (iter 4, 7, 10), output:
+8. PHASE MARKERS: At phase boundaries (iter 4, 7, 10), output:
    ```
    ── PHASE SHIFT: [Previous Focus] → [New Focus] ──
    Phase avg: [avg for completed phase iterations]
@@ -242,6 +302,8 @@ Strategy rotation (try the alternative approach):
   color fix failed           →  try font-size/weight change
   border fix failed          →  try background/shadow change
   single-element fix failed  →  try parent-container restructure
+  utility class not working  →  check CSS cascade (unlayered resets override @layer)
+  centering broken           →  run MEASURE step, check for global * resets
 
 Terminal skip: After 3 attempts on the same criterion with no score improvement,
 SKIP with documented reason in the LOG and a TODO comment in code.
@@ -265,7 +327,7 @@ started_at: "[ISO timestamp]"
 
 Then execute the loop directly. For each iteration 1 to max_iterations:
 
-1. Execute PROCESS steps (Screenshot → Analyze → Fix → Verify → Report → Log → Phase Markers)
+1. Execute PROCESS steps (Screenshot → Measure → Analyze → Fix → Verify → Report → Log → Phase Markers)
 2. Check COMPLETION:
    - ALL 8 criteria >= 4/5 for 2 consecutive iterations → STOP, output "POLISHED"
    - Max iterations reached → STOP, output final summary
@@ -282,7 +344,7 @@ Begin iteration 1 immediately.
 | Spacing | Cramped/inconsistent | Mostly ok, some tight spots | Consistent scale, room to breathe |
 | Hierarchy | Everything same weight | Primary clear, secondary unclear | Clear 3-level hierarchy |
 | Contrast | Text hard to read | Readable but dull | Clear contrast, vibrant where needed |
-| Alignment | Random placement | Mostly aligned | Pixel-perfect grid |
+| Alignment | Random placement | Mostly aligned, verify with MEASURE | Pixel-perfect grid, centered at 1920px |
 | Density | Too sparse or cluttered | Acceptable | Right info per viewport |
 | Consistency | Random patterns | Mostly consistent | Same pattern = same meaning |
 | Touch | Tiny targets | Most ok | All >= 44px |
