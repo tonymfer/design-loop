@@ -1,6 +1,6 @@
 ---
-name: design-loop
-description: Start an autonomous visual polish loop — screenshots, scores, fixes, repeats
+name: doop
+description: Shorthand for /design-loop — start an autonomous visual polish loop
 arguments:
   - name: url
     description: Target page URL (default: http://localhost:3000)
@@ -10,13 +10,9 @@ arguments:
     required: false
 ---
 
-# /design-loop
+# /doop
 
-You are about to start an autonomous visual iteration loop. This command:
-1. Scans the project for framework, design tokens, and conventions
-2. Interviews the user (3 targeted questions)
-3. Takes section-level screenshots and scores against 5 design criteria
-4. Begins autonomous iteration within the current session
+Shorthand alias for `/design-loop`. Just doop it.
 
 ## Instructions
 

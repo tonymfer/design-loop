@@ -3,7 +3,7 @@
   "name": "design-loop",
   "metadata": {
     "description": "Autonomous visual iteration loop for frontend UI/UX polish",
-    "version": "1.0.0"
+    "version": "1.0.2"
   },
   "owner": {
     "name": "tonymfer",
@@ -13,7 +13,7 @@
     {
       "name": "design-loop",
       "description": "Autonomous visual iteration loop for frontend UI/UX. Takes section-level screenshots, scores against 5 anti-slop criteria, fixes issues, and repeats until polished. Discovers companion design skills and absorbs their guidelines to sharpen scoring.",
-      "version": "1.0.0",
+      "version": "1.0.2",
       "author": {
         "name": "tonymfer",
         "email": "tony.base.eth@gmail.com"
@@ -24,7 +24,7 @@
       "homepage": "https://design-loop.vercel.app",
       "repository": "https://github.com/tonymfer/design-loop",
       "license": "MIT",
-      "keywords": ["design", "ui", "ux", "visual-polish", "screenshots", "playwright", "autonomous", "css", "tailwind", "react", "next.js", "iteration"],
+      "keywords": ["design", "ui", "ux", "visual-polish", "screenshots", "agent-browser", "autonomous", "css", "tailwind", "react", "next.js", "iteration"],
       "tags": ["frontend", "visual-iteration", "design-polish", "screenshot-driven", "anti-slop"]
     }
   ]

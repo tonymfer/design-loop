@@ -27,7 +27,7 @@ design-loop is a [Claude Code](https://docs.anthropic.com/en/docs/claude-code) p
 
 ## How it works
 
-1. **Screenshot** — Section-level captures via Playwright CLI. Detects semantic HTML landmarks (`header`, `main`, `section`, `footer`, `article`) and screenshots each one individually to disk. If the page lacks landmarks, falls back to scroll-based captures with 30% overlap so nothing is missed. This gives Claude real visual context for *each section*, not just a single full-page blob — while saving ~4x on context tokens compared to MCP-based approaches.
+1. **Screenshot** — Section-level captures via [agent-browser](https://github.com/vercel-labs/agent-browser). Detects semantic HTML landmarks (`header`, `main`, `section`, `footer`, `article`) and screenshots each one individually to disk with `--annotate` labels on interactive elements. If the page lacks landmarks, falls back to scroll-based captures with 30% overlap so nothing is missed. The headed browser daemon persists between commands — no re-launch per step.
 2. **Score** — 5 design criteria evaluated 1–5 with anti-slop detection
 3. **Fix** — Top 3 issues fixed in code, build verified
 4. **Repeat** — Loop continues until all criteria hit 4/5+
@@ -64,7 +64,7 @@ Every screenshot set is scored against these design fundamentals, with built-in 
 claude plugin add https://github.com/tonymfer/design-loop
 ```
 
-That's it. Playwright CLI is auto-installed on first run (`npm install -g @playwright/cli@latest`). No other dependencies.
+That's it. agent-browser is auto-installed on first run (`npm install -g agent-browser && agent-browser install`). No other dependencies — no MCP server, no heavy Playwright test runner.
 
 ---
 
@@ -75,6 +75,9 @@ That's it. Playwright CLI is auto-installed on first run (`npm install -g @playw
 ```bash
 # Start a design loop on your running dev server
 /design-loop http://localhost:3000
+
+# Or use the shorthand
+/doop http://localhost:3000
 ```
 
 ### With options
@@ -89,11 +92,11 @@ That's it. Playwright CLI is auto-installed on first run (`npm install -g @playw
 
 ### What happens
 
-1. **Playwright CLI check** — Installs Playwright CLI if missing, opens a headed browser session
+1. **agent-browser check** — Installs agent-browser if missing, opens a headed browser session with `wait --load networkidle`
 2. **Dev server check** — Verifies the target URL responds. If not, scans common ports for a running server or auto-starts one via `package.json`
 3. **Context scan** — Reads your `package.json` and `tailwind.config`, discovers companion design skills
 4. **Interview** — 3 questions about target, focus areas, and iterations
-5. **Section screenshots** — High-resolution captures of each page section (semantic landmarks or scroll fallback)
+5. **Section screenshots** — High-resolution annotated captures of each page section (semantic landmarks or scroll fallback)
 6. **Loop** — Autonomous iteration: screenshot, score against 5 criteria, fix, repeat
 7. **Completion** — Stops when all 5 criteria score 4/5+ for two consecutive iterations. Cleans up all screenshot files automatically.
 
@@ -168,11 +171,12 @@ design-loop/
     SKILL.md              # Core workflow (the product)
   commands/
     design-loop.md        # /design-loop slash command
+    doop.md               # /doop — shorthand alias
     export-loop.md        # /export-loop slash command
     version.md            # /version — check for updates
   hooks/
     hooks.json            # Plugin hook manifest
-    session-start-hook.sh # Validates Playwright CLI on session start
+    session-start-hook.sh # Validates agent-browser on session start
     stop-hook.sh          # Stop hook for autonomous iteration
   agents/
     visual-reviewer.md    # UI screenshot analysis agent

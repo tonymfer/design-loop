@@ -19,10 +19,13 @@ Each iteration:
 ## Phase 0: Dependency Check
 
 ```
-1. CHECK Playwright CLI — run `playwright-cli --help` via Bash
-   If unavailable: run `npm install -g @playwright/cli@latest` via Bash
-2. OPEN browser session: `playwright-cli open <url> --headed`
-3. CHECK target URL — curl or navigate to verify it responds
+1. CHECK agent-browser — run `agent-browser --version` via Bash
+   If unavailable: run `npm install -g agent-browser && agent-browser install` via Bash
+2. OPEN browser session: `agent-browser --headed open <url>`
+   --headed shows the browser window so the user can watch the loop work.
+   The browser daemon persists between commands — no re-launch per step.
+3. WAIT for page load: `agent-browser wait --load networkidle`
+4. CHECK target URL — verify the page loaded (check for errors in output)
    If it responds: proceed
    If not: run the dev server recovery sequence below
 ```
@@ -113,9 +116,10 @@ The core innovation — high-resolution section-level captures instead of tiny f
 
 ### Screenshot Strategy
 
-Run this JS via `playwright-cli eval` to find semantic landmarks:
+Find semantic landmarks via `agent-browser eval --stdin`:
 
-```js
+```bash
+agent-browser eval --stdin <<'JS'
 (() => {
   const selectors = 'section, header, main, footer, article, [role="banner"], [role="main"], [role="contentinfo"]';
   const elements = [...document.querySelectorAll(selectors)]
@@ -132,19 +136,26 @@ Run this JS via `playwright-cli eval` to find semantic landmarks:
     }))
   });
 })()
+JS
 ```
 
 **Decision: NODE MODE vs SCROLL MODE**
 
-- **>= 3 landmarks found → NODE MODE**: For each section, scroll it into view and take a viewport screenshot. This gives high-resolution captures of each logical section.
-  ```js
-  // For each section:
-  el.scrollIntoView({ block: 'start', behavior: 'instant' });
+- **>= 3 landmarks found → NODE MODE**: For each section, scroll it into view and take an annotated viewport screenshot. This gives high-resolution captures of each logical section.
+
+  Scroll each section into view:
+  ```bash
+  agent-browser eval "document.querySelectorAll('section, header, main, footer, article')[N].scrollIntoView({block:'start',behavior:'instant'})"
   ```
-  Then run `playwright-cli screenshot --filename=section-N.png` for each. Use `Read` tool to view the saved image.
+  Then capture with annotated element labels:
+  ```bash
+  agent-browser screenshot section-N.png --annotate
+  ```
+  The `--annotate` flag overlays numbered labels on interactive elements — these correspond to `@e` refs and give richer context for scoring. Use `Read` tool to view the saved image.
 
 - **< 3 landmarks → SCROLL MODE**: Take viewport-sized screenshots stepping down the page with 30% overlap.
-  ```js
+  ```bash
+  agent-browser eval --stdin <<'JS'
   (() => {
     const totalHeight = document.documentElement.scrollHeight;
     const viewportHeight = window.innerHeight;
@@ -155,10 +166,27 @@ Run this JS via `playwright-cli eval` to find semantic landmarks:
     }
     return JSON.stringify({ totalHeight, viewportHeight, step, positions });
   })()
+  JS
   ```
-  For each position: `playwright-cli eval 'window.scrollTo(0, <position>)'` then `playwright-cli screenshot --filename=scroll-N.png`. Use `Read` tool to view the saved image.
+  For each position: `agent-browser eval "window.scrollTo(0, <position>)"` then `agent-browser screenshot scroll-N.png --annotate`. Use `Read` tool to view the saved image.
 
-**Always take 1 overview shot** via `playwright-cli screenshot --filename=overview.png` at the default viewport (no scroll) for context. Use `Read` tool to view the saved image.
+**Always take 1 overview shot** at the default viewport (no scroll) for context:
+```bash
+agent-browser screenshot overview.png --annotate
+```
+Use `Read` tool to view the saved image.
+
+### Responsive Pass
+
+After completing the desktop screenshots above, cycle through a mobile viewport:
+
+```bash
+agent-browser set viewport 375 667
+agent-browser screenshot mobile-overview.png --annotate
+agent-browser set viewport 1440 900
+```
+
+Use `Read` tool to view the mobile screenshot. Flag any responsive breakage (overflow, stacked elements colliding, text too small) as Polish issues in Phase 4.
 
 ## Phase 4: Evaluate & Fix
 
@@ -210,9 +238,10 @@ criteria table above are the sole design guidance.
 
 ### CSS Layout Audit
 
-Run this JS via `playwright-cli eval` once per iteration alongside screenshots. It catches structural bugs that are invisible at screenshot scale (e.g., unequal card heights in grids, overflow clipping):
+Run this once per iteration alongside screenshots via `agent-browser eval --stdin`. It catches structural bugs invisible at screenshot scale (e.g., unequal card heights in grids, overflow clipping):
 
-```js
+```bash
+agent-browser eval --stdin <<'JS'
 (() => {
   const issues = [];
 
@@ -265,16 +294,22 @@ Run this JS via `playwright-cli eval` once per iteration alongside screenshots. 
 
   return JSON.stringify({ issues, count: issues.length });
 })()
+JS
 ```
 
 If issues are found, include them alongside screenshot-based observations when scoring. These count as Polish issues.
 
 ### Process (each iteration)
 
-1. **SCREENSHOT**: Use Phase 3 strategy (node mode or scroll mode)
+1. **SCREENSHOT**: Use Phase 3 strategy (node mode or scroll mode + responsive pass)
 2. **AUDIT**: Run the CSS Layout Audit JS above. Merge any issues found into the analysis.
 3. **ANALYZE**: Review screenshots + audit results against all 5 criteria. Score each 1–5. List top 3 issues by severity. Show score deltas from previous iteration.
 4. **FIX**: Targeted CSS/component edits for top 3 issues.
+   - Before editing code, save browser state for rollback:
+     `agent-browser state save .claude/design-loop-state-N.json`
+     (where N = current iteration number)
+   - If a fix breaks the page (blank screen, crash), rollback:
+     `agent-browser state load .claude/design-loop-state-N.json`
    - Edit ONLY component/style files — no API/backend changes
    - Prefer existing design tokens and utility classes
    - One fix at a time, verify build passes
@@ -312,7 +347,8 @@ If issues are found, include them alongside screenshot-based observations when s
 - This prevents infinite churning when all easy wins are exhausted
 
 **Infrastructure**: If a screenshot or navigation fails:
-- Retry once after a 3-second wait
+- Check `agent-browser errors` for page errors
+- Retry once after `agent-browser wait 3000`
 - If it fails again, stop the loop with status "error" and tell the user: "Screenshot failed — is the dev server still running?"
 - Do NOT keep iterating blindly without visual feedback
 
@@ -349,8 +385,9 @@ On completion, update state to `status: completed`.
 On completion (POLISHED or max iterations reached), close the browser and delete all screenshot files created during this run:
 
 ```bash
-playwright-cli close
-rm -f design-loop-*.png section-*.png scroll-*.png overview.png
+agent-browser close
+rm -f design-loop-*.png section-*.png scroll-*.png overview.png mobile-overview.png
+rm -f .claude/design-loop-state-*.json
 ```
 
 These are ephemeral working files — the scores and changes are preserved in `.claude/design-loop-history.md`.

@@ -30,18 +30,37 @@ When reviewing a screenshot or UI section:
 
 ## Output Format
 
-For each section reviewed:
+Return a strict JSON object for each section reviewed. This makes scores machine-parseable for the loop's completion logic:
 
+```json
+{
+  "section": "[name]",
+  "iteration": 1,
+  "scores": {
+    "composition": { "score": 3, "delta": "+1", "reason": "Improved grid spacing" },
+    "typography": { "score": 2, "delta": "0", "reason": "Still using system-ui defaults" },
+    "color": { "score": 4, "delta": "+1", "reason": "Intentional palette applied" },
+    "identity": { "score": 3, "delta": "0", "reason": "Generic card layout persists" },
+    "polish": { "score": 3, "delta": "-1", "reason": "Inconsistent border-radius introduced" }
+  },
+  "average": 3.0,
+  "top_issues": [
+    "System-ui font stack lacks hierarchy",
+    "Card layout is generic template pattern",
+    "Border-radius inconsistent between sections"
+  ],
+  "recommended_fixes": [
+    "Replace system-ui with Inter for body, add display font for headings",
+    "Vary card sizes — feature card spans 2 cols, add asymmetric spacing",
+    "Standardize to rounded-xl across all card components"
+  ]
+}
 ```
-Section: [name]
-Scores: Comp [X] | Typo [X] | Color [X] | Ident [X] | Polish [X]
-Average: [X.X]/5
 
-Top Issues:
-1. [Issue] → Fix: [specific CSS/Tailwind change]
-2. [Issue] → Fix: [specific CSS/Tailwind change]
-3. [Issue] → Fix: [specific CSS/Tailwind change]
-```
+Field reference:
+- `delta`: Change from previous iteration — `"+N"`, `"0"`, or `"-N"`. Use `"—"` for first iteration.
+- `top_issues`: Ranked by severity, max 3.
+- `recommended_fixes`: Specific CSS/Tailwind changes, one per issue, same order as `top_issues`.
 
 ## Principles
 
