@@ -216,9 +216,18 @@ criteria table above are the sole design guidance.
 
 ### Stuck handling
 
-If a criterion score is unchanged after targeting it in the previous iteration:
+**Per-criterion**: If a criterion score is unchanged after targeting it in the previous iteration:
 - Try alternative approach (padding fix → layout restructure, color fix → font change)
 - After 3 attempts on same criterion with no improvement: skip with documented reason, add TODO comment
+
+**Overall loop**: If the average score has not improved for 3 consecutive iterations:
+- Stop the loop early, output `<promise>POLISHED</promise>` with a note: "Plateau reached — further iterations unlikely to improve scores."
+- This prevents infinite churning when all easy wins are exhausted
+
+**Infrastructure**: If a screenshot or navigation fails:
+- Retry once after a 3-second wait
+- If it fails again, stop the loop with status "error" and tell the user: "Screenshot failed — is the dev server still running?"
+- Do NOT keep iterating blindly without visual feedback
 
 ## Phase 5: Loop Control
 
