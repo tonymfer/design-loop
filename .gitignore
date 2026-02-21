@@ -4,3 +4,4 @@ node_modules/
 site-old/
 .playwright-mcp/
 *.png
+.vercel
