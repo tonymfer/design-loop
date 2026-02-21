@@ -74,10 +74,10 @@ export default function Home() {
     <div data-iteration={iter} className="min-h-screen" style={{ background: "var(--bg)", color: "var(--text)", fontSize: "var(--b-size)", lineHeight: "var(--b-lh)" }}>
       {/* ── Switcher Bar ── */}
       <nav
-        className="sticky top-0 z-50 flex flex-wrap items-center gap-2 backdrop-blur-sm"
-        style={{ background: "var(--nav-bg)", borderBottom: "1px solid var(--nav-border)", padding: "12px 20px" }}
+        className="sticky top-0 z-50 flex flex-wrap items-center justify-center gap-2 backdrop-blur-md sm:gap-3"
+        style={{ background: "var(--nav-bg)", borderBottom: "1px solid var(--nav-border)", padding: "14px 24px" }}
       >
-        <span className="mr-1 text-[11px] font-medium uppercase tracking-wider whitespace-nowrap" style={{ fontFamily: "var(--font-mono)", color: "var(--text-m)" }}>
+        <span className="mr-2 hidden text-[11px] font-medium uppercase tracking-wider whitespace-nowrap sm:block" style={{ fontFamily: "var(--font-mono)", color: "var(--text-m)", letterSpacing: "0.12em" }}>
           design-loop
         </span>
         {BTN_LABELS.map((label, i) => (
@@ -88,8 +88,8 @@ export default function Home() {
             style={{
               fontFamily: "var(--font-mono)",
               fontSize: "12px",
-              fontWeight: iter === i ? 600 : 500,
-              padding: "6px 14px",
+              fontWeight: iter === i ? 700 : 500,
+              padding: "7px 16px",
               border: `1px solid ${iter === i ? "var(--accent)" : "var(--border)"}`,
               borderRadius: "6px",
               background: iter === i ? "var(--cta-bg)" : "transparent",
@@ -105,7 +105,7 @@ export default function Home() {
           style={{
             fontFamily: "var(--font-mono)",
             fontSize: "11px",
-            padding: "4px 10px",
+            padding: "6px 12px",
             border: `1px solid ${playing ? "var(--accent)" : "var(--border)"}`,
             borderRadius: "4px",
             background: "transparent",
@@ -114,40 +114,48 @@ export default function Home() {
         >
           {playing ? "⏸ Stop" : "▶ Auto"}
         </button>
-        <div className="ml-auto hidden items-center gap-2 whitespace-nowrap sm:flex" style={{ fontFamily: "var(--font-mono)", fontSize: "12px", fontWeight: 600, color: "var(--accent)" }}>
+        <div className="ml-auto hidden items-center gap-2.5 whitespace-nowrap sm:flex" style={{ fontFamily: "var(--font-mono)", fontSize: "12px", fontWeight: 600, color: "var(--accent)" }}>
           <span>{score} / 5</span>
-          <div className="h-1 w-20 overflow-hidden rounded" style={{ background: "var(--border)" }}>
-            <div className="score-fill h-full rounded" style={{ width: "var(--bar-w)", background: "var(--accent)" }} />
+          <div className="h-1.5 w-24 overflow-hidden rounded-full" style={{ background: "var(--border)" }}>
+            <div className="score-fill h-full rounded-full" style={{ width: "var(--bar-w)", background: "var(--accent)" }} />
           </div>
         </div>
       </nav>
 
-      <div className="mx-auto max-w-[720px] px-6">
+      <div className="mx-auto max-w-[860px] px-6">
         {/* ── Hero ── */}
-        <section className="t text-center" style={{ padding: `calc(var(--sp-section) * 1.2) 0 var(--sp-section)` }}>
+        <section className="t text-center" style={{ padding: `calc(var(--sp-section) * 1.8) 0 calc(var(--sp-section) * 1.2)` }}>
           <div
-            className="t mb-4 inline-block rounded-full text-[11px] font-medium"
+            className="t mb-6 inline-block rounded-full text-[11px] font-medium uppercase tracking-widest"
             style={{
               fontFamily: "var(--font-mono)",
-              padding: "4px 10px",
+              padding: "6px 16px",
               border: `1px solid var(--badge-border)`,
               color: "var(--badge-text)",
               background: "var(--badge-bg)",
+              letterSpacing: "0.12em",
             }}
           >
             Claude Code Plugin
           </div>
           <h1
-            className="t mb-[var(--sp-gap)] font-[800] leading-[1.15]"
-            style={{ fontSize: "var(--hero-size)", color: "var(--text-h)", fontFamily: "var(--font-heading)" }}
+            className="t mx-auto mb-6 font-[800]"
+            style={{
+              fontSize: "var(--hero-size)",
+              lineHeight: 1.08,
+              color: "var(--text-h)",
+              fontFamily: "var(--font-heading)",
+              letterSpacing: "var(--hero-tracking, -0.02em)",
+              maxWidth: "var(--hero-max-w, 640px)",
+            }}
           >
             AI can code your UI.
             <br />
-            But it can&apos;t <em>see</em> it.
+            But it can&apos;t <em style={{ color: "var(--accent)", fontStyle: "italic" }}>see</em> it.
           </h1>
           <p
-            className="t mx-auto mb-[var(--sp-card)] max-w-[480px]"
-            style={{ fontSize: "calc(var(--b-size) * 1.15)", color: "var(--text-m)" }}
+            className="t mx-auto mb-10"
+            style={{ fontSize: "var(--sub-size, calc(var(--b-size) * 1.15))", lineHeight: 1.7, color: "var(--text-m)", maxWidth: "var(--sub-max-w, 480px)" }}
           >
             design-loop gives Claude eyes. It screenshots your page, scores it
             against 8 design criteria, fixes the issues, and repeats —
@@ -157,19 +165,20 @@ export default function Home() {
             href="https://github.com/tonymfer/design-loop"
             target="_blank"
             rel="noopener noreferrer"
-            className="t inline-block cursor-pointer no-underline hover:-translate-y-0.5 hover:shadow-lg"
+            className="t cta-glow inline-block cursor-pointer no-underline hover:-translate-y-0.5"
             style={{
               fontFamily: "var(--font-mono)",
-              fontSize: "14px",
+              fontSize: "var(--cta-font-size, 14px)",
               fontWeight: "var(--cta-weight)",
               padding: "var(--cta-pad)",
               background: "var(--cta-bg)",
               color: "var(--cta-text)",
               borderRadius: "var(--cta-radius)",
               border: "none",
+              letterSpacing: "0.03em",
             }}
           >
-            Install Plugin
+            Install Plugin →
           </a>
         </section>
 
@@ -180,33 +189,39 @@ export default function Home() {
             Four steps, repeated until every criterion scores 4/5 or higher.
           </p>
           <div
-            className="t mt-[var(--sp-card)] grid grid-cols-2 sm:grid-cols-4"
-            style={{ gap: "var(--sp-gap)" }}
+            className="t mt-[var(--sp-card)] grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-[var(--sp-gap)]"
           >
-            {STEPS.map((step) => (
-              <Card key={step.num} className="text-center">
+            {STEPS.map((step, i) => (
+              <div
+                key={step.num}
+                className="t flex items-start gap-3 rounded-[var(--radius)] p-4 sm:flex-col sm:items-center sm:gap-0 sm:p-5 sm:text-center"
+                style={{
+                  background: "var(--bg-card)",
+                  border: `1px solid var(--border)`,
+                  boxShadow: "var(--shadow)",
+                }}
+              >
                 <div
-                  className="t mx-auto mb-2 inline-flex items-center justify-center rounded-full font-mono font-bold"
+                  className="t flex h-9 w-9 shrink-0 items-center justify-center rounded-full font-mono text-sm font-bold sm:mb-3 sm:h-[var(--step-size)] sm:w-[var(--step-size)] sm:text-base"
                   style={{
-                    width: "var(--step-size)",
-                    height: "var(--step-size)",
-                    fontSize: "calc(var(--step-size) * 0.4)",
                     background: "var(--accent-bg)",
                     color: "var(--accent)",
                   }}
                 >
                   {step.num}
                 </div>
-                <h3
-                  className="t mb-1 font-semibold"
-                  style={{ fontSize: "calc(var(--b-size) * 0.95)", color: "var(--text-h)" }}
-                >
-                  {step.title}
-                </h3>
-                <p className="t mb-0" style={{ fontSize: "calc(var(--b-size) * 0.85)", color: "var(--text-m)" }}>
-                  {step.desc}
-                </p>
-              </Card>
+                <div>
+                  <h3
+                    className="t mb-0.5 font-semibold sm:mb-1.5"
+                    style={{ fontSize: "var(--b-size)", color: "var(--text-h)" }}
+                  >
+                    {step.title}
+                  </h3>
+                  <p className="t mb-0 hidden sm:block" style={{ fontSize: "calc(var(--b-size) * 0.85)", color: "var(--text-m)", lineHeight: 1.5 }}>
+                    {step.desc}
+                  </p>
+                </div>
+              </div>
             ))}
           </div>
         </Section>
@@ -222,14 +237,16 @@ export default function Home() {
             style={{ gridTemplateColumns: `repeat(var(--cols), 1fr)`, gap: "var(--sp-gap)" }}
           >
             {CRITERIA.map((c) => (
-              <Card key={c.key}>
-                <div className="mb-1.5 flex items-center gap-2">
-                  <span className="text-lg leading-none">{c.icon}</span>
-                  <h3 className="t mb-0 font-semibold" style={{ fontSize: "calc(var(--b-size) * 0.95)", color: "var(--text-h)" }}>
+              <Card key={c.key} className="card-hover">
+                <div className="mb-2 flex items-center gap-2.5">
+                  <span className="t flex h-8 w-8 shrink-0 items-center justify-center rounded text-sm" style={{ background: "var(--accent-bg)", color: "var(--accent)" }}>
+                    {c.icon}
+                  </span>
+                  <h3 className="t mb-0 font-semibold" style={{ fontSize: "var(--b-size)", color: "var(--text-h)" }}>
                     {c.name}
                   </h3>
                 </div>
-                <p className="t mb-0" style={{ fontSize: "calc(var(--b-size) * 0.88)", color: "var(--text-m)" }}>
+                <p className="t mb-0" style={{ fontSize: "calc(var(--b-size) * 0.88)", color: "var(--text-m)", lineHeight: 1.55 }}>
                   {c.desc}
                 </p>
               </Card>
@@ -242,9 +259,13 @@ export default function Home() {
           <SectionHeading>Live Demo</SectionHeading>
           <div
             className="t rounded-[var(--radius)] text-center"
-            style={{ background: "var(--accent-bg)", border: `1px solid var(--badge-border)`, padding: "var(--card-pad)" }}
+            style={{
+              background: "var(--accent-bg)",
+              border: `1px solid var(--badge-border)`,
+              padding: "clamp(20px, 4vw, 32px) clamp(16px, 3vw, 28px)",
+            }}
           >
-            <p className="t mb-0 font-semibold" style={{ color: "var(--accent)" }}>
+            <p className="t mb-0 text-sm font-semibold sm:text-base" style={{ color: "var(--accent)", lineHeight: 1.6 }}>
               You&apos;re looking at it. Click the iteration buttons above and
               watch this page transform. That&apos;s design-loop polishing its
               own landing page.
@@ -264,7 +285,7 @@ export default function Home() {
                 key={c.key}
                 className="t flex items-center justify-between"
                 style={{
-                  padding: "6px 0",
+                  padding: "8px 0",
                   borderBottom: `1px solid var(--border)`,
                   fontSize: "calc(var(--b-size) * 0.9)",
                 }}
@@ -312,17 +333,18 @@ export default function Home() {
       </div>
 
       {/* ── Footer ── */}
-      <footer className="t text-center" style={{ padding: "var(--sp-section) 0", borderTop: `1px solid var(--border)` }}>
-        <p style={{ color: "var(--text-m)" }}>
+      <footer className="t text-center" style={{ padding: "calc(var(--sp-section) * 0.75) 0", borderTop: `1px solid var(--border)` }}>
+        <p className="text-sm" style={{ color: "var(--text-m)", fontFamily: "var(--font-mono)", fontSize: "12px", letterSpacing: "0.02em" }}>
           Built by{" "}
-          <a href="https://github.com/tonymfer" style={{ color: "var(--accent)", textDecoration: "none", fontWeight: 500 }}>
+          <a href="https://github.com/tonymfer" style={{ color: "var(--accent)", textDecoration: "none", fontWeight: 600 }}>
             tonymfer
           </a>
-          .{" "}
-          <a href="https://github.com/tonymfer/design-loop" style={{ color: "var(--accent)", textDecoration: "none", fontWeight: 500 }}>
+          {" · "}
+          <a href="https://github.com/tonymfer/design-loop" style={{ color: "var(--accent)", textDecoration: "none", fontWeight: 600 }}>
             GitHub
-          </a>{" "}
-          · MIT License
+          </a>
+          {" · "}
+          <span>MIT License</span>
         </p>
       </footer>
     </div>
@@ -341,13 +363,13 @@ function Section({ children }: { children: React.ReactNode }) {
 
 function SectionHeading({ children }: { children: React.ReactNode }) {
   return (
-    <h2 className="t" style={{ fontSize: "var(--h-size)", fontWeight: "var(--h-weight)", color: "var(--text-h)", marginBottom: "var(--sp-gap)", fontFamily: "var(--font-heading)" }}>
+    <h2 className="t section-heading" style={{ fontSize: "var(--h-size)", fontWeight: "var(--h-weight)", color: "var(--text-h)", marginBottom: "var(--sp-gap)", fontFamily: "var(--font-heading)", letterSpacing: "-0.01em" }}>
       {children}
     </h2>
   );
 }
 
-function Card({ children, className = "" }: { children: React.ReactNode; className?: string }) {
+function Card({ children, className = "", style = {} }: { children: React.ReactNode; className?: string; style?: React.CSSProperties }) {
   return (
     <div
       className={`t ${className}`}
@@ -357,6 +379,7 @@ function Card({ children, className = "" }: { children: React.ReactNode; classNa
         borderRadius: "var(--radius)",
         padding: "var(--card-pad)",
         boxShadow: "var(--shadow)",
+        ...style,
       }}
     >
       {children}

@@ -65,7 +65,7 @@ Every screenshot is scored against these design fundamentals:
 claude plugin add https://github.com/tonymfer/design-loop
 ```
 
-That's it. Dependencies (ralph-loop, Playwright MCP) are auto-installed on first run.
+That's it. Playwright MCP is auto-installed on first run. No other dependencies.
 
 ---
 
@@ -137,7 +137,6 @@ It also reads your design tokens (Tailwind config, CSS variables, theme files) a
 |-------|----------|
 | `frontend-design` → `design-loop` | Get creative direction first, then iterate visually |
 | `super-frontend` → `design-loop` | Build complex components first, then polish |
-| `ralph-prompt-builder` → `design-loop` | Generate the iteration prompt interactively |
 
 ---
 
@@ -146,7 +145,7 @@ It also reads your design tokens (Tailwind config, CSS variables, theme files) a
 | | design-loop | Generic UI testing |
 |---|---|---|
 | **Focus** | Visual polish only | Functional + visual |
-| **Iterations** | Unlimited (ralph-loop) | Fixed limit |
+| **Iterations** | Configurable (5/10/20+) | Fixed limit |
 | **Phase-aware** | Layout → hierarchy → polish | All at once |
 | **Criteria** | 8 design-specific, opinionated | General categories |
 | **Project-aware** | Reads your design system | Generic fixes |

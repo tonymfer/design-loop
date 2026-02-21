@@ -222,7 +222,6 @@ Match the page's design language
 
 Design Loop works well chained with:
 
-- **ralph-loop**: Required — provides the iteration engine
 - **playwright**: Required — provides screenshot capability
 - **frontend-design**: Invoke BEFORE design-loop to get creative direction
 - **figma**: Use INSTEAD of design-loop when a Figma mockup exists
@@ -233,7 +232,6 @@ Design Loop works well chained with:
 |-------|-------------|-------------|
 | **frontend-design** | Get creative direction (palette, typography, layout strategy) before iterating | frontend-design → design-loop |
 | **super-frontend** | Complex component architecture decisions | super-frontend → design-loop |
-| **ralph-prompt-builder** | Generate the design-loop iteration prompt interactively | ralph-prompt-builder → design-loop |
 
 ## Anti-Pattern Awareness
 

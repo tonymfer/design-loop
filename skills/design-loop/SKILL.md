@@ -9,8 +9,8 @@ Autonomous visual iteration loop for frontend UI/UX. Takes screenshots after eac
 
 ## Overview
 
-Design Loop = Ralph Loop + Playwright Screenshots + Design Analysis.
-Dependencies (ralph-loop plugin, Playwright MCP) are auto-installed on first run.
+Design Loop = Playwright Screenshots + Design Analysis + In-session Iteration.
+Playwright MCP is auto-installed on first run. No other dependencies.
 
 Each iteration:
 1. Take screenshot of the target page (Playwright MCP)
@@ -39,15 +39,13 @@ Each iteration:
 Before anything else, verify dependencies are available:
 
 ```
-1. CHECK ralph-loop plugin — try to detect ralph-loop infrastructure
-   If missing: run `claude plugin add ralph-loop` via Bash
-2. CHECK Playwright MCP — try calling mcp__plugin_playwright_playwright__browser_navigate
+1. CHECK Playwright MCP — try calling mcp__plugin_playwright_playwright__browser_navigate
    If unavailable: run `claude mcp add playwright -- npx -y @playwright/mcp@latest` via Bash
-3. CHECK dev server — verify target URL responds
+2. CHECK dev server — verify target URL responds
    If not running: tell user to start it and wait
 ```
 
-Only block on the dev server — plugins and MCPs are installed automatically.
+Only block on the dev server — Playwright MCP is installed automatically.
 
 ## Phase 1: Project Context Scan
 
@@ -86,8 +84,8 @@ Before interviewing the user, auto-detect the project's design system:
    - **/design-system/**
    - **/ui/**/*.{tsx,vue,svelte}
 5. CHECK for component libraries (from list above)
-6. DETECT available skills: check if frontend-design, super-frontend, or
-   ralph-prompt-builder are installed for optional chaining
+6. DETECT available skills: check if frontend-design or super-frontend
+   are installed for optional chaining
 ```
 
 Store findings as `PROJECT_CONTEXT` — inject into the generated prompt.
@@ -226,7 +224,7 @@ CONSTRAINTS:
 
 COMPLETION:
 When ALL 8 criteria score >= 4/5 for TWO consecutive screenshots,
-output: <promise>POLISHED</promise>
+output "POLISHED" and stop iterating.
 Then suggest: "Run /export-loop to generate a shareable summary of this run."
 
 STUCK HANDLING:
@@ -244,26 +242,32 @@ SKIP with documented reason in the LOG and a TODO comment in code.
 NEVER repeat the same fix that already failed.
 ```
 
-## Phase 4: Launch via Ralph Loop
+## Phase 4: Begin Iteration Loop
 
-Write the prompt to `.claude/ralph-loop.local.md` and let Ralph's stop hook handle the loop:
+Write initial state to `.claude/design-loop.state.md`:
 
-```bash
-# The skill writes the state file directly:
-cat > .claude/ralph-loop.local.md <<'STATE'
+```yaml
 ---
-active: true
-iteration: 1
+status: running
+iteration: 0
 max_iterations: [from Q3]
-completion_promise: "POLISHED"
 started_at: "[ISO timestamp]"
 ---
 
 [generated prompt from Phase 3]
-STATE
 ```
 
-Then begin working on iteration 1 immediately.
+Then execute the loop directly. For each iteration 1 to max_iterations:
+
+1. Execute PROCESS steps (Screenshot → Analyze → Fix → Verify → Report → Log → Phase Markers)
+2. Check COMPLETION:
+   - ALL 8 criteria >= 4/5 for 2 consecutive iterations → STOP, output "POLISHED"
+   - Max iterations reached → STOP, output final summary
+3. Update `.claude/design-loop.state.md` frontmatter (iteration count, last_avg)
+4. Continue to next iteration
+
+On completion, update state to `status: completed` with `final_avg` and `completed_at`.
+Begin iteration 1 immediately.
 
 ## Design Criteria Quick Reference
 
