@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.1.0] - 2026-02-21
+## [1.0.0] - 2026-02-21
 ### Added
 - Core design-loop skill: autonomous visual iteration via Playwright screenshots
 - 8-criterion scoring system (spacing, hierarchy, contrast, alignment, density, consistency, touch targets, empty states)
