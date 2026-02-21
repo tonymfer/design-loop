@@ -9,13 +9,5 @@
   "homepage": "https://github.com/tonymfer/design-loop",
   "repository": "https://github.com/tonymfer/design-loop",
   "license": "MIT",
-  "keywords": ["design", "ui", "ux", "visual-polish", "screenshots", "playwright", "iteration", "autonomous", "next.js", "react", "tailwind", "ssr", "framework-detection"],
-  "dependencies": {
-    "mcpServers": {
-      "playwright": {
-        "command": "npx",
-        "args": ["-y", "@playwright/mcp@latest"]
-      }
-    }
-  }
+  "keywords": ["design", "ui", "ux", "visual-polish", "screenshots", "playwright", "iteration", "autonomous", "next.js", "react", "tailwind", "ssr", "framework-detection"]
 }
