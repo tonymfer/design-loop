@@ -4,7 +4,6 @@ import { IterationProvider, useIteration } from "@/lib/iteration-context";
 import { Hero } from "@/components/sections/hero";
 import { HowItWorks } from "@/components/sections/how-it-works";
 import { CriteriaGrid } from "@/components/sections/criteria-grid";
-import { StackDetection } from "@/components/sections/stack-detection";
 import { IterationDemo } from "@/components/sections/iteration-demo";
 import { Install } from "@/components/sections/install";
 import { Features } from "@/components/sections/features";
@@ -22,7 +21,6 @@ function PageContent() {
       <main>
         <HowItWorks />
         <CriteriaGrid />
-        <StackDetection />
         <IterationDemo />
         <Install />
         <Features />

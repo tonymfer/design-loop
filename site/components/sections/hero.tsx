@@ -78,18 +78,13 @@ export function Hero() {
             </GlowButton>
           </div>
 
-          {/* Framework note */}
-          <p className="mt-10 font-mono text-xs text-[var(--text-muted)]">
-            Works with Next.js &middot; Nuxt &middot; SvelteKit &middot; React
-            &middot; Vue &middot; Astro &middot; and more
-          </p>
         </AnimatedGroup>
       </div>
     </>
   );
 
   return (
-    <Spotlight className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
+    <Spotlight className="relative min-h-[85vh] flex items-center justify-center overflow-hidden">
       {showPaths && (
         <div
           className="pointer-events-none absolute inset-0"

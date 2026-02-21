@@ -31,7 +31,7 @@ const features: Feature[] = [
     icon: Package,
     title: "Zero Dependencies",
     description:
-      "No API key. No npm install. Playwright auto-installed on first run.",
+      "No API key. No npm install. Reads your theme config and existing tokens \u2014 won\u2019t conflict.",
   },
   {
     icon: Layers,
@@ -70,7 +70,7 @@ export function Features() {
               Features
             </span>
           </h2>
-          <p className="mt-4 text-[var(--text-secondary)]">
+          <p className="mt-4 text-lg text-[var(--text-secondary)]">
             Autonomous. Framework-aware. Zero setup.
           </p>
         </ScrollReveal>
@@ -105,7 +105,7 @@ export function Features() {
                       <h3 className="text-sm font-semibold text-[var(--text-primary)]">
                         {feature.title}
                       </h3>
-                      <p className="mt-1.5 text-xs leading-relaxed text-[var(--text-muted)]">
+                      <p className="mt-1.5 text-sm leading-relaxed text-[var(--text-secondary)]">
                         {feature.description}
                       </p>
                     </div>
