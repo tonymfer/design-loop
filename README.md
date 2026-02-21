@@ -112,6 +112,14 @@ After a loop completes, generate a shareable summary:
 
 This produces a markdown summary with score progression, key improvements, and iteration count — ready for PR descriptions or social sharing.
 
+### Check for updates
+
+```bash
+/version
+```
+
+Compares your installed version against the latest release on GitHub and shows update instructions if needed.
+
 ---
 
 ## Ecosystem Detection
@@ -173,6 +181,7 @@ design-loop/
   commands/
     design-loop.md    # /design-loop slash command
     export-loop.md    # /export-loop slash command
+    version.md        # /version — check for updates
   hooks/
     hooks.json        # Plugin hook manifest
     stop-hook.sh      # Stop hook for autonomous iteration
