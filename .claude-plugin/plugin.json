@@ -1,6 +1,6 @@
 {
   "name": "design-loop",
-  "description": "Autonomous visual iteration loop for frontend UI/UX. Screenshots your page, scores it against 8 design criteria, fixes issues, repeats until polished.",
+  "description": "Autonomous visual iteration loop for frontend UI/UX. Takes section-level screenshots, scores against 5 anti-slop criteria, fixes issues, and repeats until polished. Discovers companion design skills and absorbs their guidelines to sharpen scoring.",
   "version": "1.0.0",
   "author": {
     "name": "tonymfer",
@@ -9,5 +9,5 @@
   "homepage": "https://design-loop.vercel.app",
   "repository": "https://github.com/tonymfer/design-loop",
   "license": "MIT",
-  "keywords": ["design", "ui", "ux", "visual-polish", "screenshots", "playwright", "iteration", "autonomous", "next.js", "react", "tailwind", "ssr", "framework-detection"]
+  "keywords": ["design", "ui", "ux", "visual-polish", "screenshots", "playwright", "iteration", "autonomous", "next.js", "react", "tailwind", "section-screenshots"]
 }

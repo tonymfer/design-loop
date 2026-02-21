@@ -3,18 +3,15 @@
 ## [1.0.0] - 2026-02-21
 ### Added
 - Core design-loop skill: autonomous visual iteration via Playwright screenshots
-- 8-criterion scoring system (spacing, hierarchy, contrast, alignment, density, consistency, touch targets, empty states)
-- Stop hook for autonomous multi-iteration loops (inspired by ralph-loop, Apache 2.0)
-- Adaptive interview (3-8 questions, auto-skipped via project scan)
-- Framework detection (Next.js, Nuxt, SvelteKit, Remix, Gatsby, Solid.js, Astro)
-- CSS-in-JS, component library, and animation library detection
-- CSS cascade audit for Tailwind v4 unlayered reset conflicts
+- Section-level screenshot intelligence: semantic landmark detection (`header`, `main`, `section`, `footer`, `article`) with scroll-based fallback and 30% overlap
+- 5 anti-slop design criteria: Composition, Typography, Color & Contrast, Visual Identity, Polish
+- Adaptive skill discovery: auto-detects companion design skills (frontend-design, web-design-guidelines, etc.) and uses their guidance to enrich scoring and fixes — zero config
+- Companion skill priority ordering: project-specific > project-scoped > user-scoped > built-in flags
+- Stop hook for autonomous multi-iteration loops
+- Stuck detection with strategy rotation (alternative approach after 2 iterations, TODO after 3)
+- No-limit iteration mode (`max_iterations: 0`) — runs until all criteria >= 4/5
+- `/design-loop`, `/export-loop`, and `/version` slash commands
 - Iteration logging to `.claude/design-loop-history.md`
-- Stuck detection with strategy rotation
-- `/design-loop` and `/export-loop` slash commands
-- Phase-aware iteration strategy (layout → hierarchy → alignment → polish)
-- Reference URL comparison at phase boundaries
-- Wide viewport check (1920px) for centering bugs
 - Interactive demo site at design-loop.vercel.app
 
 [1.0.0]: https://github.com/tonymfer/design-loop/releases/tag/v1.0.0
