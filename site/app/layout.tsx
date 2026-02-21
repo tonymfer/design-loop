@@ -18,7 +18,7 @@ const instrumentSerif = Instrument_Serif({
 export const metadata: Metadata = {
   title: "design-loop — AI can code your UI. Now it can see it.",
   description:
-    "Autonomous visual iteration loop for frontend UI/UX. v2.0: screenshots, measures layout metrics, scores against 8 design criteria, fixes issues, and repeats until polished. Standalone, framework-aware, CSS cascade audit.",
+    "Autonomous visual iteration loop for frontend UI/UX. Screenshots, measures layout metrics, scores against 8 design criteria, fixes issues, and repeats until polished. Standalone, framework-aware, CSS cascade audit.",
   openGraph: {
     title: "design-loop",
     description: "AI can code your UI. Now it can see it.",

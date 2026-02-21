@@ -33,7 +33,7 @@ const CRITERIA = [
 
 const STEPS = [
   { num: "1", title: "Screenshot", desc: "Playwright captures the page" },
-  { num: "2", title: "Measure", desc: "JS checks layout metrics", isNew: true },
+  { num: "2", title: "Measure", desc: "JS checks layout metrics" },
   { num: "3", title: "Score", desc: "8 criteria rated 1–5" },
   { num: "4", title: "Fix", desc: "Top 3 issues fixed in code" },
   { num: "5", title: "Repeat", desc: "Loop until polished" },
@@ -151,7 +151,7 @@ export default function Home() {
               letterSpacing: "0.12em",
             }}
           >
-            Claude Code Plugin · v2.0
+            Claude Code Plugin
           </div>
           <h1
             className="t mx-auto mb-6 font-[800]"
@@ -229,9 +229,6 @@ export default function Home() {
                   boxShadow: "var(--shadow)",
                 }}
               >
-                {"isNew" in step && step.isNew && (
-                  <span className="new-badge">New</span>
-                )}
                 <div
                   className="t flex h-9 w-9 shrink-0 items-center justify-center rounded-full font-mono text-sm font-bold sm:mb-2.5 sm:h-[var(--step-size)] sm:w-[var(--step-size)] sm:text-base"
                   style={{
@@ -345,14 +342,14 @@ export default function Home() {
                 letterSpacing: "0.04em",
               }}
             >
-              — That&apos;s why v2.0 measures, not just looks.
+              — That&apos;s why design-loop measures, not just looks.
             </p>
           </div>
         </Section>
 
-        {/* ── v2.0 Features ── */}
+        {/* ── Features ── */}
         <Section>
-          <SectionHeading>v2.0</SectionHeading>
+          <SectionHeading>Features</SectionHeading>
           <p className="t" style={{ color: "var(--text-m)", marginBottom: "var(--sp-gap)" }}>
             Standalone. Smarter. Framework-aware.
           </p>
@@ -459,8 +456,6 @@ export default function Home() {
           </a>
           {" · "}
           <span>MIT License</span>
-          {" · "}
-          <span style={{ color: "var(--accent)" }}>v2.0</span>
         </p>
       </footer>
     </div>
