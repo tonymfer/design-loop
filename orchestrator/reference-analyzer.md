@@ -78,8 +78,12 @@ Required inputs from the orchestrator:
 - `MODE` — must be `creative-unleash` to proceed
 - `REFERENCE_TYPE` — `url` | `image` | `description` | `null` (from interview Q2.7)
 - `REFERENCE_VALUE` — the URL, file path, or description text (or `null`)
-- `PROJECT_CONTEXT` — project metadata including `framework`, `componentLibrary`, `packageManager`
+- `PROJECT_CONTEXT` — project metadata including `framework`, `componentLibrary`, `packageManager`, `designTokens`
 - `DESIGN_SKILLS` — loaded companion skill bodies for cross-referencing
+- `FOCUS` — target focus area from interview (e.g., "hero", "typography", "layout", "full-audit")
+
+Optional inputs:
+- `BRAND_FINGERPRINT` — if available from cached `.claude/brand-guideline.md` or prior run. Provides pre-computed personality tokens and color data. When unavailable (typical on first run), personality and dark_mode are inferred from PROJECT_CONTEXT.designTokens.
 </input-contract>
 
 <analysis-pipelines>
@@ -142,10 +146,30 @@ When `REFERENCE_TYPE = null` (user chose "Skip" in Q2.7):
 1. Load the inspiration knowledge base from `references/inspirations/sources.md` (relative to plugin base path)
    - If file missing or unparseable: fall back to `{ skipped: true }` (original behavior)
 2. Extract match signals from existing context variables:
-   - `personality` tokens from BRAND_FINGERPRINT.visual.personality (or infer from code-fingerprint if visual not yet populated)
+   - `personality_tokens` — derived in priority order:
+     a. If BRAND_FINGERPRINT.visual.personality exists (cached or re-run): use directly
+     b. Otherwise, infer lightweight personality from PROJECT_CONTEXT.designTokens:
+        - Font families → classification:
+          geometric (Inter, DM Sans, Geist) | humanist (Source Sans, Nunito) |
+          technical (JetBrains Mono, Fira Code) | expressive (display/script) |
+          retro (pixel fonts like Press Start 2P, VT323)
+        - Color mood → personality signals:
+          warm/vibrant → [bold, playful] | cool/neutral → [minimal, technical] |
+          dark bg + saturated accent → [bold, technical]
+        - Shape radii → refinement:
+          sharp (0-2px) → [technical, minimal] | rounded (12px+) → [playful, friendly]
+        - Combine the 2 strongest signals into personality_tokens array
+     c. If PROJECT_CONTEXT.designTokens is empty or insufficient: personality_tokens = []
+        (scoring continues with 0 personality points — sources ranked by focus, framework,
+        dark_mode, and component_library signals only)
    - `focus` from orchestrator FOCUS variable (e.g., "hero", "typography", "layout")
    - `framework` from PROJECT_CONTEXT.framework (e.g., "react", "nextjs")
-   - `dark_mode` inferred from BRAND_FINGERPRINT.tokens (background color luminance < 0.3)
+   - `dark_mode` — derived in priority order:
+     a. If BRAND_FINGERPRINT.tokens.colors.semantic.background exists: compute luminance
+     b. Otherwise, find background color in PROJECT_CONTEXT.designTokens.colors
+        (look for keys: background, base, bg, --background)
+     c. Parse hex/hsl/oklch value → compute relative luminance → dark_mode = luminance < 0.3
+     d. If no background color found: dark_mode = false
    - `component_library` from PROJECT_CONTEXT.componentLibrary (e.g., "shadcn")
 3. Score each source using the `<inspiration-matching>` algorithm below
 4. Select top 3-5 sources with diversity constraints (max 2 per primary category)
@@ -197,6 +221,8 @@ When `REFERENCE_TYPE = null` (user chose "Skip" in Q2.7):
    ```
 
 **Fallback**: If `references/inspirations/sources.md` is missing or fails to parse, revert to original behavior: `REFERENCE_ANALYSIS = { skipped: true }`. Log: "Inspiration KB unavailable — using fingerprint-only creative direction."
+
+**Empty personality fallback**: If `personality_tokens` is empty (no BRAND_FINGERPRINT cache and PROJECT_CONTEXT.designTokens insufficient for inference), the personality scoring component contributes 0 points. Sources are ranked by focus (+2.0), framework (+2.0), dark_mode (+1.5), component_library (+1.0), and creative_value (+0.5) signals only. This still produces useful recommendations — a Next.js + shadcn project with hero focus will match component-integrable sources strongly even without personality.
 </analysis-pipelines>
 
 <inspiration-matching>
@@ -211,7 +237,7 @@ For each source in sources.md:
   score = 0
 
   # Personality match (0-3 pts)
-  For each token in BRAND_FINGERPRINT.visual.personality:
+  For each token in personality_tokens:
     If token in source.match_signals.personality_boost: score += 1.5
     If token in source.match_signals.personality_penalty: score -= 1.0
   Clamp personality component to [0, 3]
@@ -449,6 +475,12 @@ Input:
     framework: "react"
     componentLibrary: "shadcn"
   FOCUS: "identity"
+
+  # Note: BRAND_FINGERPRINT shown here for the ideal case (cached from prior run).
+  # On first run, personality_tokens [playful, retro] would be inferred from:
+  #   PROJECT_CONTEXT.designTokens: fonts "Press Start 2P" → retro,
+  #   colors accent "#FF6B00" warm+vibrant → playful, shape radii 0px → technical
+  #   → personality_tokens = [retro, playful] (same result)
 
 Inspiration KB loaded: references/inspirations/sources.md (13 sources)
 

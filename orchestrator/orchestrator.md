@@ -20,7 +20,7 @@ Arguments are checked inside the interview flow — no pre-processing needed her
 
 Read and follow `orchestrator/interview-flow.md` for the complete interview flow.
 
-Output variables from the interview: `MODE`, `TARGET_URL`, `FOCUS`, `DISCOVER_STATES`, `BOLDNESS_LEVEL`, `MAX_ITERATIONS`.
+Output variables from the interview: `MODE`, `TARGET_URL`, `FOCUS`, `DISCOVER_STATES`, `BOLDNESS_LEVEL`, `MAX_ITERATIONS`, `REFERENCE_TYPE`, `REFERENCE_VALUE`, `PREVIEW_MODE`.
 These feed directly into Steps 2-6.
 
 ---
@@ -74,7 +74,8 @@ REFERENCE_ANALYSIS feeds into Step 4 (brand fingerprint) and Step 6 (iteration l
 Read and follow `orchestrator/reference-analyzer.md` for reference analysis.
 
 Input variables: MODE, REFERENCE_TYPE, REFERENCE_VALUE (from interview Q2.7),
-PROJECT_CONTEXT, DESIGN_SKILLS.
+PROJECT_CONTEXT, DESIGN_SKILLS, FOCUS (from interview Q1),
+BRAND_FINGERPRINT (optional — from cached brand-guideline.md if available).
 
 Output variable: `REFERENCE_ANALYSIS`.
 If MODE is not `creative-unleash`, REFERENCE_ANALYSIS = {}.
