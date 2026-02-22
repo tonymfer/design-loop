@@ -30,10 +30,11 @@ if [[ ! -f "$STATE_FILE" ]]; then
 fi
 
 # Parse markdown frontmatter (YAML between ---) and extract values
-FRONTMATTER=$(sed -n '/^---$/,/^---$/{ /^---$/d; p; }' "$STATE_FILE")
-STATUS=$(echo "$FRONTMATTER" | grep '^status:' | sed 's/status: *//')
-ITERATION=$(echo "$FRONTMATTER" | grep '^iteration:' | sed 's/iteration: *//')
-MAX_ITERATIONS=$(echo "$FRONTMATTER" | grep '^max_iterations:' | sed 's/max_iterations: *//')
+# Strip \r to handle CRLF line endings (common when files are written cross-platform)
+FRONTMATTER=$(tr -d '\r' < "$STATE_FILE" | sed -n '/^---$/,/^---$/{ /^---$/d; p; }')
+STATUS=$(echo "$FRONTMATTER" | awk -F': *' '/^status:/ {print $2}')
+ITERATION=$(echo "$FRONTMATTER" | awk -F': *' '/^iteration:/ {print $2}')
+MAX_ITERATIONS=$(echo "$FRONTMATTER" | awk -F': *' '/^max_iterations:/ {print $2}')
 
 # If status is not "running", allow exit (completed, paused, etc.)
 if [[ "$STATUS" != "running" ]]; then
@@ -147,7 +148,7 @@ NEXT_ITERATION=$((ITERATION + 1))
 
 # Extract prompt (everything after the closing ---)
 # Skip first --- line, skip until second --- line, then print everything after
-PROMPT_TEXT=$(awk '/^---$/{i++; next} i>=2' "$STATE_FILE")
+PROMPT_TEXT=$(tr -d '\r' < "$STATE_FILE" | awk '/^---$/{i++; next} i>=2')
 
 if [[ -z "$PROMPT_TEXT" ]]; then
   echo "⚠️  Design loop: State file corrupted or incomplete" >&2
