@@ -6,7 +6,7 @@ These guardrails are **always enforced**, regardless of mode. No mode skill can 
 
 - ONLY edit frontend files (components, styles, layout)
 - NEVER change API routes, services, or database code
-- NEVER add npm dependencies — **Exception**: Creative Unleash mode may install libraries approved through the Reference Analyzer's safe install protocol (user-confirmed, build-tested, auto-rollback on failure). See `orchestrator/reference-analyzer.md`.
+- NEVER add npm dependencies — **Exception**: Creative Unleash mode may install libraries through the Reference Analyzer's safe install protocol (Step 3b, pre-loop) and scaffold components through the Safe Apply Agent (Step 5.7, per-iteration, build-tested, auto-rollback). See `orchestrator/reference-analyzer.md` and `agents/apply-agent.md`.
 - Preserve existing functionality — visual-only changes
 - Use project's existing design system and tokens
 

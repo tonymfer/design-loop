@@ -57,7 +57,7 @@ All companion skills stack — the more installed, the richer the creative direc
 
 ### Prohibited Changes (still enforced)
 
-- Adding npm dependencies UNLESS approved through the Reference Analyzer's safe install protocol (Step 3b). Use CDN links for fonts if no install approved.
+- Adding npm dependencies UNLESS approved through the Reference Analyzer's safe install protocol (Step 3b). Component-level scaffolding (shadcn components, 21st.dev components) is handled by the Safe Apply Agent (Step 5.7) with backup, build-test verification, and auto-rollback. Use CDN links for fonts if no install approved.
 - Changing API routes, services, or database code
 - Removing existing functionality
 - Breaking accessibility (WCAG AA contrast is always required)

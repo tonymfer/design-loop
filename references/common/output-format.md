@@ -8,7 +8,7 @@ Output after each iteration:
 ITERATION [N]: Fixed [issue1], [issue2], [issue3]
 Scores: Comp:[x] Typo:[x] Color:[x] Ident:[x] Polish:[x] = Avg [x.x]/5
 Trend: [up/down/flat] from [prev avg] → [current avg]
-Safety: [checkpoint=X build=X test=X fidelity=X rollbacks=N]
+Safety: [checkpoint=X build=X test=X fidelity=X apply=X rollbacks=N]
 Preview: [auto-approved | user-approved | user-skipped | user-modified (kept N/M)]
 ```
 
@@ -39,9 +39,13 @@ On completion, append summary block with start → finish avg and key improvemen
   Decision: [POLISHED | MAX_REACHED | PLATEAU | REGRESSION]
   Safety: [safety_summary from LOOP_RESULT]
   Cleaned up [N] screenshot files.
+  Report: .claude/design-loop-report.md + .claude/design-loop-report.html
+  Screenshots: .claude/design-loop-report-assets/
 
-Run /design-loop:export-loop to generate a shareable summary.
+Run /design-loop:export-loop to regenerate.
 ```
+
+Note: `.claude/design-loop-report-assets/` persists between sessions and is cleaned on the NEXT run start (by scan-context). This directory contains preserved baseline and final screenshots for the report gallery.
 
 ## Cleanup
 
@@ -54,4 +58,4 @@ rm -f state-tab-*.png state-modal-*.png state-accordion-*.png
 rm -f .claude/design-loop-state-*.json
 ```
 
-These are ephemeral working files — the scores and changes are preserved in `.claude/design-loop-history.md`.
+These are ephemeral working files — the scores and changes are preserved in `.claude/design-loop-history.md` and the rich report in `.claude/design-loop-report.md`.

@@ -11,6 +11,7 @@ Claude Code plugin for autonomous visual UI/UX iteration.
 - `orchestrator/code-fingerprint.md` — Code-based brand token extraction (colors, typography, spacing, shape)
 - `orchestrator/reference-analyzer.md` — CU-only reference analysis, library recommendation, safe install
 - `orchestrator/loop-engine.md` — 7-step iteration loop with LOOP_STATE, plateau detection, decision trees
+- `orchestrator/report-engine.md` — Rich visual report generator: SVG charts, screenshot gallery, fidelity heatmap
 - `orchestrator/safety-engine.md` — Safety coordinator: checkpoints, test runner, audit log
 - `orchestrator/visual-fingerprint.md` — Visual analysis interface (designed, wired by Screenshot Mastery)
 - `orchestrator/screenshot-engine/` — Visual capture, diff, and fidelity scoring (baseline-init, iteration-workflow, fidelity-scoring)
@@ -23,6 +24,7 @@ Claude Code plugin for autonomous visual UI/UX iteration.
 - `agents/reviewers/theme-respect-reviewer.md` — Design token compliance auditor (extends visual-reviewer)
 - `agents/reviewers/creative-unleash-reviewer.md` — Design conviction evaluator (extends visual-reviewer)
 - `agents/preview-agent.md` — Per-iteration change preview with code diffs and confirmation gate
+- `agents/apply-agent.md` — Per-iteration safe component scaffolding (shadcn, 21st.dev) with backup/verify/rollback
 - `commands/design-loop.md` — `/design-loop` slash command entry point
 - `commands/doop.md` — `/doop` shorthand alias
 - `commands/export-loop.md` — `/export-loop` slash command

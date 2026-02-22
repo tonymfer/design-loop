@@ -331,6 +331,92 @@ assert_contains "T19p: output-format has Preview line" "Preview:" references/com
 # Orchestrator state
 assert_contains "T19q: orchestrator state has preview_mode" "preview_mode" orchestrator/orchestrator.md
 
+# --- Test 20: Apply agent exists and has required content ---
+
+# Structure
+assert_true "T20a: apply-agent.md exists" test -f agents/apply-agent.md
+assert_contains "T20b: apply-agent has role" "<role>" agents/apply-agent.md
+assert_contains "T20c: apply-agent has input-contract" "input-contract" agents/apply-agent.md
+assert_contains "T20d: apply-agent has output-contract" "output-contract" agents/apply-agent.md
+assert_contains "T20e: apply-agent has anti-hardcode" "anti-hardcode" agents/apply-agent.md
+assert_contains "T20f: apply-agent has Beeper example" "Beeper" agents/apply-agent.md
+assert_contains "T20g: apply-agent has APPLY_RESULT" "APPLY_RESULT" agents/apply-agent.md
+assert_contains "T20h: apply-agent has mode-gate" "mode-gate" agents/apply-agent.md
+assert_contains "T20i: apply-agent gates PP" "precision-polish" agents/apply-agent.md
+assert_contains "T20j: apply-agent gates TRE" "theme-respect-elevate" agents/apply-agent.md
+assert_contains "T20k: apply-agent handles CU" "creative-unleash" agents/apply-agent.md
+assert_contains "T20l: apply-agent has component-detection" "component-detection" agents/apply-agent.md
+assert_contains "T20m: apply-agent refs component_matches" "component_matches" agents/apply-agent.md
+assert_contains "T20n: apply-agent has install-protocol" "install-protocol" agents/apply-agent.md
+assert_contains "T20o: apply-agent has rollback" "rollback" agents/apply-agent.md
+assert_contains "T20p: apply-agent backs up package.json" "package.json" agents/apply-agent.md
+assert_contains "T20q: apply-agent has brand_compliance" "brand_compliance" agents/apply-agent.md
+
+# Cross-file wiring
+assert_contains "T20r: loop-engine Step 5.7" "Step 5.7" orchestrator/loop-engine.md
+assert_contains "T20s: loop-engine → apply-agent" "apply-agent.md" orchestrator/loop-engine.md
+assert_contains "T20t: loop-engine APPLY_RESULT" "APPLY_RESULT" orchestrator/loop-engine.md
+assert_contains "T20u: safety apply_backup" "apply_backup" orchestrator/safety-engine.md
+assert_contains "T20v: safety apply_rollback" "apply_rollback" orchestrator/safety-engine.md
+assert_contains "T20w: LOOP_STATE apply_status" "apply_status" orchestrator/loop-engine.md
+assert_contains "T20x: apply-agent refs 21st" "21st" agents/apply-agent.md
+assert_contains "T20y: apply-agent refs shadcn" "shadcn" agents/apply-agent.md
+assert_contains "T20z: constraints has apply-agent exception" "Apply Agent" references/common/constraints.md
+
+# BRAND_FINGERPRINT preservation
+assert_contains "T20aa: apply-agent has BRAND_FINGERPRINT" "BRAND_FINGERPRINT" agents/apply-agent.md
+assert_contains "T20ab: apply-agent has brand hard constraint for TRE" "hard constraint" agents/apply-agent.md
+assert_contains "T20ac: apply-agent has visual_fidelity_impact" "visual_fidelity_impact" agents/apply-agent.md
+assert_contains "T20ad: apply-agent Beeper preserves retro" "retro" agents/apply-agent.md
+assert_contains "T20ae: apply-agent Beeper preserves pixel" "pixel" agents/apply-agent.md
+assert_contains "T20af: apply-agent has brand_compliance in output" "brand_compliance" agents/apply-agent.md
+
+# --- Test 21: Report engine exists and has required content ---
+
+# Structure
+assert_true  "T21a: report-engine.md exists" test -f orchestrator/report-engine.md
+assert_contains "T21b: report-engine has role" "<role>" orchestrator/report-engine.md
+assert_contains "T21c: report-engine has input-contract" "input-contract" orchestrator/report-engine.md
+assert_contains "T21d: report-engine has output-contract" "output-contract" orchestrator/report-engine.md
+assert_contains "T21e: report-engine has anti-hardcode" "anti-hardcode" orchestrator/report-engine.md
+assert_contains "T21f: report-engine has Beeper example" "Beeper" orchestrator/report-engine.md
+assert_contains "T21g: report-engine has REPORT_RESULT" "REPORT_RESULT" orchestrator/report-engine.md
+
+# SVG charts
+assert_contains "T21h: report-engine has score_progression" "score_progression" orchestrator/report-engine.md
+assert_contains "T21i: report-engine has fidelity_heatmap" "fidelity_heatmap" orchestrator/report-engine.md
+assert_contains "T21j: report-engine has score_breakdown" "score_breakdown" orchestrator/report-engine.md
+assert_contains "T21k: report-engine has theme_preservation" "theme_preservation" orchestrator/report-engine.md
+
+# Screenshot preservation
+assert_contains "T21l: report-engine preserves baseline" "baseline-full.png" orchestrator/report-engine.md
+assert_contains "T21m: report-engine has report-assets dir" "design-loop-report-assets" orchestrator/report-engine.md
+
+# Criterion colors (reuses export-loop palette)
+assert_contains "T21n: report-engine has cyan" "#06b6d4" orchestrator/report-engine.md
+assert_contains "T21o: report-engine has violet" "#8b5cf6" orchestrator/report-engine.md
+
+# Report sections
+assert_contains "T21p: report-engine has Executive Summary" "Executive Summary" orchestrator/report-engine.md
+assert_contains "T21q: report-engine has Safety Audit" "Safety Audit" orchestrator/report-engine.md
+assert_contains "T21r: report-engine has Brand Fingerprint" "Brand Fingerprint" orchestrator/report-engine.md
+
+# Cross-file wiring
+assert_contains "T21s: orchestrator delegates to report-engine" "report-engine.md" orchestrator/orchestrator.md
+assert_contains "T21t: orchestrator has REPORT_RESULT" "REPORT_RESULT" orchestrator/orchestrator.md
+assert_contains "T21u: loop-engine LOOP_RESULT has iterations" "iterations:" orchestrator/loop-engine.md
+assert_contains "T21v: output-format references report" "design-loop-report" references/common/output-format.md
+assert_contains "T21w: export-loop references report-engine" "report-engine" commands/export-loop.md
+assert_contains "T21x: scan-context cleans report-assets" "design-loop-report-assets" orchestrator/scan-context.md
+
+# Visual fidelity preservation (Beeper few-shots)
+assert_contains "T21aa: report-engine has visual_fidelity" "visual_fidelity" orchestrator/report-engine.md
+assert_contains "T21ab: report-engine has theme_fidelity" "theme_fidelity" orchestrator/report-engine.md
+assert_contains "T21ac: report-engine Beeper preserves retro" "retro" orchestrator/report-engine.md
+assert_contains "T21ad: report-engine Beeper preserves pixel" "pixel" orchestrator/report-engine.md
+assert_contains "T21ae: report-engine has visual_fidelity_impact" "visual_fidelity_impact" orchestrator/report-engine.md
+assert_contains "T21af: report-engine has responsive HTML" "responsive" orchestrator/report-engine.md
+
 # --- Summary ---
 TOTAL=$((TESTS_PASSED + TESTS_FAILED))
 echo ""

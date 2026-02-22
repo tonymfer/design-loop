@@ -30,6 +30,7 @@ You receive all variables established by the orchestrator in Steps 1-5:
 | CAPTURE_SET_BASELINE | Step 5 (screenshot) | Initial baseline screenshots |
 | ELEMENT_INVENTORY | Step 5 (screenshot) | Interactive element inventory |
 | PREVIEW_MODE | Step 1 (interview) | confirm or auto — controls whether preview pauses for user confirmation |
+| SESSION_ID | orchestrator | CLAUDE_SESSION_ID for backup paths and apply-agent |
 </input-contract>
 
 <loop-state>
@@ -57,6 +58,8 @@ LOOP_STATE:
       decision: string           # CONTINUE | POLISHED | PLATEAU | MAX_REACHED | REGRESSION
       safety_status: string      # compact one-line safety summary
       preview_action: string        # apply | skip | modify (from PREVIEW_RESULT)
+      apply_status: string           # success | skipped | partial | rollback
+      components_installed: [string] # names installed this iteration
 
   safety_events: array              # Centralized safety audit events
     - { timestamp, iteration, type, details }
@@ -279,6 +282,40 @@ If PREVIEW_MODE = confirm: `<preview-await>CONFIRM</preview-await>` is output. S
 
 Record PREVIEW_RESULT.action in iteration's preview_action field.
 
+### Step 5.7: SAFE APPLY — Component Installation & Verification
+
+Delegate to `agents/apply-agent.md`.
+
+Provide: PREVIEW_RESULT, FIXES_APPLIED, FIXES_SKIPPED, REFERENCE_ANALYSIS,
+PROJECT_CONTEXT, BRAND_FINGERPRINT, MODE, MODE_INSTRUCTIONS, LOOP_STATE,
+SESSION_ID, ITERATION.
+
+Handle APPLY_RESULT:
+
+```
+IF APPLY_RESULT.status = "skipped":
+  → Record apply_status="skipped", components_installed=[]
+  → Proceed to Step 6
+
+IF APPLY_RESULT.status = "success":
+  → Record apply_status="success"
+  → Record components_installed from APPLY_RESULT.components_installed[].name
+  → Append APPLY_RESULT.safety_events to LOOP_STATE.safety_events[]
+  → Proceed to Step 6
+
+IF APPLY_RESULT.status = "partial":
+  → Record apply_status="partial"
+  → Record components_installed (only successful ones)
+  → Append APPLY_RESULT.safety_events to LOOP_STATE.safety_events[]
+  → Log: "Partial apply: installed [N], skipped [M] components"
+  → Proceed to Step 6
+
+IF APPLY_RESULT.status = "rollback":
+  → Record apply_status="rollback", components_installed=[]
+  → Append APPLY_RESULT.safety_events to LOOP_STATE.safety_events[]
+  → All component changes reverted — proceed to Step 6 with zeroed deltas
+```
+
 ### Step 6: CHECK — Compute Deltas and Derived State
 
 After scoring, compute all derived LOOP_STATE fields:
@@ -473,9 +510,10 @@ Step 4 FIX: checkpoint saved → iter-1/
   safety-engine checkpoint-manager: checkpoint=saved
 Step 5 DIFF: visual_fidelity=0.82, theme_fidelity=0.78
 Step 5.5 PREVIEW: PREVIEW_MODE=auto → logged, action=apply (CU default)
+Step 5.7 APPLY: mode_gate=full_cu, no components detected → status=skipped
 Step 6 CHECK: plateau_count=0, trend=improving
 Step 7 DECIDE: CONTINUE targeting composition (3/5)
-Safety: checkpoint=1 build=pass test=2pass/0fail fidelity=pass rollbacks=0
+Safety: checkpoint=1 build=pass test=2pass/0fail fidelity=pass apply=skipped rollbacks=0
 ```
 
 **Iteration 2 — Test failure triggers Rollback:**
@@ -493,10 +531,11 @@ Step 4 FIX: checkpoint saved → iter-2/
   fixes_skipped: ["voxel-nav — test failure, rolled back"]
 Step 5 DIFF: visual_fidelity=0.79, theme_fidelity=0.75
 Step 5.5 PREVIEW: PREVIEW_MODE=auto → logged, action=apply (CU default)
+Step 5.7 APPLY: mode_gate=full_cu, no components detected → status=skipped
 Step 6 CHECK: plateau_count=1, trend=improving (wavg 3.95 > 3.70)
 Step 7 DECIDE: CONTINUE — plateau_count=1, strategy_hint set
   strategy_hint: "Shift to pixel-aligned 3D depth via offset borders, avoid structural nav changes"
-Safety: checkpoint=2 build=pass test=1pass/1fail fidelity=pass rollbacks=1
+Safety: checkpoint=2 build=pass test=1pass/1fail fidelity=pass apply=skipped rollbacks=1
 ```
 
 **Iteration 3 — Strategy shift, scores jump:**
@@ -511,9 +550,10 @@ Step 4 FIX: checkpoint saved → iter-3/
   safety-engine test-runner: tests pass (2/2)
 Step 5 DIFF: visual_fidelity=0.85, theme_fidelity=0.80
 Step 5.5 PREVIEW: PREVIEW_MODE=auto → logged, action=apply (CU default)
+Step 5.7 APPLY: mode_gate=full_cu, no components detected → status=skipped
 Step 6 CHECK: consecutive_pass_count=1, plateau_count=0, trend=improving
 Step 7 DECIDE: CONTINUE — approaching goal (4.55 < 4.70), need consecutive_pass_count=2
-Safety: checkpoint=3 build=pass test=2pass/0fail fidelity=pass rollbacks=0
+Safety: checkpoint=3 build=pass test=2pass/0fail fidelity=pass apply=skipped rollbacks=0
 ```
 
 ### Example 5: Beeper Theme-Respect — Fidelity Gate Blocks Off-Brand Fix
@@ -553,10 +593,26 @@ LOOP_RESULT:
   improvements: [string]        # key changes made across all iterations
   safety_summary: string        # compact aggregate: "checkpoints=5 tests=4pass/1fail rollbacks=1"
   total_rollbacks: integer      # cumulative rollback count across all iterations
+  total_components_installed: integer  # cumulative component installs across all iterations
+  iterations: array               # Full LOOP_STATE.iterations[] for report-engine
+    - iteration: integer
+      scores: { composition, typography, color, identity, polish }
+      raw_average: float
+      weighted_average: float
+      visual_fidelity: float | null
+      theme_fidelity: float | null
+      fixes_applied: [string]
+      fixes_skipped: [string]
+      decision: string
+      safety_status: string
+      preview_action: string
+      apply_status: string
+      components_installed: [string]
 ```
 
 The orchestrator uses LOOP_RESULT for:
 - Step 8 completion message (status + averages + safety summary)
+- Step 8 report generation (iterations data feeds SVG charts and report sections)
 - State file update (status: completed)
 - Cleanup decision (always clean up regardless of terminal reason)
 </output-contract>

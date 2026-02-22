@@ -60,6 +60,21 @@ cp -r ~/.claude/backups/design-loop/${CLAUDE_SESSION_ID}/iter-${ITERATION}/* ./
 rm -rf ~/.claude/backups/design-loop/${CLAUDE_SESSION_ID}/
 ```
 
+### Package Manifest Backup/Restore (for apply-agent)
+
+Separate from code file checkpoints — backs up package.json and lockfile before component installs:
+
+```bash
+# Backup (before component install in apply-agent Step B)
+cp package.json ~/.claude/backups/design-loop/${CLAUDE_SESSION_ID}/iter-${ITERATION}/package.json
+# Also backup lockfile (package-lock.json, yarn.lock, pnpm-lock.yaml, or bun.lockb)
+
+# Restore (on install failure in apply-agent Step F)
+cp ~/.claude/backups/design-loop/${CLAUDE_SESSION_ID}/iter-${ITERATION}/package.json ./package.json
+# Also restore lockfile
+${pm} install    # Reinstall from restored manifest
+```
+
 NOTE: Browser state rollback remains in loop-engine (`agent-browser state save/load`). This checkpoint manager handles only code file backups.
 
 NOTE: Fidelity scores (visual_fidelity, theme_fidelity) are on a 0.0-1.0 scale, NOT 1-5. These are computed by `orchestrator/screenshot-engine/fidelity-scoring.md`.
@@ -123,6 +138,11 @@ File: `.claude/design-loop-safety.log`
 | `build_fail` | Build verification failed |
 | `fidelity_gate` | Fidelity gate triggered (blocked or warned) |
 | `fix_skipped` | Individual fix skipped due to build/test failure |
+| `apply_backup` | Package manifest backed up before component install |
+| `component_install` | Component successfully installed via shadcn CLI or 21st.dev MCP |
+| `component_skip` | Component install skipped or not needed |
+| `apply_verify` | Post-install build+test verification completed |
+| `apply_rollback` | Full rollback of component install (package.json + lockfile restored) |
 
 ### Lifecycle
 
@@ -151,6 +171,7 @@ SAFETY_STATUS:
   build: passed | failed
   test: passed | failed | skipped
   fidelity_gate: passed | blocked | warned | n/a
+  apply: success | skipped | partial | rollback
   fixes_skipped: 0          # count for this iteration
   cumulative_rollbacks: 0    # total across all iterations
 ```
@@ -205,6 +226,21 @@ Safety: checkpoint=created build=pass test=fail fidelity=n/a rollbacks=1
 Safety: checkpoint=created build=pass test=skip fidelity=n/a rollbacks=0
 ```
 
+### Example 3: Beeper CU — shadcn Dialog Install Rollback via Apply Agent
+
+**Scenario:** CU mode, retro pixel-art messenger. Apply-agent attempts to install shadcn dialog component. Peer dependency conflict causes install failure. Full rollback.
+
+```
+1. Apply-agent backup: cp package.json + lockfile → iter-2/
+   → Log: { type: "apply_backup", details: "Package manifest backed up" }
+2. Install: npx shadcn@latest add dialog --yes → FAILED (peer dependency conflict)
+3. Rollback: restored package.json + lockfile from iter-2/
+   → Ran npm install to restore clean state
+   → Log: { type: "apply_rollback", details: "Rolled back dialog: peer dependency conflict" }
+4. Code checkpoint also restored (no integration code persists)
+Safety: checkpoint=created build=pass test=pass fidelity=n/a apply=rollback rollbacks=1
+```
+
 </few-shot-examples>
 
 <output-contract>
@@ -217,6 +253,8 @@ SAFETY_RESULT:
   checkpoint_path: string       # path to backup dir, or null if skipped
   build_passed: boolean         # from existing build check
   test_result: string           # passed | failed | skipped
+  apply_status: string          # success | skipped | partial | rollback (from apply-agent)
+  components_installed: [string] # names of components installed this iteration
   safety_events: array          # events generated this iteration
   safety_status: string         # compact one-line summary
 ```

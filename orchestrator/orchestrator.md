@@ -235,7 +235,12 @@ On loop completion (POLISHED or max iterations):
 
 1. Update state file: `status: completed`
 2. Close browser: `agent-browser close`
-3. Clean up screenshots and checkpoints:
+3. Generate report:
+   Read and follow `orchestrator/report-engine.md`.
+   Input: LOOP_RESULT, BRAND_FINGERPRINT, MODE, MODE_INSTRUCTIONS,
+          PROJECT_CONTEXT, SHARED_REFERENCES.
+   Output: REPORT_RESULT
+4. Clean up screenshots and checkpoints:
    ```bash
    rm -f design-loop-*.png section-*.png scroll-*.png overview.png mobile-overview.png
    rm -f state-tab-*.png state-modal-*.png state-accordion-*.png
@@ -246,15 +251,19 @@ On loop completion (POLISHED or max iterations):
    rm -rf ~/.claude/backups/design-loop/${CLAUDE_SESSION_ID}/
    # Safety audit log persists — not cleaned up (serves as audit trail)
    # Log is size-limited: truncated to last 500 lines on next session start
+   # .claude/design-loop-report-assets/ persists — cleaned on NEXT run start (scan-context)
    ```
-4. Output completion message:
+5. Output completion message:
    ```
    [LOOP_RESULT.status] — [status-specific message]. Weighted avg [final]/5 (goal: [threshold]).
      Mode: [MODE] | [start avg]/5 → [final avg]/5 across [N] iterations.
      Decision: [POLISHED | MAX_REACHED | PLATEAU | REGRESSION]
+     Safety: [safety_summary]
      Cleaned up [N] screenshot files.
+     Report: .claude/design-loop-report.md + .claude/design-loop-report.html
+     Screenshots: .claude/design-loop-report-assets/
 
-   Run /design-loop:export-loop to generate a shareable summary.
+   Run /design-loop:export-loop to regenerate.
    ```
 </completion>
 </workflow>

@@ -17,6 +17,13 @@ Required from Step 1 (interview):
 
 ## Sub-step 2a: Project Context Detection
 
+Clean up stale report assets and report files from previous runs:
+
+```
+0. rm -rf .claude/design-loop-report-assets/
+   rm -f .claude/design-loop-report.md .claude/design-loop-report.html
+```
+
 Read and store as `PROJECT_CONTEXT`:
 
 ```
