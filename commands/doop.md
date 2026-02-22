@@ -8,6 +8,9 @@ arguments:
   - name: iterations
     description: Max iterations (default: 10, 0 for no limit)
     required: false
+  - name: mode
+    description: "Mode: precision-polish, theme-respect-elevate, or creative-unleash"
+    required: false
 ---
 
 # /doop
@@ -16,17 +19,19 @@ Shorthand alias for `/design-loop`. Just doop it.
 
 ## Instructions
 
-Invoke the `design-loop` skill. It will handle the full workflow:
-- Phase 0: Dependency check (auto-install agent-browser)
-- Phase 1: Context scan (package.json, tailwind config, component libraries)
-- Phase 2: Interview (target page, focus area, max iterations)
-- Phase 3: Section screenshots (node mode or scroll mode)
-- Phase 4: Evaluate against 5 criteria & fix top issues
-- Phase 5: Write `.claude/design-loop.state.md` and begin iteration 1
+Invoke the `design-loop` skill. It will load the orchestrator which handles:
+- Mode selection interview (Q0)
+- Dependency check (auto-install agent-browser)
+- Context scan (package.json, tailwind config, component libraries)
+- Interview (target page, focus area, max iterations)
+- Section screenshots (node mode or scroll mode)
+- Mode-specific scoring and fixing
+- Iteration loop with rollback safety
 
 If arguments were provided:
-- `url`: Skip Q1 (target), use provided URL
-- `iterations`: Skip Q3 (iterations), use provided value (0 = no limit)
+- `url`: Skip target question, use provided URL
+- `iterations`: Skip iterations question, use provided value (0 = no limit)
+- `mode`: Skip mode question, use provided mode name
 
 ## Prerequisites (auto-installed)
 

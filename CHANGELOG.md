@@ -1,5 +1,26 @@
 # Changelog
 
+## [2.0.0] - 2026-02-22
+### Added
+- **3 Operational Modes**: Precision Polish (surgical CSS), Theme-Respect Elevate (design-system-aware), Creative Unleash (bold redesign)
+- **Thin Orchestrator** (`orchestrator/orchestrator.md`): Smart coordinator that handles all shared phases and delegates mode-specific behavior
+- **Mode skills** (`skills/modes/*/SKILL.md`): Declarative ~80-120 line files defining scoring weights and fix constraints per mode
+- **Shared references** (`references/common/`): Extracted rubric, screenshot strategy, constraints, and output format into reusable files
+- Mode selection interview (Q0) before target/focus questions
+- Mode-specific scoring weight overrides in visual-reviewer agent
+- Stop hook displays active mode in system message
+- CLI mode argument: `/design-loop http://localhost:3000 10 precision-polish`
+
+### Changed
+- SKILL.md is now a 15-line wrapper delegating to orchestrator (backward-compatible entry point)
+- Visual reviewer accepts mode weight overrides for weighted scoring
+- Commands updated with `mode` argument and mode documentation
+
+### Architecture
+- Smart Coordinator pattern: orchestrator handles shared logic centrally, mode skills define only what differs
+- Adding a new mode requires only 1 new file + 1 table row in orchestrator
+- No shared logic duplication across modes
+
 ## [1.0.2] - 2026-02-22
 ### Enhanced
 - `/doop` command alias for `/design-loop`
@@ -41,6 +62,7 @@
 - Iteration logging to `.claude/design-loop-history.md`
 - Interactive demo site at design-loop.vercel.app
 
+[2.0.0]: https://github.com/tonymfer/design-loop/compare/v1.0.2...v2.0.0
 [1.0.2]: https://github.com/tonymfer/design-loop/compare/v1.0.1...v1.0.2
 [1.0.1]: https://github.com/tonymfer/design-loop/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/tonymfer/design-loop/releases/tag/v1.0.0

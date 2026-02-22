@@ -1,7 +1,7 @@
 # design-loop
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com/tonymfer/design-loop/releases)
+[![Version](https://img.shields.io/badge/version-2.0.0-blue.svg)](https://github.com/tonymfer/design-loop/releases)
 [![Claude Code Plugin](https://img.shields.io/badge/Claude_Code-Plugin-blueviolet.svg)](https://docs.anthropic.com/en/docs/claude-code)
 
 **AI can code your UI. But it can't *see* it.**
@@ -15,11 +15,13 @@ design-loop is a [Claude Code](https://docs.anthropic.com/en/docs/claude-code) p
 ## Table of Contents
 
 - [How it works](#how-it-works)
+- [Modes](#modes)
 - [The 5 Criteria](#the-5-criteria)
 - [Install](#install)
 - [Usage](#usage)
 - [Ecosystem Detection](#ecosystem-detection)
 - [Adaptive Design Intelligence](#adaptive-design-intelligence)
+- [Architecture](#architecture)
 - [Project Structure](#project-structure)
 - [License](#license)
 
@@ -27,10 +29,11 @@ design-loop is a [Claude Code](https://docs.anthropic.com/en/docs/claude-code) p
 
 ## How it works
 
-1. **Screenshot** — Section-level captures via [agent-browser](https://github.com/vercel-labs/agent-browser). Detects semantic HTML landmarks (`header`, `main`, `section`, `footer`, `article`) and screenshots each one individually to disk with `--annotate` labels on interactive elements. If the page lacks landmarks, falls back to scroll-based captures with 30% overlap so nothing is missed. The headed browser daemon persists between commands — no re-launch per step.
-2. **Score** — 5 design criteria evaluated 1–5 with anti-slop detection
-3. **Fix** — Top 3 issues fixed in code, build verified
-4. **Repeat** — Loop continues until all criteria hit 4/5+
+1. **Choose a mode** — Precision Polish (safe CSS fixes), Theme-Respect Elevate (design-system-aware), or Creative Unleash (bold redesign)
+2. **Screenshot** — Section-level captures via [agent-browser](https://github.com/vercel-labs/agent-browser). Detects semantic HTML landmarks (`header`, `main`, `section`, `footer`, `article`) and screenshots each one individually to disk with `--annotate` labels on interactive elements. If the page lacks landmarks, falls back to scroll-based captures with 30% overlap so nothing is missed. The headed browser daemon persists between commands — no re-launch per step.
+3. **Score** — 5 design criteria evaluated 1–5 with anti-slop detection, weighted by your chosen mode
+4. **Fix** — Top 3 issues fixed in code within mode constraints, build verified
+5. **Repeat** — Loop continues until all criteria hit 4/5+
 
 design-loop prioritizes the highest-impact issues first and adapts its focus as scores improve. If it gets stuck on a criterion after 3 attempts, it documents the issue and moves on.
 
@@ -41,6 +44,30 @@ Three levels of protection against wasted iterations:
 - **Per-criterion** — If the same issue persists for 2 iterations, tries an alternative approach (e.g., padding fixes → layout restructuring). After 3 failed attempts, documents a TODO and moves on.
 - **Plateau** — If the average score hasn't improved for 3 consecutive iterations, stops early. Further iterations are unlikely to help.
 - **Infrastructure** — If a screenshot or navigation fails, retries once. If it fails again, stops with a clear error ("is the dev server still running?") instead of iterating blindly.
+
+---
+
+## Modes
+
+v2.0 introduces 3 operational modes that control how aggressive the design iteration is:
+
+| Mode | Best For | Constraints | Creative Latitude |
+|------|----------|-------------|-------------------|
+| **Precision Polish** | Production sites, quick fixes | CSS-only, no layout changes, single property at a time | Low |
+| **Theme-Respect Elevate** | Design-system projects | Token-aware, all values must map to theme tokens | Medium |
+| **Creative Unleash** | Greenfield, redesigns | Layout restructuring, font exploration, bold color moves | High |
+
+### Precision Polish
+
+Surgical CSS fixes. Changes padding, margins, border-radius, font sizes — nothing that would be visible in a side-by-side layout comparison. Safest mode for production sites.
+
+### Theme-Respect Elevate
+
+Reads your design tokens (Tailwind config, CSS custom properties) and elevates using only values from your theme. Never introduces foreign design elements. Ideal for design-system projects.
+
+### Creative Unleash
+
+Maximum creative latitude. Loads all companion design skills and applies their full aesthetic guidance. May restructure layout, swap fonts, change color palettes. For greenfield projects and redesigns.
 
 ---
 
@@ -88,17 +115,22 @@ That's it. agent-browser is auto-installed on first run (`npm install -g agent-b
 
 # No iteration limit — runs until all criteria >= 4/5
 /design-loop http://localhost:5173 0
+
+# Specify mode directly (skip mode question)
+/design-loop http://localhost:3000 10 precision-polish
+/doop http://localhost:3000 10 creative-unleash
 ```
 
 ### What happens
 
-1. **agent-browser check** — Installs agent-browser if missing, opens a headed browser session with `wait --load networkidle`
-2. **Dev server check** — Verifies the target URL responds. If not, scans common ports for a running server or auto-starts one via `package.json`
-3. **Context scan** — Reads your `package.json` and `tailwind.config`, discovers companion design skills
-4. **Interview** — 3 questions about target, focus areas, and iterations
-5. **Section screenshots** — High-resolution annotated captures of each page section (semantic landmarks or scroll fallback)
-6. **Loop** — Autonomous iteration: screenshot, score against 5 criteria, fix, repeat
-7. **Completion** — Stops when all 5 criteria score 4/5+ for two consecutive iterations. Cleans up all screenshot files automatically.
+1. **Mode selection** — Choose Precision Polish, Theme-Respect Elevate, or Creative Unleash (or pass as 3rd argument)
+2. **agent-browser check** — Installs agent-browser if missing, opens a headed browser session with `wait --load networkidle`
+3. **Dev server check** — Verifies the target URL responds. If not, scans common ports for a running server or auto-starts one via `package.json`
+4. **Context scan** — Reads your `package.json` and `tailwind.config`, discovers companion design skills
+5. **Interview** — Questions about target, focus areas, and iterations
+6. **Section screenshots** — High-resolution annotated captures of each page section (semantic landmarks or scroll fallback)
+7. **Loop** — Autonomous iteration: screenshot, score with mode-specific weights, fix within mode constraints, repeat
+8. **Completion** — Stops when all 5 criteria score 4/5+ for two consecutive iterations. Cleans up all screenshot files automatically.
 
 ### Export results
 
@@ -163,12 +195,42 @@ You can also chain skills explicitly for a directed workflow:
 
 ---
 
+## Architecture
+
+v2.0 uses a **Thin Orchestrator** pattern. SKILL.md is a lightweight wrapper that delegates to `orchestrator/orchestrator.md`, which coordinates all shared phases and routes to mode-specific skills for scoring weights and fix constraints.
+
+```
+SKILL.md (wrapper)
+  → orchestrator/orchestrator.md (coordinator)
+      ├── references/common/ (rubric, screenshots, constraints, output-format)
+      ├── agents/visual-reviewer.md (scoring with mode weight overrides)
+      └── skills/modes/
+          ├── precision-polish/SKILL.md (CSS-only, tight constraints)
+          ├── theme-respect-elevate/SKILL.md (token-aware, medium latitude)
+          └── creative-unleash/SKILL.md (bold redesign, high latitude)
+```
+
+Adding a new mode requires only 1 new file + 1 table row in the orchestrator.
+
+---
+
 ## Project Structure
 
 ```
 design-loop/
   skills/design-loop/
-    SKILL.md              # Core workflow (the product)
+    SKILL.md              # Entry point wrapper → orchestrator
+  orchestrator/
+    orchestrator.md       # Core workflow coordinator
+  skills/modes/
+    precision-polish/     # CSS-only, production-safe
+    theme-respect-elevate/# Design-token-aware
+    creative-unleash/     # Bold redesign latitude
+  references/common/
+    rubric.md             # 5-criteria scoring definitions
+    screenshots.md        # Screenshot capture strategy
+    constraints.md        # Shared edit guardrails
+    output-format.md      # Report and log format
   commands/
     design-loop.md        # /design-loop slash command
     doop.md               # /doop — shorthand alias

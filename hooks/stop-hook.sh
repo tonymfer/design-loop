@@ -35,6 +35,7 @@ FRONTMATTER=$(tr -d '\r' < "$STATE_FILE" | sed -n '/^---$/,/^---$/{ /^---$/d; p;
 STATUS=$(echo "$FRONTMATTER" | awk -F': *' '/^status:/ {print $2}')
 ITERATION=$(echo "$FRONTMATTER" | awk -F': *' '/^iteration:/ {print $2}')
 MAX_ITERATIONS=$(echo "$FRONTMATTER" | awk -F': *' '/^max_iterations:/ {print $2}')
+MODE=$(echo "$FRONTMATTER" | awk -F': *' '/^mode:/ {print $2}')
 
 # If status is not "running", allow exit (completed, paused, etc.)
 if [[ "$STATUS" != "running" ]]; then
@@ -181,7 +182,11 @@ if [[ $MAX_ITERATIONS -gt 0 ]]; then
 else
   ITER_DISPLAY="$NEXT_ITERATION (no limit)"
 fi
-SYSTEM_MSG="🔄 design-loop iteration $ITER_DISPLAY | To complete: all 5 criteria >= 4/5 for 2 consecutive iterations, then output <promise>POLISHED</promise>"
+MODE_DISPLAY=""
+if [[ -n "$MODE" ]]; then
+  MODE_DISPLAY=" | mode: $MODE"
+fi
+SYSTEM_MSG="🔄 design-loop iteration $ITER_DISPLAY$MODE_DISPLAY | To complete: all 5 criteria >= 4/5 for 2 consecutive iterations, then output <promise>POLISHED</promise>"
 
 # Output JSON to block the stop and feed prompt back
 jq -n \

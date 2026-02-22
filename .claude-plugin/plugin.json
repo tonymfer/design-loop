@@ -1,6 +1,7 @@
 {
   "name": "design-loop",
-  "description": "Autonomous visual iteration loop for frontend UI/UX. Takes section-level screenshots, scores against 5 anti-slop criteria, fixes issues, and repeats until polished. Discovers companion design skills and absorbs their guidelines to sharpen scoring.",
+  "version": "2.0.0",
+  "description": "Autonomous visual iteration loop for frontend UI/UX with 3 operational modes: Precision Polish (surgical CSS fixes), Theme-Respect Elevate (design-system-aware), and Creative Unleash (bold redesign). Takes section-level screenshots, scores against 5 anti-slop criteria, fixes issues, and repeats until polished.",
   "author": {
     "name": "tonymfer",
     "email": "tony.base.eth@gmail.com"
@@ -8,5 +9,5 @@
   "homepage": "https://design-loop.vercel.app",
   "repository": "https://github.com/tonymfer/design-loop",
   "license": "MIT",
-  "keywords": ["design", "ui", "ux", "visual-polish", "screenshots", "agent-browser", "iteration", "autonomous", "next.js", "react", "tailwind", "section-screenshots"]
+  "keywords": ["design", "ui", "ux", "visual-polish", "screenshots", "agent-browser", "iteration", "autonomous", "next.js", "react", "tailwind", "section-screenshots", "orchestrator", "modes"]
 }
