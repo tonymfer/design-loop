@@ -70,9 +70,9 @@
   --accent-rgb: 6, 182, 212;
   --accent-2: #8b5cf6;
   --accent-2-rgb: 139, 92, 246;
-  --border: rgba(39, 39, 42, 0.5);
-  --card-bg: rgba(24, 24, 27, 0.35);
-  --surface: rgba(24, 24, 27, 0.45);
+  --border: rgba(39, 39, 42, 0.65);
+  --card-bg: rgba(24, 24, 27, 0.5);
+  --surface: rgba(24, 24, 27, 0.55);
   --effects-opacity: 1;
   --gradient-opacity: 1;
   --dot-grid-opacity: 0.15;

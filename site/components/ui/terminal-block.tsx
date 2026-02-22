@@ -27,14 +27,14 @@ export function TerminalBlock({
   return (
     <div
       className={cn(
-        "relative rounded-xl border border-[var(--border)] bg-[var(--surface)]",
+        "relative rounded-xl border border-[var(--border)] bg-[var(--surface)] shadow-lg shadow-black/20",
         className
       )}
     >
       <div className="flex items-center gap-1.5 border-b border-[var(--border)] px-4 py-3">
-        <div className="h-2.5 w-2.5 rounded-full bg-zinc-700" />
-        <div className="h-2.5 w-2.5 rounded-full bg-zinc-700" />
-        <div className="h-2.5 w-2.5 rounded-full bg-zinc-700" />
+        <div className="h-2.5 w-2.5 rounded-full bg-red-500/60" />
+        <div className="h-2.5 w-2.5 rounded-full bg-yellow-500/60" />
+        <div className="h-2.5 w-2.5 rounded-full bg-green-500/60" />
       </div>
       <button
         onClick={handleCopy}

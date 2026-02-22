@@ -62,11 +62,11 @@ const features: Feature[] = [
 
 export function Features() {
   return (
-    <section className="border-t border-[var(--border)] py-16">
+    <section className="border-t border-[var(--border)] py-20">
       <div className="mx-auto max-w-[1100px] px-6">
         <ScrollReveal>
           <h2 className="font-serif text-3xl sm:text-4xl">
-            <span className="bg-gradient-to-r from-zinc-100 to-zinc-400 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-zinc-100 via-cyan-200 to-zinc-400 bg-clip-text text-transparent">
               Features
             </span>
           </h2>
@@ -75,15 +75,15 @@ export function Features() {
           </p>
         </ScrollReveal>
 
-        <div className="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {features.map((feature, i) => {
             const Icon = feature.icon;
             return (
-              <ScrollReveal key={feature.title} delay={i * 0.05}>
+              <ScrollReveal key={feature.title} delay={i * 0.05} className={feature.highlight ? "lg:col-span-2" : ""}>
                 <div
                   className={`group relative h-full rounded-xl border p-5 transition-all ${
                     feature.highlight
-                      ? "border-[rgba(var(--accent-rgb),0.2)] bg-gradient-to-br from-[rgba(var(--accent-rgb),0.06)] to-[rgba(var(--accent-2-rgb),0.03)]"
+                      ? "border-[rgba(var(--accent-rgb),0.25)] bg-gradient-to-br from-[rgba(var(--accent-rgb),0.08)] to-[rgba(var(--accent-2-rgb),0.04)] shadow-[0_0_20px_rgba(var(--accent-rgb),0.06)]"
                       : "border-[var(--border)] bg-[var(--card-bg)] hover:border-[color-mix(in_srgb,var(--accent),transparent_70%)]"
                   }`}
                 >
@@ -102,7 +102,7 @@ export function Features() {
                       />
                     </div>
                     <div>
-                      <h3 className="text-sm font-semibold text-[var(--text-primary)]">
+                      <h3 className="text-base font-semibold text-[var(--text-primary)]">
                         {feature.title}
                       </h3>
                       <p className="mt-1.5 text-sm leading-relaxed text-[var(--text-secondary)]">

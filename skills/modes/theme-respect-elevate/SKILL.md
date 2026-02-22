@@ -7,25 +7,25 @@ description: "Reads your design tokens and elevates within your existing design 
 
 Design-system-aware iteration. Reads your tokens (colors, spacing, typography) and elevates the UI using only what your theme provides. Never introduces foreign design elements.
 
-## Theme Fingerprinting
+## Theme Constraint Source
 
-Before scoring, build a theme fingerprint from `PROJECT_CONTEXT`:
+Use `BRAND_FINGERPRINT.tokens` as the HARD CONSTRAINT for all fixes:
 
-```
-1. Extract color palette from tailwind.config or CSS custom properties
-   → Store as THEME_COLORS: { primary, secondary, accent, background, foreground, muted, ... }
-2. Extract spacing scale
-   → Store as THEME_SPACING: [values from theme]
-3. Extract typography
-   → Store as THEME_FONTS: { sans, serif, mono, display, heading }
-   → Note: if only 1 font family exists, do NOT add a second one
-4. Extract border-radius scale
-   → Store as THEME_RADII: [values from theme]
-5. Extract shadow definitions
-   → Store as THEME_SHADOWS: [values from theme]
-```
+- `BRAND_FINGERPRINT.tokens.colors` — allowed color values
+- `BRAND_FINGERPRINT.tokens.typography` — allowed font families, sizes, weights
+- `BRAND_FINGERPRINT.tokens.spacing` — allowed spacing values
+- `BRAND_FINGERPRINT.tokens.shape` — allowed border-radius and shadow values
 
-All fixes MUST use values from these extracted tokens. If a desired value doesn't exist in the theme, use the closest available token.
+If BRAND_FINGERPRINT is empty (user declined fingerprinting), fall back to
+extracting tokens directly from PROJECT_CONTEXT.designTokens:
+1. Extract color palette — THEME_COLORS
+2. Extract spacing scale — THEME_SPACING
+3. Extract typography — THEME_FONTS
+4. Extract border-radius — THEME_RADII
+5. Extract shadows — THEME_SHADOWS
+
+All fixes MUST use values from the fingerprint tokens or fallback extraction.
+If a desired value doesn't exist in the theme, use the closest available token.
 
 ## Scoring Weights
 
@@ -74,6 +74,15 @@ All fixes MUST use values from these extracted tokens. If a desired value doesn'
 4. **Consistent application** — if `rounded-lg` is the standard, find and fix all `rounded-md` or `rounded` outliers
 5. **Maximum 5 fixes per iteration** — moderate pace, each fix must reference a specific token
 
+## Diff Configuration
+
+- `diff_threshold`: 0.15 (moderate — meaningful changes expected per iteration)
+- `visual_fidelity`: computed, warn if < 0.3 (possible regression)
+- `theme_fidelity`: **HARD GATE** at 0.8 — fixes scoring below 0.8 are reverted and revised using only `BRAND_FINGERPRINT.tokens`. Max 1 retry per fix.
+
 ## Completion Threshold
 
-All 5 criteria >= 4/5 for 2 consecutive iterations. All criteria are equally weighted for completion — no exemptions.
+- `goal_threshold`: 4.2
+- Per-criterion: All 5 criteria >= 4/5 raw for 2 consecutive iterations.
+- Exemptions: None — all criteria must pass.
+- `completion_exemptions`: []

@@ -123,12 +123,14 @@ That's it. agent-browser is auto-installed on first run (`npm install -g agent-b
 
 ### What happens
 
-1. **Mode selection** — Choose Precision Polish, Theme-Respect Elevate, or Creative Unleash (or pass as 3rd argument)
+1. **Mode selection** — Rich interview with real-world examples, mode-adaptive follow-up questions, and a confirmation summary. Choose Precision Polish, Theme-Respect Elevate, or Creative Unleash (or pass as 3rd argument to skip)
 2. **agent-browser check** — Installs agent-browser if missing, opens a headed browser session with `wait --load networkidle`
 3. **Dev server check** — Verifies the target URL responds. If not, scans common ports for a running server or auto-starts one via `package.json`
 4. **Context scan** — Reads your `package.json` and `tailwind.config`, discovers companion design skills
-5. **Interview** — Questions about target, focus areas, and iterations
-6. **Section screenshots** — High-resolution annotated captures of each page section (semantic landmarks or scroll fallback)
+5. **Brand fingerprint** (opt-in) — Extracts color palette, typography, spacing, and shape language from design tokens. Persists to `.claude/brand-guideline.md`
+6. **Screenshot baseline** — Captures initial annotated screenshots, runs visual fingerprint enrichment, establishes before state for diff tracking
+7. **Interview** — Questions about target, focus areas, and iterations
+7. **Section screenshots** — High-resolution annotated captures of each page section (semantic landmarks or scroll fallback)
 7. **Loop** — Autonomous iteration: screenshot, score with mode-specific weights, fix within mode constraints, repeat
 8. **Completion** — Stops when all 5 criteria score 4/5+ for two consecutive iterations. Cleans up all screenshot files automatically.
 
@@ -202,8 +204,17 @@ v2.0 uses a **Thin Orchestrator** pattern. SKILL.md is a lightweight wrapper tha
 ```
 SKILL.md (wrapper)
   → orchestrator/orchestrator.md (coordinator)
+      ├── orchestrator/interview-flow.md (mode selection interview)
+      ├── orchestrator/scan-context.md (context & skill scanner)
+      ├── orchestrator/code-fingerprint.md (brand token extraction)
+      ├── orchestrator/reference-analyzer.md (CU-only reference analysis)
+      ├── orchestrator/loop-engine.md (7-step iteration loop + decision tree)
+      ├── orchestrator/safety-engine.md (checkpoints, test runner, audit log)
+      ├── orchestrator/visual-fingerprint.md (visual analysis — future wiring)
+      ├── orchestrator/screenshot-engine/ (baseline-init, iteration-workflow, fidelity-scoring)
       ├── references/common/ (rubric, screenshots, constraints, output-format)
       ├── agents/visual-reviewer.md (scoring with mode weight overrides)
+      ├── agents/reviewers/ (precision-reviewer, theme-respect-reviewer, creative-unleash-reviewer)
       └── skills/modes/
           ├── precision-polish/SKILL.md (CSS-only, tight constraints)
           ├── theme-respect-elevate/SKILL.md (token-aware, medium latitude)
@@ -222,6 +233,17 @@ design-loop/
     SKILL.md              # Entry point wrapper → orchestrator
   orchestrator/
     orchestrator.md       # Core workflow coordinator
+    interview-flow.md     # Rich mode selection interview
+    scan-context.md       # Mode-aware context & skill scanner
+    code-fingerprint.md   # Brand token extraction from code
+    reference-analyzer.md # CU-only reference & inspiration analysis
+    loop-engine.md        # 7-step iteration loop with LOOP_STATE + plateau detection
+    safety-engine.md      # Safety coordinator: checkpoints, tests, audit log
+    visual-fingerprint.md # Visual analysis (interface designed, wired by Screenshot Mastery)
+    screenshot-engine/        # Visual capture, diff, and fidelity scoring
+      baseline-init.md        # One-time baseline capture
+      iteration-workflow.md   # Phase A/B capture & diff workflow
+      fidelity-scoring.md     # visual_fidelity + theme_fidelity algorithms
   skills/modes/
     precision-polish/     # CSS-only, production-safe
     theme-respect-elevate/# Design-token-aware
@@ -242,6 +264,10 @@ design-loop/
     stop-hook.sh          # Stop hook for autonomous iteration
   agents/
     visual-reviewer.md    # UI screenshot analysis agent
+    reviewers/
+      precision-reviewer.md     # Pixel-level regression specialist
+      theme-respect-reviewer.md # Token compliance auditor
+      creative-unleash-reviewer.md # Design conviction evaluator
   .claude-plugin/
     plugin.json           # Plugin manifest
     marketplace.json      # Marketplace manifest

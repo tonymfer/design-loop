@@ -36,6 +36,10 @@ STATUS=$(echo "$FRONTMATTER" | awk -F': *' '/^status:/ {print $2}')
 ITERATION=$(echo "$FRONTMATTER" | awk -F': *' '/^iteration:/ {print $2}')
 MAX_ITERATIONS=$(echo "$FRONTMATTER" | awk -F': *' '/^max_iterations:/ {print $2}')
 MODE=$(echo "$FRONTMATTER" | awk -F': *' '/^mode:/ {print $2}')
+GOAL_THRESHOLD=$(echo "$FRONTMATTER" | awk -F': *' '/^goal_threshold:/ {print $2}')
+if [[ -z "$GOAL_THRESHOLD" ]]; then
+  GOAL_THRESHOLD="4.0"
+fi
 
 # If status is not "running", allow exit (completed, paused, etc.)
 if [[ "$STATUS" != "running" ]]; then
@@ -137,8 +141,8 @@ fi
 # Check for completion signal: <promise>POLISHED</promise>
 PROMISE_TEXT=$(echo "$LAST_OUTPUT" | perl -0777 -pe 's/.*?<promise>(.*?)<\/promise>.*/$1/s; s/^\s+|\s+$//g; s/\s+/ /g' 2>/dev/null || echo "")
 
-if [[ -n "$PROMISE_TEXT" ]] && [[ "$PROMISE_TEXT" = "POLISHED" ]]; then
-  echo "✅ Design loop: Detected <promise>POLISHED</promise> — all criteria met!"
+if [[ -n "$PROMISE_TEXT" ]] && [[ "$PROMISE_TEXT" =~ ^(POLISHED|PLATEAU|REGRESSION|MAX_REACHED)$ ]]; then
+  echo "✅ Design loop: Detected <promise>$PROMISE_TEXT</promise>"
   sed "s/^status: .*/status: completed/" "$STATE_FILE" > "${STATE_FILE}.tmp.$$"
   mv "${STATE_FILE}.tmp.$$" "$STATE_FILE"
   exit 0
@@ -186,7 +190,7 @@ MODE_DISPLAY=""
 if [[ -n "$MODE" ]]; then
   MODE_DISPLAY=" | mode: $MODE"
 fi
-SYSTEM_MSG="🔄 design-loop iteration $ITER_DISPLAY$MODE_DISPLAY | To complete: all 5 criteria >= 4/5 for 2 consecutive iterations, then output <promise>POLISHED</promise>"
+SYSTEM_MSG="🔄 design-loop iteration $ITER_DISPLAY$MODE_DISPLAY | goal: weighted avg >= $GOAL_THRESHOLD + all criteria >= 4/5 for 2 consecutive iterations, then output <promise>POLISHED</promise>"
 
 # Output JSON to block the stop and feed prompt back
 jq -n \

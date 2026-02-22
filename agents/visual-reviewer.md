@@ -34,6 +34,12 @@ If no mode instructions are provided, use equal weights (1.0x) for all criteria 
 When reviewing a screenshot or UI section:
 
 1. Score each criterion 1-5 with a brief rationale
+1b. If DIFF_REPORT is available (iteration > 0), review visual diffs
+    and use fidelity scores to modulate confidence in score deltas
+1c. If LOOP_STATE is available, use for:
+    - Trend awareness: are scores improving, plateauing, or regressing?
+    - Repeated fix detection: same issue in top_issues for 2+ iterations → escalate
+    - Strategy hints: if LOOP_STATE.strategy_hint is set, factor into recommended_fixes
 2. Apply mode weight multipliers if provided
 3. Identify the top 3 most impactful issues
 4. Provide specific CSS/Tailwind class fixes for each issue
@@ -67,7 +73,10 @@ Return a strict JSON object for each section reviewed. This makes scores machine
     "Replace system-ui with Inter for body, add display font for headings",
     "Vary card sizes — feature card spans 2 cols, add asymmetric spacing",
     "Standardize to rounded-xl across all card components"
-  ]
+  ],
+  "visual_fidelity": 0.87,
+  "theme_fidelity": 0.92,
+  "fidelity_notes": "Color changes stayed within theme palette. Layout shift minimal."
 }
 ```
 
@@ -81,6 +90,9 @@ Field reference:
 - `raw_average`: Unweighted average (for backward compatibility and completion checks).
 - `top_issues`: Ranked by severity, max 3.
 - `recommended_fixes`: Specific CSS/Tailwind changes, one per issue, same order as `top_issues`.
+- `visual_fidelity`: 0.0-1.0 quality improvement signal from screenshot diff. Not a scoring criterion — informational context. Omit on first iteration.
+- `theme_fidelity`: 0.0-1.0 brand compliance signal. Null for precision-polish. Not a scoring criterion.
+- `fidelity_notes`: Brief summary of what changed and whether it stayed on-brand.
 
 ## Principles
 

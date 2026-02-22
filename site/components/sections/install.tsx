@@ -10,7 +10,7 @@ export function Install() {
       <div className="mx-auto max-w-[1100px] px-6">
         <ScrollReveal>
           <h2 className="font-serif text-3xl sm:text-4xl text-[var(--text-primary)]">
-            <span className="bg-gradient-to-r from-zinc-100 to-zinc-400 bg-clip-text text-transparent">One command away</span>
+            <span className="bg-gradient-to-r from-zinc-100 via-cyan-200 to-zinc-400 bg-clip-text text-transparent">One command away</span>
           </h2>
           <p className="mt-4 max-w-xl text-[var(--text-secondary)]">
             Requires{" "}
@@ -64,7 +64,7 @@ export function Install() {
         </ScrollReveal>
 
         <ScrollReveal delay={0.2}>
-          <div className="mt-8 rounded-xl border border-[rgba(var(--accent-rgb),0.1)] bg-[rgba(var(--accent-rgb),0.04)] p-5">
+          <div className="mt-8 rounded-xl border border-[rgba(var(--accent-rgb),0.1)] border-l-[rgba(var(--accent-rgb),0.4)] border-l-2 bg-[rgba(var(--accent-rgb),0.04)] p-5">
             <p className="font-mono text-[11px] font-semibold uppercase tracking-wider text-[var(--accent)]">
               Pro Tip
             </p>

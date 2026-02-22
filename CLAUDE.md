@@ -6,11 +6,22 @@ Claude Code plugin for autonomous visual UI/UX iteration.
 
 - `skills/design-loop/SKILL.md` — Entry point wrapper (delegates to orchestrator)
 - `orchestrator/orchestrator.md` — Core workflow coordinator (v2.0 thin orchestrator)
+- `orchestrator/interview-flow.md` — Rich mode selection interview with examples and adaptive questions
+- `orchestrator/scan-context.md` — Mode-aware project context, companion skill discovery, shared reference loading
+- `orchestrator/code-fingerprint.md` — Code-based brand token extraction (colors, typography, spacing, shape)
+- `orchestrator/reference-analyzer.md` — CU-only reference analysis, library recommendation, safe install
+- `orchestrator/loop-engine.md` — 7-step iteration loop with LOOP_STATE, plateau detection, decision trees
+- `orchestrator/safety-engine.md` — Safety coordinator: checkpoints, test runner, audit log
+- `orchestrator/visual-fingerprint.md` — Visual analysis interface (designed, wired by Screenshot Mastery)
+- `orchestrator/screenshot-engine/` — Visual capture, diff, and fidelity scoring (baseline-init, iteration-workflow, fidelity-scoring)
 - `skills/modes/precision-polish/SKILL.md` — Surgical CSS fixes, tight constraints
 - `skills/modes/theme-respect-elevate/SKILL.md` — Design-token-aware, elevate within system
 - `skills/modes/creative-unleash/SKILL.md` — Bold redesign, all companion skills loaded
 - `references/common/` — Shared references (rubric, screenshots, constraints, output-format)
 - `agents/visual-reviewer.md` — Visual scoring agent (accepts mode weight overrides)
+- `agents/reviewers/precision-reviewer.md` — Pixel-level regression specialist (extends visual-reviewer)
+- `agents/reviewers/theme-respect-reviewer.md` — Design token compliance auditor (extends visual-reviewer)
+- `agents/reviewers/creative-unleash-reviewer.md` — Design conviction evaluator (extends visual-reviewer)
 - `commands/design-loop.md` — `/design-loop` slash command entry point
 - `commands/doop.md` — `/doop` shorthand alias
 - `commands/export-loop.md` — `/export-loop` slash command

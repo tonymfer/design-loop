@@ -76,3 +76,25 @@ Started: 3.6/5 → Finished: 4.0/5
 Key improvements: Hierarchy (wordmark sizing), Contrast (muted text legibility), Spacing (phase cards)
 Skipped issues: none
 Duration: 3 iterations (POLISHED at iteration 3)
+
+---
+
+## Run 4 — Full-page gradual polish (5-criteria)
+
+| Iter | Comp | Typo | Color | Ident | Polish | Avg | Focus | Changes |
+|------|------|------|-------|-------|--------|-----|-------|---------|
+| 0 | 3.5 | 3.5 | 3.5 | 3.5 | 3.0 | 3.4 | Baseline | Initial measurement |
+| 1 | 3.5 | 4.0 | 3.5 | 3.5 | 3.0 | 3.5 | Typography, Card visibility | --card-bg/border opacity up, card titles text-sm→text-base |
+| 2 | 3.5 | 4.0 | 3.5 | 3.5 | 3.5 | 3.6 | Polish, Terminal depth | Terminal shadow+colored dots, BentoCard hover gradient up |
+| 3 | 3.5 | 4.0 | 4.0 | 3.5 | 3.5 | 3.7 | Color, Heading consistency | Heading gradients via-cyan-200, step numbers opacity up |
+| 4 | 3.5 | 4.0 | 4.0 | 3.5 | 3.5 | 3.7 | Spacing, Footer | Features py-16→py-20, footer py-12→py-14, wordmark text-base |
+| 5 | 3.5 | 4.0 | 4.0 | 3.5 | 3.5 | 3.7 | Visual hierarchy | Feature highlight glow, icon boxes more vibrant, arrows more visible |
+| 6 | 4.0 | 4.0 | 4.0 | 4.0 | 3.5 | 3.9 | Composition, Identity | Features grid→4-col asymmetric, highlighted cards col-span-2 |
+| 7 | 4.0 | 4.0 | 4.0 | 4.0 | 4.0 | 4.0 | Polish | Phase labels spacing+sizing, footer divider, pro tip left border |
+| 8 | 4.0 | 4.0 | 4.0 | 4.0 | 4.0 | 4.0 | Verification | All sections verified, responsive pass, no errors — POLISHED |
+
+### Summary
+Started: 3.4/5 → Finished: 4.0/5
+Key improvements: Typography (+0.5, card text scale), Color (+0.5, unified gradients), Composition (+0.5, asymmetric grid), Identity (+0.5, highlight cards), Polish (+1.0, terminal depth, details)
+Skipped issues: iteration demo sidebar height delta (structural, not visual)
+Duration: 8 iterations (POLISHED at iteration 8)

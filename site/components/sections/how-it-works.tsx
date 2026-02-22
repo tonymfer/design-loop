@@ -55,7 +55,7 @@ export function HowItWorks() {
       <div className="mx-auto max-w-[1100px] px-6">
         <ScrollReveal>
           <h2 className="font-serif text-3xl sm:text-4xl">
-            <span className="bg-gradient-to-r from-zinc-100 to-zinc-400 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-zinc-100 via-cyan-200 to-zinc-400 bg-clip-text text-transparent">
               How it works
             </span>
           </h2>
@@ -70,20 +70,20 @@ export function HowItWorks() {
             return (
               <ScrollReveal key={step.title} delay={i * 0.08}>
                 <div className="group relative h-full rounded-xl border border-[var(--border)] bg-[var(--card-bg)] p-5 transition-all hover:border-[color-mix(in_srgb,var(--accent),transparent_80%)] hover:bg-[var(--surface)]">
-                  <span className="font-mono text-[10px] font-bold text-[color-mix(in_srgb,var(--accent),transparent_60%)]">
+                  <span className="font-mono text-[11px] font-bold text-[color-mix(in_srgb,var(--accent),transparent_40%)]">
                     {step.number}
                   </span>
-                  <div className="mt-3 flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-[rgba(var(--accent-rgb),0.1)] to-[rgba(var(--accent-2-rgb),0.1)] ring-1 ring-[rgba(var(--accent-rgb),0.1)]">
+                  <div className="mt-3 flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-[rgba(var(--accent-rgb),0.15)] to-[rgba(var(--accent-2-rgb),0.1)] ring-1 ring-[rgba(var(--accent-rgb),0.15)]">
                     <Icon className="h-4.5 w-4.5 text-[var(--accent)]" />
                   </div>
-                  <h3 className="mt-4 text-sm font-semibold text-[var(--text-primary)]">
+                  <h3 className="mt-4 text-base font-semibold text-[var(--text-primary)]">
                     {step.title}
                   </h3>
-                  <p className="mt-2 text-xs leading-relaxed text-[var(--text-secondary)]">
+                  <p className="mt-2 text-sm leading-relaxed text-[var(--text-secondary)]">
                     {step.description}
                   </p>
                   {i < steps.length - 1 && (
-                    <div className="pointer-events-none absolute -right-3 top-1/2 hidden text-[color-mix(in_srgb,var(--accent),transparent_40%)] sm:block">
+                    <div className="pointer-events-none absolute -right-3 top-1/2 hidden text-sm text-[var(--accent)] opacity-50 sm:block">
                       &rarr;
                     </div>
                   )}
@@ -95,14 +95,14 @@ export function HowItWorks() {
 
         {/* Phase strategy — inline */}
         <ScrollReveal delay={0.4}>
-          <p className="mt-10 mb-3 font-mono text-[10px] uppercase tracking-widest text-[var(--text-muted)]">Iteration phases</p>
+          <p className="mt-12 mb-4 font-mono text-[11px] uppercase tracking-widest text-[var(--text-muted)]">Iteration phases</p>
           <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
             {phases.map((phase) => (
               <div
                 key={phase.range}
                 className="rounded-lg border border-[var(--border)] bg-[var(--card-bg)] px-5 py-4"
               >
-                <span className="font-mono text-[10px] font-bold text-[color-mix(in_srgb,var(--accent),transparent_40%)]">
+                <span className="font-mono text-[11px] font-bold text-[color-mix(in_srgb,var(--accent),transparent_30%)]">
                   Iter {phase.range}
                 </span>
                 <p className="mt-1.5 text-sm font-semibold text-[var(--text-primary)]">

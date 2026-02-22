@@ -17,7 +17,7 @@ export function BentoCard({
         className
       )}
     >
-      <div className="pointer-events-none absolute inset-0 rounded-xl bg-gradient-to-br from-[rgba(var(--accent-rgb),0.04)] via-transparent to-[rgba(var(--accent-2-rgb),0.02)] opacity-0 transition-opacity group-hover:opacity-100" />
+      <div className="pointer-events-none absolute inset-0 rounded-xl bg-gradient-to-br from-[rgba(var(--accent-rgb),0.06)] via-transparent to-[rgba(var(--accent-2-rgb),0.04)] opacity-0 transition-opacity group-hover:opacity-100" />
       <div className="relative z-10">{children}</div>
     </div>
   );

@@ -57,7 +57,7 @@ All companion skills stack — the more installed, the richer the creative direc
 
 ### Prohibited Changes (still enforced)
 
-- Adding npm dependencies (use CDN links for fonts if needed)
+- Adding npm dependencies UNLESS approved through the Reference Analyzer's safe install protocol (Step 3b). Use CDN links for fonts if no install approved.
 - Changing API routes, services, or database code
 - Removing existing functionality
 - Breaking accessibility (WCAG AA contrast is always required)
@@ -78,6 +78,14 @@ Before the first fix in each iteration:
 ```
 1. Review all screenshots and scores
 2. Identify the page's current design personality (or lack thereof)
+2b. If BRAND_FINGERPRINT.visual.personality exists, use it as the starting
+       classification. If empty, infer personality from BRAND_FINGERPRINT.tokens
+       (e.g., retro-pixel font → Playful/Retro direction).
+2c. If REFERENCE_ANALYSIS exists and is not skipped:
+      - Use REFERENCE_ANALYSIS.aesthetic_direction as PRIMARY direction input
+      - Cross-reference with BRAND_FINGERPRINT for coherence
+      - If REFERENCE_ANALYSIS.installed[] is non-empty, prefer using those libraries in fixes
+      - Note in report: "Direction informed by reference: [aesthetic_direction]"
 3. Choose ONE design direction to push toward:
    - Minimal & sophisticated (lots of white space, refined type, muted palette)
    - Bold & expressive (strong colors, display fonts, asymmetric layout)
@@ -86,8 +94,19 @@ Before the first fix in each iteration:
    - Or derive direction from companion skill guidance
 4. All fixes in this iteration serve that chosen direction
 5. Document the chosen direction in the iteration report
+   If BRAND_FINGERPRINT informed the direction, note: "Direction informed by brand fingerprint: [personality]"
 ```
+
+## Diff Configuration
+
+- `diff_threshold`: 0.25 (wide — large visual changes expected and encouraged)
+- `visual_fidelity`: computed, warn if < 0.3 (possible regression)
+- `theme_fidelity`: computed, informational only. Warn if < 0.5 ("significant brand departure — verify intentional").
 
 ## Completion Threshold
 
-All 5 criteria >= 4/5 for 2 consecutive iterations. **Visual Identity must score >= 4** — this mode does NOT pass without a strong design point of view.
+- `goal_threshold`: 4.7
+- Per-criterion: All 5 criteria >= 4/5 raw for 2 consecutive iterations.
+- Identity MUST >= 4 — does NOT pass without a design point of view.
+- `completion_exemptions`: []
+- `required_minimum`: { "identity": 4 }

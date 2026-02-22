@@ -57,6 +57,15 @@ All 5 criteria are scored, but **Polish** and **Composition** are weighted highe
 4. **Maximum 3 fixes per iteration** — conservative pace prevents regression
 5. **Skip if uncertain** — if a fix could break layout on other viewports, skip it
 
+## Diff Configuration
+
+- `diff_threshold`: 0.05 (tight — only significant pixel changes register)
+- `visual_fidelity`: computed, warn if < 0.3 (possible regression)
+- `theme_fidelity`: N/A (brand fingerprinting skipped for this mode)
+
 ## Completion Threshold
 
-All 5 criteria >= 4/5 for 2 consecutive iterations. Visual Identity scores below 4 do NOT block completion in this mode — it is explicitly out of scope.
+- `goal_threshold`: 4.0
+- Per-criterion: All 5 criteria >= 4/5 raw for 2 consecutive iterations.
+- Exemption: Visual Identity < 4 does NOT block completion.
+- `completion_exemptions`: ["identity"]
