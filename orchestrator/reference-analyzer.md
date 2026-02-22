@@ -602,6 +602,117 @@ Rendering check emphasis (CU zero-tolerance):
   - Live iteration meta: verify data-iteration switching produces visible state changes
   Mode: CU → Phase B re-score MANDATORY → all checks verified visually after every fix
 ```
+
+### Example 5: Self-Demonstrating Product Hero — design-loop Demo Site
+
+```yaml
+Input:
+  REFERENCE_TYPE: null  # Skip pipeline
+  BRAND_FINGERPRINT:
+    visual:
+      personality: [technical, bold]
+    tokens:
+      background: "#030712"
+      accent: "#06b6d4"
+      accent_2: "#8b5cf6"
+      fontDisplay: "Space Grotesk"
+      fontSerif: "Instrument Serif"
+      fontMono: "JetBrains Mono"
+  PROJECT_CONTEXT:
+    framework: "nextjs"
+    componentLibrary: null  # Custom components (Spotlight, Threads, AnimatedGroup, GlowButton)
+  FOCUS: "hero"
+  DESIGN_SKILLS: []
+
+Existing hero inventory (behavioral gap analysis):
+  PRESENT:
+    - Cursor-responsive glow: Spotlight component tracks mouse via onMouseMove,
+      renders radial-gradient at cursor position (spring physics, damping=30, stiffness=200).
+      This IS cursor-reactive but is BACKGROUND only — not a distinct focal OBJECT.
+    - WebGL kinetic lines: Threads component renders 40 Perlin-noise lines via OGL
+      fragment shader, mouse-reactive amplitude. Only activates at iteration >= 3.
+    - Score badge: floating 2.1→4.8 comparison with translateY/rotate animation (4s).
+      But values are STATIC text, not animated counters.
+    - Aurora background: animated radial gradient (12s drift) + floating orb (8s drift).
+      Driven by --effects-opacity per iteration state.
+    - AnimatedGroup: children stagger in (0.08s per child, spring bounce). But wraps
+      ENTIRE elements (badge, wordmark, headline) — not per-WORD.
+
+  MISSING (per Hero Upgrade Decision Tree):
+    - Priority 1 PARTIAL: Spotlight is cursor-reactive background, not a focal OBJECT.
+      No 3D element, rotating SVG, or canvas scene that IS the hero's visual anchor.
+    - Priority 2 MISSING: Headline renders all at once via AnimatedGroup (block-level).
+      Individual WORDS do not stagger.
+    - Priority 3 MISSING: No translucent depth panels. Aurora bg + orb are
+      pointer-events-none background layers. No foreground translucent surfaces with
+      backdrop-filter or variable-alpha stacking.
+    - Priority 4 PARTIAL: AnimatedGroup triggers on mount (animate="visible"), not on
+      scroll intersection. No IntersectionObserver-driven animation.
+    - Priority 5 PARTIAL: Score badge shows 2.1→4.8 as static text, not animated
+      count-up. data-iteration changes colors/opacity but hero text content does NOT
+      transform between states.
+
+Upgrade targets (Hero Upgrade Decision Tree priority order):
+  1. KINETIC TAGLINE (Priority 2 — highest impact for this project):
+     - Split headline into <span> per word, each staggers from translateY(20px)
+       with 80ms animation-delay
+     - Iteration-aware text transformation:
+       iteration 0-1: "AI can code your UI. But it can't see it."
+       iteration 3-4: "AI can code your UI. Now it can see it."
+     - The tagline ITSELF demonstrates the before/after.
+
+  2. DEPTH PANELS (Priority 3):
+     - Add 2-3 translucent panels: backdrop-filter: blur(12px) + rgba(bg, 0.3/0.5)
+     - Panels shift at different parallax rates on mousemove (0.3x, 0.6x cursor delta)
+     - Luminous edge treatment: inset box-shadow with accent at 0.08 alpha
+     - Panels appear at iteration >= 2 (driven by --effects-opacity)
+
+  3. SCORE BADGE ANIMATION (Priority 4+5):
+     - Animate 2.1→4.8 as count-up on IntersectionObserver entry (2.5s easeOutExpo)
+     - Doubles as scroll reward: triggers on scroll entry, not page load
+
+  4. THREADS ACTIVATION THRESHOLD:
+     - Lower from iteration >= 3 to iteration >= 2
+
+Visual transformation narrative (feeds into scoring_guidance):
+  BEFORE: Headline appears as block-level children via AnimatedGroup. Spotlight glow
+          tracks cursor on BACKGROUND only. Score badge static text. No depth panels.
+          Threads only at iteration 3+. Text content identical across all states.
+          Identity: 3.5/5 — polished but not unforgettable.
+  AFTER:  Each word staggers in with 80ms delay. 2-3 translucent depth panels with
+          backdrop-filter create atmospheric layering, shifting on mousemove.
+          Score badge counts up 2.1→4.8 on scroll intersection. Threads at iteration 2.
+          At iteration 3-4, tagline transforms "can't see" → "can see."
+          Identity target: 5/5 — self-demonstrating.
+  META:   The hero IS the before/after. Iteration 0 = problem (static, flat, "can't see").
+          Iteration 4 = solution (kinetic, deep, "can see"). The design-loop's product
+          is demonstrated within the hero section itself.
+
+Output:
+  REFERENCE_ANALYSIS:
+    skipped: false
+    source: "inspiration-kb"
+    aesthetic_direction: "Dark technical with kinetic depth and self-demonstrating narrative"
+    detected_patterns: []
+    component_matches: []  # All upgrades use existing custom components
+    install_mode: "current-stack"
+    installed: []
+    scoring_guidance: "Hero is the moment AI proves it can see. Words must stagger per-word
+      with visible delay (not block-level AnimatedGroup). Depth panels must show translucent
+      layering with backdrop-filter (not just background gradients). Score badge must animate
+      on scroll entry (not static text). Tagline text must CHANGE between iteration states
+      for self-demonstrating bonus. Threads should activate at iteration 2, not 3. Penalize:
+      all-at-once text, flat single-plane layouts, static score values, identical text across
+      all states."
+    inspiration_sources: [...]
+
+Component reference map (existing demo site):
+  - Spotlight (ui/spotlight.tsx): cursor-tracking radial glow. P1 background reactivity. Keep.
+  - Threads (ui/threads.tsx): WebGL kinetic lines. Lower activation to iteration >= 2.
+  - AnimatedGroup (ui/animated-group.tsx): block-level stagger. NOT per-word.
+  - GlowButton (ui/glow-button.tsx): gradient CTA. No changes.
+  - iteration-context (lib/iteration-context.tsx): provides iteration + mode state.
+```
 </few-shot-examples>
 
 <output-contract>

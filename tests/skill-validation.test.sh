@@ -537,6 +537,50 @@ fi
 assert_contains "T23j: ref-analyzer Example 4 has per-word stagger behavior" "Per-word stagger" orchestrator/reference-analyzer.md
 assert_contains "T23k: ref-analyzer has live iteration meta" "iteration meta" orchestrator/reference-analyzer.md
 
+# --- Test 24: Hero Upgrade Strategy & Live Demo Integration (Sub-step 4) ---
+
+# T24a-c: Hero Upgrade Decision Tree in CU SKILL
+assert_contains "T24a: CU SKILL has Hero Upgrade Decision Tree" "Hero Upgrade Decision Tree" skills/modes/creative-unleash/SKILL.md
+assert_contains "T24b: CU SKILL decision tree has Priority 1" "PRIORITY 1" skills/modes/creative-unleash/SKILL.md
+assert_contains "T24c: CU SKILL decision tree has Priority 5" "PRIORITY 5" skills/modes/creative-unleash/SKILL.md
+
+# T24d-f: Depth-Layer Behavioral Taxonomy
+assert_contains "T24d: CU SKILL has Depth-Layer Taxonomy" "Depth-Layer Behavioral Taxonomy" skills/modes/creative-unleash/SKILL.md
+assert_contains "T24e: CU SKILL taxonomy has variable-alpha" "Variable-alpha" skills/modes/creative-unleash/SKILL.md
+assert_contains "T24f: CU SKILL taxonomy has specular highlight" "Cursor-following specular highlight" skills/modes/creative-unleash/SKILL.md
+
+# T24g-i: Example 5 in reference-analyzer
+assert_contains "T24g: ref-analyzer has Example 5" "Self-Demonstrating Product Hero" orchestrator/reference-analyzer.md
+assert_contains "T24h: Example 5 has behavioral gap analysis" "behavioral gap analysis" orchestrator/reference-analyzer.md
+assert_contains "T24i: Example 5 references Spotlight component" "Spotlight" orchestrator/reference-analyzer.md
+
+# T24j-k: Hero scoring in CU reviewer
+assert_contains "T24j: CU reviewer has hero upgrade priority scoring" "HERO UPGRADE PRIORITY SCORING" agents/reviewers/creative-unleash-reviewer.md
+assert_contains "T24k: CU reviewer has per-word kinetic check" "Per-word kinetic text" agents/reviewers/creative-unleash-reviewer.md
+
+# T24l: Hero-aware fix routing in loop-engine
+assert_contains "T24l: loop-engine has hero-aware fix prioritization" "Hero-aware fix prioritization" orchestrator/loop-engine.md
+
+# T24m-o: Anti-hardcode compliance
+if grep -qi "liquid glass" skills/modes/creative-unleash/SKILL.md 2>/dev/null; then
+  echo "FAIL: T24m: CU SKILL contains hardcoded 'liquid glass'"
+  TESTS_FAILED=$((TESTS_FAILED + 1))
+else
+  TESTS_PASSED=$((TESTS_PASSED + 1))
+fi
+if grep -qi "glassmorphism" skills/modes/creative-unleash/SKILL.md 2>/dev/null; then
+  echo "FAIL: T24n: CU SKILL contains hardcoded 'glassmorphism'"
+  TESTS_FAILED=$((TESTS_FAILED + 1))
+else
+  TESTS_PASSED=$((TESTS_PASSED + 1))
+fi
+if grep -qi "neumorphism" skills/modes/creative-unleash/SKILL.md 2>/dev/null; then
+  echo "FAIL: T24o: CU SKILL contains hardcoded 'neumorphism'"
+  TESTS_FAILED=$((TESTS_FAILED + 1))
+else
+  TESTS_PASSED=$((TESTS_PASSED + 1))
+fi
+
 # --- Summary ---
 TOTAL=$((TESTS_PASSED + TESTS_FAILED))
 echo ""

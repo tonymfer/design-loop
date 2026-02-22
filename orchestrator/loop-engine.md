@@ -228,6 +228,15 @@ Apply fixes per MODE_INSTRUCTIONS constraints:
     - Back up code files targeted by this iteration's fixes
     - Location: ~/.claude/backups/design-loop/{session}/iter-{N}/
 2. Select top 3 issues from reviewer's top_issues (or top 5 for TRE/CU modes)
+2b. Hero-aware fix prioritization:
+    If MODE = creative-unleash AND FOCUS = "hero":
+      → Instead of ordering fixes by reviewer score impact alone, consult the
+        Hero Upgrade Decision Tree in MODE_INSTRUCTIONS.
+      → Sequence fixes by decision tree priority: P1 (focal element) before
+        P2 (kinetic text) before P3 (depth layers) before P4 (scroll reward)
+        before P5 (self-demonstrating).
+      → Skip priorities already satisfied (checked in reviewer step 4d).
+      → Log: "Hero fix priority: targeting P[N] — [behavior name]"
 3. Apply fixes one at a time:
    a. Make the code change
    b. Verify build passes

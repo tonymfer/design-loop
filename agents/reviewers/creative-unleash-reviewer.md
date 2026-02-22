@@ -77,6 +77,40 @@ directly. All creative direction must come from BRAND_FINGERPRINT + loaded DESIG
     - If hero demonstrates its own iteration (live before/after, score animation) = bonus +0.25 to identity
     - Dashboard/settings: check section-specific behavioral priorities from MODE_INSTRUCTIONS
 
+4d. HERO UPGRADE PRIORITY SCORING (if FOCUS="hero"):
+    Apply weighted behavioral checks aligned with the Hero Upgrade Decision Tree
+    from MODE_INSTRUCTIONS. Each behavior scored by priority weight:
+
+    [ ] P1 Focal depth response (weight 0.15):
+        A distinct visual element (not just background glow) responds to cursor.
+        Background-only tracking (spotlight radial glow) = partial (0.08).
+        Full 3D object or reactive SVG/canvas = full (0.15).
+    [ ] P2 Per-word kinetic text (weight 0.12):
+        Words stagger individually with visible delay between words.
+        Block-level stagger (entire elements, not words) = 0.
+        Per-word <span> with 60-100ms delay = full (0.12).
+    [ ] P3 Depth layer presence (weight 0.10):
+        2+ translucent surfaces with backdrop-filter at different z-levels.
+        Single-plane layout with only background gradients = 0.
+        2+ panels with visible see-through + differential parallax = full (0.10).
+    [ ] P4 Scroll-triggered reward (weight 0.08):
+        IntersectionObserver-driven animation (counter, draw, reveal).
+        Mount-only animation (page load trigger) = 0.
+        Scroll-triggered = full (0.08).
+    [ ] P5 Self-demonstrating transformation (weight 0.05):
+        Hero content (text, structure) changes between iteration states.
+        Same text at all iterations = 0.
+        Text transforms to show before/after narrative = full (0.05).
+
+    Sum of checked weights → identity bonus (max +0.50).
+    Zero behaviors with FOCUS="hero" → Identity capped at 3.
+
+    Structural transformation bonus (beyond +0.50 cap):
+    - If hero STRUCTURE (layout, element count, depth layers) changes between
+      iteration states, not just colors/opacity: +0.10 identity bonus.
+    - Cosmetic-only state changes (CSS custom properties, no structural diff): no bonus.
+      Note: "State changes cosmetic only — structural transformation would strengthen narrative."
+
 5. ANTI-SLOP CHECK: Scan for generic AI-generated patterns:
    - Uniform card grids with identical sizing
    - Stock box-shadows (shadow-md everywhere)

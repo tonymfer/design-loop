@@ -97,6 +97,77 @@ Behavioral priority: **one unforgettable focal element + kinetic text + scroll r
 - **Live iteration demonstration** (meta): the hero itself shows its own before/after transformation — score badges animating from 2.1 → 4.8, visual states morphing through iteration steps. The design-loop's product IS the hero's content.
 - **Scoring emphasis**: hero identity score gates the entire page's portfolio test. If the hero isn't screenshot-worthy, the page isn't.
 
+##### Hero Upgrade Decision Tree
+
+When FOCUS="hero", use this priority ordering to determine fix sequence. Assess what behaviors are ALREADY PRESENT vs MISSING, then fix the highest-priority missing behavior first.
+
+```
+PRIORITY 1 — Focal Element (gates everything else)
+  CHECK: Does the hero have ONE element that responds to cursor movement?
+    - Mouse-tracking 3D object, rotating SVG, parallax illustration, or reactive canvas
+    - The element must visually change in response to onMouseMove (rotation, shift, morph, scale)
+  IF MISSING → Fix FIRST. A hero without a focal element is a hero without a hero.
+    Technique: transform: rotate3d() bound to mousemove,
+    or embed with cursor binding,
+    or SVG with data-driven transform attributes.
+  IF PRESENT but broken (ANIMATION_FREEZE, BROKEN_ELEMENT) → Fix FIRST as rendering defect.
+  IF PRESENT and rendering → proceed to Priority 2.
+
+PRIORITY 2 — Kinetic Text Entry
+  CHECK: Does the headline TEXT animate in per-word or per-character?
+    - Individual <span> per word with stagger animation-delay (60-100ms between words)
+    - Entry direction: translateY(16-24px) or translateX(-12px) with opacity 0→1
+    - Post-entry: subtle Y oscillation (2-4px, 3-5s ease-in-out infinite) is optional but elevating
+  IF MISSING → Fix SECOND. Static text on a dynamic background creates dissonance.
+    Technique: split headline into <span> per word, apply CSS or JS stagger.
+  IF ALL-AT-ONCE (AnimatedGroup wrapping full headline, not per-word) → counts as MISSING.
+  IF PRESENT → proceed to Priority 3.
+
+PRIORITY 3 — Depth Layers (see Depth-Layer Behavioral Taxonomy below)
+  CHECK: Does the hero have 2+ translucent surfaces at different z-levels?
+    - backdrop-filter: blur() + background: rgba() on at least 2 surfaces
+    - Surfaces should shift at different parallax rates on mouse move
+    - Variable alpha: each surface has distinct opacity level (not all identical)
+  IF MISSING → Fix THIRD. Flat layouts fail the depth test.
+  IF PRESENT → proceed to Priority 4.
+
+PRIORITY 4 — Scroll Reward
+  CHECK: Does scrolling INTO the hero trigger a visible animation?
+    - IntersectionObserver toggling animation-play-state from paused to running
+    - Accent underline draw, counter animation, element fade-in from off-viewport
+  IF MISSING → Fix FOURTH. The scroll should reward attention.
+  IF PRESENT → proceed to Priority 5.
+
+PRIORITY 5 — Self-Demonstrating Meta (bonus)
+  CHECK: Does the hero SHOW its own before/after transformation?
+    - Score badge animating from low to high
+    - Visual states morphing through iteration steps as live content
+    - Text content CHANGING between states (problem → solution narrative)
+    - Structural changes across data-iteration states (not just color)
+  IF MISSING → Fix as bonus. This elevates from "designed" to "self-demonstrating."
+  IF PRESENT → hero is complete. Target remaining issues elsewhere.
+```
+
+When assessing completion, check each priority in order. The decision tree replaces generic "fix lowest score" with hero-specific behavioral sequencing. The tree is read by the loop-engine Step 4 fix selection when FOCUS="hero".
+
+##### Depth-Layer Behavioral Taxonomy
+
+Expands "Layered depth panels" into a complete behavioral vocabulary. These describe what the USER SEES, not CSS property names. The specific implementation values emerge from BRAND_FINGERPRINT + DESIGN_SKILLS.
+
+| Layer Behavior | What the User Sees | Implementation Signal |
+|---|---|---|
+| **Variable-alpha panel stacking** | 2-3 translucent rectangular surfaces overlapping, each with different see-through levels. The back-most is most transparent, the front-most most opaque. | `background: rgba(bg, 0.3/0.5/0.7)` on 2-3 positioned elements at different z-index levels. Each alpha value is distinct. |
+| **Surface blur** | Content behind a panel appears frosted — shapes visible but details smeared. Blur intensity varies per layer (deeper = more blur). | `backdrop-filter: blur(8-16px)` on translucent panels. Blur radius differs between layers (e.g., 8px foreground, 12px mid, 16px back). |
+| **Cursor-following specular highlight** | A bright soft spot on the primary panel that follows the mouse, as if light reflects off a glossy surface. Accent-tinted, fading at edges. | `radial-gradient()` positioned at cursor coordinates via onMouseMove. Size 100-200px, accent-tinted rgba at 0.1-0.2 alpha. Updates on requestAnimationFrame. |
+| **Depth-aware parallax rates** | Layers shift at different speeds when mouse moves — foreground shifts most, background least. Creates convincing 3D illusion without actual 3D. | `transform: translate()` bound to mousemove delta. Foreground: 1.0x delta, mid-ground: 0.5x delta, background: 0.2x delta. |
+| **Luminous edge treatment** | Panel edges have a subtle inner glow — thin bright line along edges suggesting the surface catches light. Uses accent color at very low opacity. | `box-shadow: inset 0 1px 0 rgba(accent, 0.1)` or `border-image` with gradient. 1-2px, accent-colored. |
+| **Depth-responsive opacity** | Panels become slightly more opaque on hover — confirmation that the layer is interactive. Non-hovered panels dim slightly to reinforce z-ordering. | `transition: background 0.3s` with hover state increasing alpha by 0.1-0.15. |
+
+**Fidelity checks for depth layers:**
+- SOLID_BLOCK: If any layer renders as fully opaque (no content visible through it), the depth effect has failed. Verify rgba alpha < 0.8 in computed styles.
+- MISSING_EFFECT: If backdrop-filter: blur() shows no visual difference, the browser may not support it or the element lacks a background. Verify visual softening in screenshot.
+- STACKING_ERROR: If text or interactive elements are hidden behind a depth layer, z-index ordering is wrong. Verify all interactive content is above decorative layers.
+
 #### Dashboard / Data-heavy
 
 Behavioral priority: **one hero metric + scanable rhythm + hover revelation**
