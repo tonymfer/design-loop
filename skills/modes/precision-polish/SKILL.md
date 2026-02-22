@@ -9,15 +9,15 @@ Conservative, targeted CSS fixes. Zero layout changes. The safest mode for produ
 
 ## Scoring Weights
 
-All 5 criteria are scored, but **Polish** and **Composition** are weighted highest. This mode cares most about alignment, consistency, and spacing — not creative ambition.
+All 5 criteria are scored at equal weight. This mode cares most about alignment, consistency, and spacing — not creative ambition.
 
 | Criterion | Weight | Sensitivity |
 |-----------|--------|-------------|
-| Composition | 1.2x | Flag spacing inconsistencies > 4px, misaligned elements |
+| Composition | 1.0x | Flag spacing inconsistencies > 4px, misaligned elements |
 | Typography | 1.0x | Flag only: wrong hierarchy, unreadable sizes, clipped text |
 | Color & Contrast | 1.0x | Flag only: WCAG AA failures, invisible interactive states |
-| Visual Identity | 0.8x | Acknowledge but do not attempt to fix — out of scope |
-| Polish | 1.5x | Primary focus. Every pixel inconsistency matters. |
+| Visual Identity | 1.0x | Acknowledge but do NOT attempt to fix — out of scope |
+| Polish | 1.0x | Core focus — every pixel inconsistency matters. No structural changes. Basic rendering check. |
 
 ### What "score 5" means in this mode
 

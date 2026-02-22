@@ -17,7 +17,7 @@ Score each section against the 5 anti-slop criteria (1-5 scale):
 
 4. **Visual Identity** — Looks designed, not generated. Has a point of view. Passes the "portfolio test" — would a designer put this in their portfolio? Flag generic card layouts, stock-photo hero patterns, default shadows.
 
-5. **Polish** — Alignment, consistency, details. Same pattern = same treatment. Edge cases handled. Flag inconsistent border-radius, mixed spacing scales, orphaned elements.
+5. **Polish** — Alignment, consistency, details. Same pattern = same treatment. Edge cases handled. Flag inconsistent border-radius, mixed spacing scales, orphaned elements. Flag rendering artifacts: solid blocks where gradients/effects expected, clipped/overflow text, missing visual effects, broken element rendering.
 
 ## Mode-Specific Weight Overrides
 
@@ -33,6 +33,25 @@ If no mode instructions are provided, use equal weights (1.0x) for all criteria 
 
 When reviewing a screenshot or UI section:
 
+0. **Rendering integrity scan** — Before scoring, scan each section screenshot for rendering failures using the formal defect taxonomy:
+
+   | Defect | Detection |
+   |--------|-----------|
+   | `SOLID_BLOCK` | Opaque rectangle where gradient/transparency expected |
+   | `MISSING_GRADIENT` | CSS gradient fallback to solid color, `background-clip: text` not applied |
+   | `CLIPPED_TEXT` | Text cut off, overflowing container, truncated without ellipsis |
+   | `MISSING_EFFECT` | `mask`, `clip-path`, `backdrop-filter` not rendering |
+   | `BROKEN_ELEMENT` | Empty box, SVG not loading, broken image |
+   | `STACKING_ERROR` | Z-index overlap hiding content |
+   | `ANIMATION_FREEZE` | CSS transition/animation defined but element static |
+
+   Flag each defect as `RENDERING_DEFECT` with defect type in the issues list.
+   Any RENDERING_DEFECT automatically caps Polish at 2/5 for the affected section.
+
+   Mode-specific rendering sensitivity:
+   - **PP**: Basic check — defects capped, fixed after score-driven issues
+   - **TRE**: Strong check — defects capped, also verify rendering uses theme tokens
+   - **CU**: Zero-tolerance — defects capped, fix FIRST before all other issues. Phase B re-score mandatory.
 1. Score each criterion 1-5 with a brief rationale
 1b. If DIFF_REPORT is available (iteration > 0), review visual diffs
     and use fidelity scores to modulate confidence in score deltas

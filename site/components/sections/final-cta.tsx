@@ -48,27 +48,40 @@ function ScoreCounter() {
   return (
     <div
       ref={ref}
-      className="mt-10 flex items-center justify-center gap-6"
+      className="mt-10 flex items-center justify-center gap-8"
     >
-      <div className="text-center">
+      {/* Before score with label */}
+      <div className="flex flex-col items-center gap-1">
+        <span className="font-mono text-[10px] uppercase tracking-wider text-[var(--text-muted)]">before</span>
         <motion.span className="font-mono text-4xl font-bold text-[var(--text-muted)]">
           {fromDisplay}
         </motion.span>
-        <span className="ml-1 font-mono text-sm text-[var(--text-muted)]">/5</span>
+        <span className="font-mono text-xs text-[var(--text-muted)]">/5</span>
       </div>
 
-      <div className="h-2 w-40 overflow-hidden rounded-full bg-[var(--surface)]">
-        <motion.div
-          className="h-full rounded-full bg-gradient-to-r from-[var(--accent)] to-[var(--accent-2)]"
-          style={{ width: progressWidth }}
-        />
+      {/* Progress bar with ruler ticks */}
+      <div className="flex flex-col items-center gap-1.5">
+        <div className="h-2 w-44 overflow-hidden rounded-full bg-[var(--surface)]">
+          <motion.div
+            className="h-full rounded-full bg-gradient-to-r from-[var(--accent)] to-[var(--accent-2)]"
+            style={{ width: progressWidth }}
+          />
+        </div>
+        {/* Ruler ticks under the progress bar */}
+        <div className="flex w-44 justify-between px-0.5">
+          {[1, 2, 3, 4, 5].map((n) => (
+            <span key={n} className="font-mono text-[8px] text-[var(--text-muted)] opacity-40">{n}</span>
+          ))}
+        </div>
       </div>
 
-      <div className="text-center">
+      {/* After score with label */}
+      <div className="flex flex-col items-center gap-1">
+        <span className="font-mono text-[10px] uppercase tracking-wider text-[var(--accent)]">after</span>
         <motion.span className="bg-gradient-to-r from-[var(--accent)] to-[var(--accent-2)] bg-clip-text font-mono text-4xl font-bold text-transparent">
           {toDisplay}
         </motion.span>
-        <span className="ml-1 font-mono text-sm text-[var(--accent)]">/5</span>
+        <span className="font-mono text-xs text-[var(--accent)]">/5</span>
       </div>
     </div>
   );
@@ -76,15 +89,20 @@ function ScoreCounter() {
 
 export function FinalCTA() {
   return (
-    <section className="relative border-t border-[var(--border)] py-24 text-center overflow-hidden">
+    <section className="relative section-divider py-28 text-center overflow-hidden">
+      {/* Warm ambient glow — CTA gets warm temperature */}
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_50%_40%,rgba(var(--accent-3-rgb),0.04),transparent_70%)]" />
       {/* Subtle dot grid background */}
       <div className="absolute inset-0 dot-grid" />
 
       <div className="relative mx-auto max-w-[1100px] px-6">
         <ScrollReveal>
-          <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl">
-            <span className="bg-gradient-to-r from-cyan-300 via-violet-300 to-cyan-300 bg-clip-text text-transparent">
-              Stop guessing. Start measuring.
+          <div className="mx-auto mb-6 accent-bar accent-bar-warm" />
+          <h2 className="font-display text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl xl:text-6xl text-[var(--text-primary)]">
+            Stop guessing.
+            <br />
+            <span className="bg-gradient-to-r from-[var(--accent)] via-[var(--accent-2)] to-[var(--accent)] bg-clip-text text-transparent">
+              Start measuring.
             </span>
           </h2>
         </ScrollReveal>
@@ -102,10 +120,16 @@ export function FinalCTA() {
         </ScrollReveal>
 
         <ScrollReveal delay={0.2}>
-          <div className="mt-8">
-            <GlowButton href="https://github.com/tonymfer/design-loop">
-              View on GitHub &rarr;
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
+            <GlowButton href="#install">
+              Get Started &rarr;
             </GlowButton>
+            <a
+              href="https://github.com/tonymfer/design-loop"
+              className="font-mono text-sm text-[var(--text-secondary)] transition-colors hover:text-[var(--accent)]"
+            >
+              View on GitHub &rarr;
+            </a>
           </div>
         </ScrollReveal>
       </div>

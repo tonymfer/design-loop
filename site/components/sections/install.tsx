@@ -6,11 +6,12 @@ import { TerminalBlock } from "@/components/ui/terminal-block";
 
 export function Install() {
   return (
-    <section id="install" className="border-t border-[var(--border)] py-20">
+    <section id="install" className="section-divider py-24">
       <div className="mx-auto max-w-[1100px] px-6">
         <ScrollReveal>
-          <h2 className="font-serif text-3xl sm:text-4xl text-[var(--text-primary)]">
-            <span className="bg-gradient-to-r from-zinc-100 via-cyan-200 to-zinc-400 bg-clip-text text-transparent">One command away</span>
+          <div className="accent-bar accent-bar-warm mb-6" />
+          <h2 className="font-display text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl text-[var(--text-primary)]">
+            One command away
           </h2>
           <p className="mt-4 max-w-xl text-[var(--text-secondary)]">
             Requires{" "}
@@ -64,8 +65,8 @@ export function Install() {
         </ScrollReveal>
 
         <ScrollReveal delay={0.2}>
-          <div className="mt-8 rounded-xl border border-[rgba(var(--accent-rgb),0.1)] border-l-[rgba(var(--accent-rgb),0.4)] border-l-2 bg-[rgba(var(--accent-rgb),0.04)] p-5">
-            <p className="font-mono text-[11px] font-semibold uppercase tracking-wider text-[var(--accent)]">
+          <div className="mt-8 rounded-xl border border-[rgba(var(--accent-3-rgb),0.1)] border-l-[rgba(var(--accent-3-rgb),0.4)] border-l-2 bg-[rgba(var(--accent-3-rgb),0.04)] p-5">
+            <p className="font-mono text-[11px] font-semibold uppercase tracking-wider text-[var(--accent-3)]">
               Pro Tip
             </p>
             <p className="mt-2 text-sm leading-relaxed text-[var(--text-secondary)]">

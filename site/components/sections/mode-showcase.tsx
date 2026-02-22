@@ -76,16 +76,16 @@ export function ModeShowcase() {
   };
 
   return (
-    <section className="border-t border-[var(--border)] py-16">
+    <section className="section-divider py-20">
       <div className="mx-auto max-w-[1100px] px-6">
         <ScrollReveal>
-          <h2 className="font-serif text-3xl sm:text-4xl text-[var(--text-primary)]">
-            <span className="bg-gradient-to-r from-cyan-300 to-violet-300 bg-clip-text text-transparent">
-              Choose your mode
-            </span>
+          <span className="slash-motif heading-mono">Modes</span>
+          <h2 className="mt-3 font-display text-3xl font-bold tracking-tight sm:text-4xl text-[var(--text-primary)]">
+            Three modes.{" "}
+            <span className="text-[var(--text-secondary)]">One loop.</span>
           </h2>
           <p className="mt-4 max-w-xl text-[var(--text-secondary)]">
-            Three approaches to visual iteration. Each uses the same loop — different creative latitude.
+            Different creative latitude for different contexts.
           </p>
         </ScrollReveal>
 
@@ -98,7 +98,7 @@ export function ModeShowcase() {
               <ScrollReveal key={card.mode} delay={i * 0.08}>
                 <motion.div
                   className={cn(
-                    "group relative flex h-full flex-col rounded-xl border p-6 transition-all cursor-pointer",
+                    "group relative flex h-full flex-col rounded-xl border p-6 transition-all cursor-pointer overflow-hidden",
                     isActive
                       ? "border-[color-mix(in_srgb,var(--accent),transparent_40%)] bg-[var(--surface)]"
                       : "border-[var(--border)] bg-[var(--card-bg)] hover:border-[color-mix(in_srgb,var(--accent),transparent_70%)] hover:bg-[var(--surface)]"
@@ -112,6 +112,18 @@ export function ModeShowcase() {
                       : "none",
                   }}
                 >
+                  {/* Mode-specific top accent band */}
+                  <div
+                    className="absolute top-0 left-0 right-0 h-[2px]"
+                    style={{
+                      background: card.mode === "precision-polish"
+                        ? `repeating-linear-gradient(90deg, ${card.accentFrom} 0px, ${card.accentFrom} 4px, transparent 4px, transparent 8px)`
+                        : card.mode === "theme-respect-elevate"
+                        ? `linear-gradient(90deg, transparent, ${card.accentFrom}, transparent)`
+                        : `linear-gradient(90deg, ${card.accentFrom}, ${card.accentTo}, #f59e0b, ${card.accentFrom})`,
+                    }}
+                  />
+
                   {/* Glow overlay on hover */}
                   <div
                     className="pointer-events-none absolute inset-0 rounded-xl opacity-0 transition-opacity group-hover:opacity-100"

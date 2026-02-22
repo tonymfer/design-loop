@@ -2,35 +2,45 @@ import React from "react";
 
 export function Footer() {
   return (
-    <footer className="border-t border-[var(--border)] py-14 text-center">
+    <footer className="section-divider py-16 text-center">
       <div className="mx-auto max-w-[1100px] px-6">
-        <p className="mb-4 font-mono text-base font-bold tracking-tight text-[var(--text-secondary)]">
-          design<span className="text-[var(--accent)]">-</span>loop
+        {/* Brand wordmark */}
+        <div className="flex flex-col items-center gap-3">
+          <p className="font-mono text-lg font-bold tracking-tight text-[var(--text-secondary)]">
+            design<span className="text-[var(--accent)]">-</span>loop
+          </p>
+          <div className="hero-accent-line" />
+        </div>
+
+        {/* Tagline */}
+        <p className="mt-4 font-serif text-sm italic text-[var(--text-muted)]">
+          AI can code your UI. Now it can see it.
         </p>
-        <p className="font-mono text-xs text-[var(--text-muted)]">
-          Built by{" "}
+
+        {/* Links */}
+        <div className="mt-6 flex items-center justify-center gap-6">
           <a
             href="https://github.com/tonymfer"
             target="_blank"
             rel="noopener noreferrer"
-            className="font-semibold text-[var(--text-secondary)] transition-colors hover:text-[var(--accent)]"
+            className="font-mono text-xs font-medium text-[var(--text-secondary)] transition-colors hover:text-[var(--accent)]"
           >
-            tonymfer
+            @tonymfer
           </a>
-          {" \u00B7 "}
+          <span className="text-[var(--border)]">/</span>
           <a
             href="https://github.com/tonymfer/design-loop"
             target="_blank"
             rel="noopener noreferrer"
-            className="font-semibold text-[var(--text-secondary)] transition-colors hover:text-[var(--accent)]"
+            className="font-mono text-xs font-medium text-[var(--text-secondary)] transition-colors hover:text-[var(--accent)]"
           >
             GitHub
           </a>
-          {" \u00B7 "}
-          MIT License
-        </p>
-        <div className="mx-auto mt-5 h-px w-16 bg-gradient-to-r from-transparent via-[var(--accent)] to-transparent opacity-50" />
-        <p className="mt-5 font-mono text-[10px] text-[var(--text-muted)]">
+          <span className="text-[var(--border)]">/</span>
+          <span className="font-mono text-xs text-[var(--text-muted)]">MIT</span>
+        </div>
+
+        <p className="mt-6 font-mono text-[10px] text-[var(--text-muted)] opacity-60">
           v1.0.0
         </p>
       </div>

@@ -64,41 +64,58 @@ const criteria: Criterion[] = [
 
 export function CriteriaGrid() {
   return (
-    <section className="border-t border-[var(--border)] py-20">
+    <section className="section-divider section-elevated py-24">
       <div className="mx-auto max-w-[1100px] px-6">
         <ScrollReveal>
-          <h2 className="font-serif text-3xl sm:text-4xl text-[var(--text-primary)]">
-            <span className="bg-gradient-to-r from-cyan-300 to-violet-300 bg-clip-text text-transparent">5 anti-slop criteria</span>
-          </h2>
-          <p className="mt-4 max-w-xl text-[var(--text-secondary)]">
+          <div className="flex items-end gap-6">
+            <span className="step-number-xl select-none">5</span>
+            <div>
+              <span className="slash-motif heading-mono">Scoring</span>
+              <h2 className="mt-1 font-serif text-3xl italic sm:text-4xl text-[var(--text-primary)]" style={{ letterSpacing: "-0.02em" }}>
+                Anti-slop criteria
+              </h2>
+            </div>
+          </div>
+          <p className="mt-5 max-w-xl text-[var(--text-secondary)]">
             Every screenshot set is scored. Every score detects AI-default
             patterns and pushes toward intentional design.
           </p>
         </ScrollReveal>
 
         <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-6">
-          {criteria.map((c, i) => (
-            <ScrollReveal key={c.key} delay={i * 0.05} className={i < 3 ? "lg:col-span-2" : "lg:col-span-3"}>
-              <BentoCard className="h-full">
-                <div className="space-y-3">
-                  <div className="flex items-center gap-3">
-                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-[rgba(var(--accent-rgb),0.2)] to-[rgba(var(--accent-2-rgb),0.2)] ring-1 ring-[rgba(var(--accent-rgb),0.2)]">
-                      <c.icon className="h-4 w-4 text-[var(--accent)]" />
+          {criteria.map((c, i) => {
+            const isIdentity = c.key === "identity";
+            return (
+              <ScrollReveal key={c.key} delay={i * 0.05} className={i < 3 ? "lg:col-span-2" : "lg:col-span-3"}>
+                <BentoCard className={`h-full ${isIdentity ? "glow-card ring-1 ring-[rgba(var(--accent-2-rgb),0.15)]" : ""}`}>
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3">
+                      <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ring-1 ${
+                        isIdentity
+                          ? "bg-gradient-to-br from-[rgba(var(--accent-2-rgb),0.25)] to-[rgba(var(--accent-rgb),0.15)] ring-[rgba(var(--accent-2-rgb),0.25)]"
+                          : "bg-gradient-to-br from-[rgba(var(--accent-rgb),0.2)] to-[rgba(var(--accent-2-rgb),0.2)] ring-[rgba(var(--accent-rgb),0.2)]"
+                      }`}>
+                        <c.icon className={`h-4 w-4 ${isIdentity ? "text-[var(--accent-2)]" : "text-[var(--accent)]"}`} />
+                      </div>
+                      <span className="text-base font-semibold text-[var(--text-primary)]">
+                        {c.name}
+                      </span>
                     </div>
-                    <span className="text-base font-semibold text-[var(--text-primary)]">
-                      {c.name}
-                    </span>
+                    <p className="text-sm leading-relaxed text-[var(--text-secondary)]">
+                      {c.description}
+                    </p>
+                    <p className={`text-xs leading-relaxed ${
+                      isIdentity
+                        ? "text-[color-mix(in_srgb,var(--accent-2),transparent_30%)]"
+                        : "text-[color-mix(in_srgb,var(--accent),transparent_40%)]"
+                    }`}>
+                      {c.antiSlop}
+                    </p>
                   </div>
-                  <p className="text-sm leading-relaxed text-[var(--text-secondary)]">
-                    {c.description}
-                  </p>
-                  <p className="text-xs leading-relaxed text-[color-mix(in_srgb,var(--accent),transparent_40%)]">
-                    {c.antiSlop}
-                  </p>
-                </div>
-              </BentoCard>
-            </ScrollReveal>
-          ))}
+                </BentoCard>
+              </ScrollReveal>
+            );
+          })}
         </div>
       </div>
     </section>

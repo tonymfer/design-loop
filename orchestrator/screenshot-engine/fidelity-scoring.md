@@ -51,6 +51,12 @@ Scale:
   0.0 = pure regression (all changes made things worse)
   0.5 = neutral (equal improvement and regression)
   1.0 = clear improvement (all changes improved things)
+
+5. Per-section regression check:
+   For each section individually, compute section_fidelity using the same algorithm.
+   If any section's section_fidelity < 0.2, flag as SECTION_REGRESSION
+   even if aggregate visual_fidelity passes. Include in fidelity_notes:
+   "SECTION_REGRESSION: [section_name] fidelity={value} — localized defect detected"
 ```
 
 ### theme_fidelity (skip if BRAND_FINGERPRINT is empty {})

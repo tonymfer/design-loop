@@ -27,6 +27,75 @@ agent-browser eval --stdin <<'JS'
 JS
 ```
 
+## Fixed/Sticky Element Handling
+
+Before any `--full` (full-page) capture, detect and temporarily hide fixed/sticky elements that would otherwise float in the middle of the stitched image.
+
+### Detection Probe
+
+```bash
+agent-browser eval --stdin <<'JS'
+(() => {
+  const fixed = [];
+  document.querySelectorAll('*').forEach(el => {
+    const style = getComputedStyle(el);
+    if ((style.position === 'fixed' || style.position === 'sticky') &&
+        el.offsetHeight > 30 && el.offsetWidth > 100) {
+      fixed.push({
+        selector: el.id ? '#' + el.id : el.tagName.toLowerCase() + (el.className ? '.' + el.className.toString().split(' ')[0] : ''),
+        position: style.position,
+        height: el.offsetHeight,
+        width: el.offsetWidth,
+        tag: el.tagName.toLowerCase()
+      });
+    }
+  });
+  return JSON.stringify({ count: fixed.length, elements: fixed });
+})()
+JS
+```
+
+Store result as `FIXED_ELEMENTS`.
+
+### Mitigation (for `--full` captures only)
+
+If `FIXED_ELEMENTS.count > 0`:
+
+**Before capture:**
+```bash
+agent-browser eval --stdin <<'JS'
+(() => {
+  const fixedEls = document.querySelectorAll('*');
+  const hidden = [];
+  fixedEls.forEach(el => {
+    const style = getComputedStyle(el);
+    if ((style.position === 'fixed' || style.position === 'sticky') &&
+        el.offsetHeight > 30 && el.offsetWidth > 100) {
+      el.dataset.dlOriginalVisibility = el.style.visibility;
+      el.style.visibility = 'hidden';
+      hidden.push(el.tagName);
+    }
+  });
+  return JSON.stringify({ hidden_count: hidden.length });
+})()
+JS
+```
+
+**After capture — restore immediately:**
+```bash
+agent-browser eval --stdin <<'JS'
+(() => {
+  document.querySelectorAll('[data-dl-original-visibility]').forEach(el => {
+    el.style.visibility = el.dataset.dlOriginalVisibility || '';
+    delete el.dataset.dlOriginalVisibility;
+  });
+  return 'restored';
+})()
+JS
+```
+
+**Important:** Only apply to `--full` captures. Viewport-sized captures should keep fixed elements visible (they appear correctly in viewport shots).
+
 ## Decision: NODE MODE vs SCROLL MODE
 
 - **>= 3 landmarks found → NODE MODE**: For each section, scroll it into view and take an annotated viewport screenshot.

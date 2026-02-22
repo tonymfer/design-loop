@@ -217,6 +217,50 @@ assert_contains "T15o: creative-unleash SKILL has reference-aware fix" "REFERENC
 assert_contains "T15p: creative-unleash-reviewer has reference_alignment" "reference_alignment" agents/reviewers/creative-unleash-reviewer.md
 assert_contains "T15q: constraints has CU exception" "Reference Analyzer" references/common/constraints.md
 
+# --- Test 15r: Inspiration KB file structure ---
+assert_true "T15r1: sources.md exists" test -f references/inspirations/sources.md
+assert_contains "T15r2: sources.md has sources key" "sources:" references/inspirations/sources.md
+assert_contains "T15r3: sources.md has categories key" "categories:" references/inspirations/sources.md
+assert_contains "T15r4: sources.md has match_signals" "match_signals" references/inspirations/sources.md
+assert_contains "T15r5: sources.md has creative_unleash_value" "creative_unleash_value" references/inspirations/sources.md
+assert_contains "T15r6: sources.md has 21st-dev entry" "21st-dev" references/inspirations/sources.md
+assert_contains "T15r7: sources.md has actionable flag" "actionable" references/inspirations/sources.md
+assert_contains "T15r8: sources.md has integration block" "integration:" references/inspirations/sources.md
+
+# --- Test 15s: Reference-analyzer inspiration matching ---
+assert_contains "T15s1: reference-analyzer has inspiration-matching" "inspiration-matching" orchestrator/reference-analyzer.md
+assert_contains "T15s2: reference-analyzer references sources.md" "references/inspirations" orchestrator/reference-analyzer.md
+assert_contains "T15s3: reference-analyzer has inspiration_sources output" "inspiration_sources" orchestrator/reference-analyzer.md
+assert_contains "T15s4: reference-analyzer has Beeper retro skip example" "Skip Reference" orchestrator/reference-analyzer.md
+assert_contains "T15s5: reference-analyzer has inspiration-kb source type" "inspiration-kb" orchestrator/reference-analyzer.md
+assert_contains "T15s6: reference-analyzer has personality_boost" "personality_boost" orchestrator/reference-analyzer.md
+
+# --- Test 15t: Cross-file wiring for inspiration ---
+assert_contains "T15t1: CU reviewer handles inspiration" "inspiration" agents/reviewers/creative-unleash-reviewer.md
+assert_contains "T15t2: report-engine handles inspiration" "inspiration" orchestrator/report-engine.md
+assert_contains "T15t3: orchestrator passes REFERENCE_ANALYSIS to report" "REFERENCE_ANALYSIS" orchestrator/orchestrator.md
+
+# --- Test 15u: Anti-hardcode compliance ---
+# reference-analyzer.md must NOT contain hardcoded URLs from the KB
+if grep -q "godly.website" orchestrator/reference-analyzer.md 2>/dev/null; then
+  echo "FAIL: T15u1: reference-analyzer.md contains hardcoded godly.website URL"
+  TESTS_FAILED=$((TESTS_FAILED + 1))
+else
+  TESTS_PASSED=$((TESTS_PASSED + 1))
+fi
+if grep -q "awwwards.com" orchestrator/reference-analyzer.md 2>/dev/null; then
+  echo "FAIL: T15u2: reference-analyzer.md contains hardcoded awwwards.com URL"
+  TESTS_FAILED=$((TESTS_FAILED + 1))
+else
+  TESTS_PASSED=$((TESTS_PASSED + 1))
+fi
+if grep -q "httpster.net" orchestrator/reference-analyzer.md 2>/dev/null; then
+  echo "FAIL: T15u3: reference-analyzer.md contains hardcoded httpster.net URL"
+  TESTS_FAILED=$((TESTS_FAILED + 1))
+else
+  TESTS_PASSED=$((TESTS_PASSED + 1))
+fi
+
 # --- Test 16: Loop engine exists and has required content ---
 assert_true "T16a: loop-engine.md exists" test -f orchestrator/loop-engine.md
 assert_contains "T16b: loop-engine has role" "<role>" orchestrator/loop-engine.md
@@ -416,6 +460,82 @@ assert_contains "T21ac: report-engine Beeper preserves retro" "retro" orchestrat
 assert_contains "T21ad: report-engine Beeper preserves pixel" "pixel" orchestrator/report-engine.md
 assert_contains "T21ae: report-engine has visual_fidelity_impact" "visual_fidelity_impact" orchestrator/report-engine.md
 assert_contains "T21af: report-engine has responsive HTML" "responsive" orchestrator/report-engine.md
+
+# --- Test 22: Mode evaluation context, rendering taxonomy, weight changes ---
+
+# T22a-e: Mode evaluation context in reference-analyzer
+assert_contains "T22a: ref-analyzer has mode-evaluation-context" "mode-evaluation-context" orchestrator/reference-analyzer.md
+assert_contains "T22b: ref-analyzer has rendering defect taxonomy" "SOLID_BLOCK" orchestrator/reference-analyzer.md
+assert_contains "T22c: ref-analyzer has CU philosophy" "Give AI eyes" orchestrator/reference-analyzer.md
+assert_contains "T22d: ref-analyzer has hero example" "Kinetic Tagline" orchestrator/reference-analyzer.md
+assert_contains "T22e: ref-analyzer has rendering sensitivity table" "Zero-tolerance" orchestrator/reference-analyzer.md
+
+# T22f-i: CU SKILL.md updates
+assert_contains "T22f: CU SKILL has philosophy" "Give AI eyes" skills/modes/creative-unleash/SKILL.md
+assert_contains "T22g: CU SKILL has zero tolerance" "ZERO TOLERANCE" skills/modes/creative-unleash/SKILL.md
+assert_contains "T22h: CU SKILL has Phase B mandatory" "phase_b_rescore" skills/modes/creative-unleash/SKILL.md
+assert_contains "T22i: CU SKILL has rendering defect" "Rendering Defect" skills/modes/creative-unleash/SKILL.md
+
+# T22j-l: Weight changes verified
+if grep -E "\| (Composition|Typography|Color|Identity|Polish) \| [^1]" skills/modes/precision-polish/SKILL.md | grep -v "1.0x" | grep -q .; then
+  echo "FAIL: T22j: PP weights not all 1.0x"
+  TESTS_FAILED=$((TESTS_FAILED + 1))
+else
+  TESTS_PASSED=$((TESTS_PASSED + 1))
+fi
+assert_contains "T22k: TRE Identity weight scales with boldness (1.3x at Level 3)" "1.3x" skills/modes/theme-respect-elevate/SKILL.md
+assert_contains "T22l: CU Identity weight is 2.0x" "2.0x" skills/modes/creative-unleash/SKILL.md
+
+# T22m-p: Rendering detection wiring
+assert_contains "T22m: visual-reviewer has SOLID_BLOCK" "SOLID_BLOCK" agents/visual-reviewer.md
+assert_contains "T22n: visual-reviewer has ANIMATION_FREEZE" "ANIMATION_FREEZE" agents/visual-reviewer.md
+assert_contains "T22o: loop-engine has CU mandatory re-score" "creative-unleash" orchestrator/loop-engine.md
+assert_contains "T22p: CU reviewer has rendering zero-tolerance" "RENDERING ZERO-TOLERANCE" agents/reviewers/creative-unleash-reviewer.md
+
+# T22q-u: Cross-file consistency + UX
+assert_contains "T22q: rubric has SOLID_BLOCK" "SOLID_BLOCK" references/common/rubric.md
+assert_contains "T22r: rubric has ANIMATION_FREEZE" "ANIMATION_FREEZE" references/common/rubric.md
+assert_contains "T22s: loop-engine mandatory not gated by VISUAL_SPOT_CHECK for CU" "mandatory" orchestrator/loop-engine.md
+assert_contains "T22t: ref-analyzer has pick-from-list confirmation" "Pick sources to explore" orchestrator/reference-analyzer.md
+assert_contains "T22u: ref-analyzer has install confirmation gate" "Install these into your project" orchestrator/reference-analyzer.md
+
+# --- Test 23: Philosophy → Hero Strategy Unification (Sub-step 3) ---
+
+# T23a-b: Philosophy impact line
+assert_contains "T23a: CU SKILL has impact line" "moment AI proves it can see" skills/modes/creative-unleash/SKILL.md
+assert_contains "T23b: ref-analyzer has impact line" "moment AI proves it can see" orchestrator/reference-analyzer.md
+
+# T23c-e: Concrete behavioral descriptions in CU SKILL
+assert_contains "T23c: CU SKILL has cursor-responsive behavior" "Cursor-responsive" skills/modes/creative-unleash/SKILL.md
+assert_contains "T23d: CU SKILL has per-word kinetic entry" "Per-word kinetic entry" skills/modes/creative-unleash/SKILL.md
+assert_contains "T23e: CU SKILL has scroll-triggered draw" "Scroll-triggered" skills/modes/creative-unleash/SKILL.md
+
+# T23f: Live iteration meta-concept
+assert_contains "T23f: CU SKILL has live iteration demonstration" "Live iteration demonstration" skills/modes/creative-unleash/SKILL.md
+
+# T23g: Transformation narrative with behavioral language
+assert_contains "T23g: CU SKILL has transformation narrative" "transformation narrative" skills/modes/creative-unleash/SKILL.md
+
+# T23h: CU reviewer has focus-specific behavioral scoring
+assert_contains "T23h: CU reviewer has focus-specific scoring" "FOCUS-SPECIFIC" agents/reviewers/creative-unleash-reviewer.md
+
+# T23i: Anti-hardcode compliance
+if grep -qi "liquid glass" skills/modes/creative-unleash/SKILL.md 2>/dev/null; then
+  echo "FAIL: T23i1: CU SKILL contains hardcoded 'liquid glass' trend name"
+  TESTS_FAILED=$((TESTS_FAILED + 1))
+else
+  TESTS_PASSED=$((TESTS_PASSED + 1))
+fi
+if grep -qi "glassmorphism" skills/modes/creative-unleash/SKILL.md 2>/dev/null; then
+  echo "FAIL: T23i2: CU SKILL contains hardcoded 'glassmorphism' trend name"
+  TESTS_FAILED=$((TESTS_FAILED + 1))
+else
+  TESTS_PASSED=$((TESTS_PASSED + 1))
+fi
+
+# T23j-k: Cross-file behavioral consistency
+assert_contains "T23j: ref-analyzer Example 4 has per-word stagger behavior" "Per-word stagger" orchestrator/reference-analyzer.md
+assert_contains "T23k: ref-analyzer has live iteration meta" "iteration meta" orchestrator/reference-analyzer.md
 
 # --- Summary ---
 TOTAL=$((TESTS_PASSED + TESTS_FAILED))

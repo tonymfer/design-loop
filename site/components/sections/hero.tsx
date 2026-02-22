@@ -13,6 +13,9 @@ export function Hero() {
 
   const heroContent = (
     <>
+      {/* Measurement ruler — left edge */}
+      <div className="hero-ruler pointer-events-none hidden lg:block" />
+
       {/* Aurora gradient background + animated orb */}
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute inset-0 aurora-bg" />
@@ -32,10 +35,13 @@ export function Hero() {
             Claude Code Plugin
           </span>
 
-          {/* Wordmark */}
-          <span className="mb-8 font-mono text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-[var(--text-primary)]">
-            design<span className="text-[var(--accent)]">-</span>loop
-          </span>
+          {/* Wordmark + accent line */}
+          <div className="mb-8 flex flex-col items-center gap-3">
+            <span className="font-mono text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-[var(--text-primary)]">
+              design<span className="text-[var(--accent)]">-</span>loop
+            </span>
+            <div className="hero-accent-line" />
+          </div>
 
           {/* Headline */}
           <h1
@@ -76,6 +82,23 @@ export function Hero() {
             <GlowButton href="#how-it-works" variant="ghost">
               See how it works &darr;
             </GlowButton>
+          </div>
+
+          {/* Floating score badge — gives hero personality */}
+          <div className="float-badge mt-12 inline-flex items-center gap-3 rounded-2xl border border-[rgba(var(--accent-rgb),0.15)] bg-[rgba(var(--accent-rgb),0.04)] px-5 py-3 backdrop-blur-sm">
+            <div className="flex flex-col items-end">
+              <span className="font-mono text-[10px] text-[var(--text-muted)]">before</span>
+              <span className="font-mono text-lg font-bold text-[var(--text-muted)]">2.1</span>
+            </div>
+            <div className="h-6 w-px bg-[var(--border)]" />
+            <svg width="48" height="24" viewBox="0 0 48 24" className="text-[var(--accent)]">
+              <polyline points="2,20 12,16 22,12 32,6 46,3" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            <div className="h-6 w-px bg-[var(--border)]" />
+            <div className="flex flex-col">
+              <span className="font-mono text-[10px] text-[var(--accent)]">after</span>
+              <span className="bg-gradient-to-r from-[var(--accent)] to-[var(--accent-2)] bg-clip-text font-mono text-lg font-bold text-transparent">4.8</span>
+            </div>
           </div>
 
         </AnimatedGroup>

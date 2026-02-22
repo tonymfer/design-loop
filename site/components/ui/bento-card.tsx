@@ -13,7 +13,7 @@ export function BentoCard({
   return (
     <div
       className={cn(
-        "group relative rounded-xl border border-[var(--border)] bg-[var(--card-bg)] p-6 transition-all hover:border-[color-mix(in_srgb,var(--accent),transparent_70%)] hover:bg-[var(--surface)]",
+        "group relative rounded-xl border border-[var(--border)] bg-[var(--card-bg)] p-6 transition-all duration-300 hover:border-[color-mix(in_srgb,var(--accent),transparent_70%)] hover:bg-[var(--surface)] hover:-translate-y-0.5 hover:shadow-[0_4px_20px_rgba(0,0,0,0.15)]",
         className
       )}
     >

@@ -1,12 +1,14 @@
-# design-loop History
+# Design Loop History — Creative Unleash
 
-| Iter | Comp | Typo | Color | Ident | Polish | Avg | Focus | Changes |
-|------|------|------|-------|-------|--------|-----|-------|---------|
-| 0 | 3 | 4 | 3 | 4 | 3 | 3.4 | Baseline | Initial assessment |
-| 1 | 3 | 4 | 4 | 4 | 3 | 3.6 | Color/Polish | Boosted --text-muted contrast, varied section padding, connected phase cards |
-| 2 | 4 | 4 | 4 | 4 | 3 | 3.8 | Comp/Typo/Polish | Criteria 3+2 asymmetric grid, feature desc text-sm, Usage heading bumped, features subtitle text-lg |
-| 3 | 4 | 4 | 4 | 4 | 4 | 4.0 | Polish/Identity | Brand gradient on "See it in action", footer wordmark + separator, detection detail cards, StackDetection removed by user |
-| 3 | 4 | 4 | 4 | 4 | 4 | 4.0 | Polish/Identity | Brand gradient for key sections, footer refinement, stack detection details readable |
-| 4 | 4 | 4 | 4 | 4 | 4 | 4.0 | Verification | Footer version deduped, feature icons text-secondary, step arrows more visible |
+Mode: Creative Unleash | Goal: 4.7 weighted avg, all >= 4/5
+Weights: Comp 1.5x, Typo 1.3x, Color 1.2x, Ident 2.0x, Polish 1.0x
+Direction: "Technical Precision Instrument" — sharp, confident, asymmetric
 
-**Result: POLISHED** — All 5 criteria ≥ 4/5 for 2 consecutive iterations (iter 3 + iter 4).
+| Iter | Comp | Typo | Color | Ident | Polish | Avg | WAvg | Decision | Changes |
+|------|------|------|-------|-------|--------|-----|------|----------|---------|
+| 0 (baseline) | 3.5 | 3.5 | 3.5 | 3.0 | 3.5 | 3.4 | 3.36 | CONTINUE | Baseline assessment |
+| 1 | 4.0 | 4.0 | 3.5 | 4.0 | 3.5 | 3.8 | 3.84 | CONTINUE | Hero accent line + score badge, asymmetric step layout, 3 heading styles, mono labels, section dividers, warm accent bars |
+| 2 | 4.5 | 4.5 | 4.0 | 4.5 | 4.0 | 4.3 | 4.34 | CONTINUE | Slash motif brand element, asymmetric Features layout (5/7 split), glow-card accents, dual CTA, heading gradient variations |
+| 3 | 4.5 | 4.5 | 4.5 | 4.5 | 4.5 | 4.5 | 4.50 | CONTINUE | Visual Identity card glow highlight, footer brand rewrite (accent line + tagline + "/" links), BentoCard hover micro-interactions, Pro Tip amber accent |
+| 4 | 5.0 | 4.5 | 4.5 | 5.0 | 4.5 | 4.7 | 4.75 | CONTINUE | Ruler tick marks on section dividers, section-elevated alternation, mode-specific top accent bands, HowItWorks flow arrows, CTA score counter with ruler ticks + labels |
+| 5 | 5.0 | 5.0 | 5.0 | 5.0 | 5.0 | 5.0 | 5.00 | **POLISHED** | Step number warm/cool variant, CTA warm ambient glow, phase strategy color temperature progression, focus-visible rings, heading letter-spacing refinements |

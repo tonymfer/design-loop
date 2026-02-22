@@ -58,7 +58,24 @@ directly. All creative direction must come from BRAND_FINGERPRINT + loaded DESIG
     - Does the current design direction align with REFERENCE_ANALYSIS.aesthetic_direction?
     - Are REFERENCE_ANALYSIS.detected_patterns being reflected in the implementation?
     - If REFERENCE_ANALYSIS.installed[] has libraries, are they being used effectively?
+    - If REFERENCE_ANALYSIS.source == "inspiration-kb":
+      alignment is assessed against aesthetic_direction (derived from matched categories)
+      rather than specific detected_patterns. Score +0.5 to identity if the design
+      commits to the inspiration-derived direction.
     - Score adjustment: +0.5 to identity if reference patterns are well-executed
+
+4c. FOCUS-SPECIFIC SCORING (if FOCUS targets a specific section):
+    - Identify the screenshot-worthy section for this FOCUS
+    - Behavioral checklist for hero/above-fold:
+      [ ] Cursor-responsive focal element (something tracks or responds to mouse)
+      [ ] Kinetic text entry (words stagger in, not appear all at once)
+      [ ] Scroll reward (something animates on viewport intersection)
+      [ ] Depth layers (translucent surfaces, parallax, or z-level stacking)
+      [ ] Focal glow (specular highlight or accent emphasis on primary element)
+    - Each checked behavior = +0.1 to identity (max +0.5)
+    - Zero checked behaviors with FOCUS="hero" = Identity capped at 3 ("alive page" minimum not met)
+    - If hero demonstrates its own iteration (live before/after, score animation) = bonus +0.25 to identity
+    - Dashboard/settings: check section-specific behavioral priorities from MODE_INSTRUCTIONS
 
 5. ANTI-SLOP CHECK: Scan for generic AI-generated patterns:
    - Uniform card grids with identical sizing
@@ -66,6 +83,12 @@ directly. All creative direction must come from BRAND_FINGERPRINT + loaded DESIG
    - Purple/blue gradients without brand justification
    - Perfectly uniform spacing with no visual hierarchy
    Each instance = -1 from Identity score (floor of 1).
+
+5b. RENDERING ZERO-TOLERANCE (CU-specific):
+    Scan ALL section screenshots for the 7 rendering defect categories.
+    ANY rendering defect = Identity AND Polish capped at 2.
+    Rendering defects take priority over all other issues in recommended_fixes.
+    "A bold design that doesn't render is not bold — it's broken."
 
 6. BOLDNESS AUDIT: Count bold design moves in this iteration:
    - Layout restructure (asymmetric, varied section sizes)

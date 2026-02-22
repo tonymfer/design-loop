@@ -88,13 +88,13 @@ What "score 5" means in precision-polish mode:
 {
   "section": "contacts-grid", "state": "default", "iteration": 2, "mode": "precision-polish",
   "scores": {
-    "composition": { "score": 4, "weight": 1.2, "weighted": 4.8, "delta": "+1", "reason": "Grid gap normalized to 16px across all card rows" },
+    "composition": { "score": 4, "weight": 1.0, "weighted": 4.0, "delta": "+1", "reason": "Grid gap normalized to 16px across all card rows" },
     "typography": { "score": 4, "weight": 1.0, "weighted": 4.0, "delta": "0", "reason": "Press Start 2P hierarchy clear. No clipping." },
     "color": { "score": 4, "weight": 1.0, "weighted": 4.0, "delta": "0", "reason": "WCAG AA passes. Orange accent visible on dark bg." },
-    "identity": { "score": 3, "weight": 0.8, "weighted": 2.4, "delta": "0", "reason": "Retro personality present but not targeted by this mode." },
-    "polish": { "score": 4, "weight": 1.5, "weighted": 6.0, "delta": "+1", "reason": "Border-radius now uniform 0px. Padding consistent p-4." }
+    "identity": { "score": 3, "weight": 1.0, "weighted": 3.0, "delta": "0", "reason": "Retro personality present but not targeted by this mode." },
+    "polish": { "score": 4, "weight": 1.0, "weighted": 4.0, "delta": "+1", "reason": "Border-radius now uniform 0px. Padding consistent p-4." }
   },
-  "weighted_average": 4.24, "raw_average": 3.8,
+  "weighted_average": 3.8, "raw_average": 3.8,
   "top_issues": ["Card content height varies by 8px between rows"],
   "recommended_fixes": ["Add min-h-[120px] to .contact-card inner content area"],
   "visual_fidelity": 0.88, "theme_fidelity": null,
@@ -109,13 +109,13 @@ What "score 5" means in precision-polish mode:
 {
   "section": "stats-cards", "state": "default", "iteration": 1, "mode": "precision-polish",
   "scores": {
-    "composition": { "score": 3, "weight": 1.2, "weighted": 3.6, "delta": "—", "reason": "Cards in top row have uneven gap (24px vs 16px)" },
+    "composition": { "score": 3, "weight": 1.0, "weighted": 3.0, "delta": "—", "reason": "Cards in top row have uneven gap (24px vs 16px)" },
     "typography": { "score": 4, "weight": 1.0, "weighted": 4.0, "delta": "—", "reason": "Clear hierarchy. Inter works for dashboard." },
     "color": { "score": 3, "weight": 1.0, "weighted": 3.0, "delta": "—", "reason": "Muted text on grey bg borderline AA (4.3:1)" },
-    "identity": { "score": 2, "weight": 0.8, "weighted": 1.6, "delta": "—", "reason": "Generic dashboard — not targeted in this mode." },
-    "polish": { "score": 3, "weight": 1.5, "weighted": 4.5, "delta": "—", "reason": "Mixed border-radius: cards rounded-lg, buttons rounded-md, inputs rounded" }
+    "identity": { "score": 2, "weight": 1.0, "weighted": 2.0, "delta": "—", "reason": "Generic dashboard — not targeted in this mode." },
+    "polish": { "score": 3, "weight": 1.0, "weighted": 3.0, "delta": "—", "reason": "Mixed border-radius: cards rounded-lg, buttons rounded-md, inputs rounded" }
   },
-  "weighted_average": 3.33, "raw_average": 3.0,
+  "weighted_average": 3.0, "raw_average": 3.0,
   "top_issues": ["Mixed border-radius across components", "Gap inconsistency in stats row", "Muted text borderline WCAG AA"],
   "recommended_fixes": ["Standardize to rounded-lg", "Set gap-4 on stats grid", "Darken from text-gray-400 to text-gray-500"],
   "visual_fidelity": null, "theme_fidelity": null,

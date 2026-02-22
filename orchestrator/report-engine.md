@@ -16,12 +16,13 @@ You receive these variables from the orchestrator at Step 8:
 
 | Variable | Source | Description |
 |----------|--------|-------------|
-| LOOP_RESULT | Step 6 (loop-engine) | status, iterations[], scores, improvements, safety_summary, total_rollbacks, total_components_installed |
+| LOOP_RESULT | Step 6 (loop-engine) | status, iterations[], scores, improvements, safety_summary, total_rollbacks, total_components_installed, code_quality_iterations, boldness_level |
 | BRAND_FINGERPRINT | Step 4 (fingerprint) | tokens, visual.personality, visual.aestheticSummary |
 | MODE | Step 1 (interview) | precision-polish, theme-respect-elevate, or creative-unleash |
 | MODE_INSTRUCTIONS | Step 3 (routing) | goal_threshold, scoring weights |
 | PROJECT_CONTEXT | Step 2 (scan) | framework, componentLibrary, packageManager |
 | SHARED_REFERENCES | Step 2 (scan) | For output-format awareness |
+| REFERENCE_ANALYSIS | Step 3b (reference) | Inspiration sources and aesthetic direction (CU only, {} otherwise) |
 
 LOOP_RESULT.iterations[] schema (per iteration):
 ```yaml
@@ -38,6 +39,8 @@ LOOP_RESULT.iterations[] schema (per iteration):
   preview_action: string
   apply_status: string
   components_installed: [string]
+  visual_impact: string           # "visible" | "code_quality_only"
+  pixel_delta_percentage: float
 ```
 </input-contract>
 
@@ -82,16 +85,17 @@ Store each as a raw SVG string in REPORT_RESULT.svg_charts.
 Build the report from the `<report-template>` section. Sections:
 
 1. **Header** — project name, mode, status, date
-2. **Executive Summary** — start/final avg, key wins, terminal reason
-3. **Score Progression** — inline SVG chart + color legend
-4. **Before/After Gallery** — screenshot image paths from report-assets
-5. **Fidelity Analysis** — heatmap SVG + theme preservation SVG (if TRE/CU)
-6. **Score Breakdown** — horizontal bar SVG with weight hints
-7. **Key Improvements** — from LOOP_RESULT.improvements
-8. **Safety Audit Summary** — checkpoints, tests, rollbacks, components installed
-9. **Brand Fingerprint Summary** — personality, key tokens, aesthetic summary (or "Skipped" for PP)
-10. **Iteration Log** — full table: #, Comp, Typo, Color, Ident, Polish, WAvg, VFid, TFid, Decision
-11. **Footer** — design-loop credit link
+2. **Executive Summary** — start/final avg, key wins, terminal reason, boldness level (TRE)
+3. **Visual Impact Notice** — code-quality iteration summary (if any code_quality_only iterations exist)
+4. **Score Progression** — inline SVG chart + color legend
+5. **Before/After Gallery** — screenshot image paths from report-assets
+6. **Fidelity Analysis** — heatmap SVG + theme preservation SVG (if TRE/CU)
+7. **Score Breakdown** — horizontal bar SVG with weight hints
+8. **Key Improvements** — from LOOP_RESULT.improvements (code-quality iterations annotated)
+9. **Safety Audit Summary** — checkpoints, tests, rollbacks, components installed
+10. **Brand Fingerprint Summary** — personality, key tokens, aesthetic summary (or "Skipped" for PP)
+11. **Iteration Log** — full table: #, Comp, Typo, Color, Ident, Polish, WAvg, VFid, TFid, VImpact, Decision
+12. **Footer** — design-loop credit link
 
 ### Step 4: Generate HTML Report
 
@@ -201,7 +205,24 @@ All charts share:
 
 **Key wins:** {top 3 improvements from LOOP_RESULT.improvements, one line each}
 
+{If LOOP_RESULT.boldness_level is not null:}
+**Boldness Level:** {LOOP_RESULT.boldness_level} ({1: "Minimal", 2: "Medium", 3: "Bold"})
+{End if}
+
 ---
+
+{If LOOP_RESULT.code_quality_iterations > 0:}
+## Visual Impact Notice
+
+> **{LOOP_RESULT.code_quality_iterations} of {LOOP_RESULT.total_iterations} iterations** produced code-quality improvements with minimal visible pixel change. Score increases were capped at +0.15/criterion for these iterations to prevent invisible changes from inflating scores.
+
+{For each iteration where visual_impact == "code_quality_only":}
+- **Iteration {N}**: {fixes_applied summary} *(code quality — minimal visual change)*
+{End for}
+
+---
+
+{End if}
 
 ## Score Progression
 
@@ -258,7 +279,7 @@ All charts share:
 ## Key Improvements
 
 {For each improvement in LOOP_RESULT.improvements:}
-- {improvement description}
+- {improvement description} {if from code_quality_only iteration: "*(code quality — minimal visual change)*"}
 
 ---
 
@@ -289,12 +310,24 @@ All charts share:
 
 ---
 
+{If REFERENCE_ANALYSIS.inspiration_sources is non-empty:}
+## Recommended Inspiration
+
+Sources matched to your project's personality and focus:
+
+{For each source in REFERENCE_ANALYSIS.inspiration_sources:}
+- **{source.name}** — {source.match_reason} ([{source.url}]({source.url}))
+
+{End if}
+
+---
+
 ## Iteration Log
 
-| # | Comp | Typo | Color | Ident | Polish | WAvg | VFid | TFid | Decision |
-|---|------|------|-------|-------|--------|------|------|------|----------|
+| # | Comp | Typo | Color | Ident | Polish | WAvg | VFid | TFid | VImpact | Decision |
+|---|------|------|-------|-------|--------|------|------|------|---------|----------|
 {For each iteration in LOOP_RESULT.iterations[]:}
-| {iter} | {scores.composition} | {scores.typography} | {scores.color} | {scores.identity} | {scores.polish} | {weighted_average} | {visual_fidelity or "—"} | {theme_fidelity or "—"} | {decision} |
+| {iter} | {scores.composition} | {scores.typography} | {scores.color} | {scores.identity} | {scores.polish} | {weighted_average} | {visual_fidelity or "—"} | {theme_fidelity or "—"} | {visual_impact == "code_quality_only" ? "CQ" : "V"} | {decision} |
 
 ---
 
@@ -350,9 +383,14 @@ REPORT_RESULT:
     fidelity_heatmap: string       # raw SVG string
     score_breakdown: string        # raw SVG string
     theme_preservation: string | null  # null for PP mode
+  visual_impact_summary:
+    code_quality_iterations: integer
+    total_iterations: integer
+    capped_iterations: [integer]   # iteration numbers where score cap was applied
   report_metadata:
     project_name: string
     mode: string
+    boldness_level: integer | null
     status: string
     date: string                   # ISO-8601
     total_iterations: integer

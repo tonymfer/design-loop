@@ -50,11 +50,23 @@ Capture per `SHARED_REFERENCES.screenshots`:
 
 ### 2. Full-page annotated capture
 
-```bash
-agent-browser screenshot baseline-full.png --annotate --full
+Before `--full` capture, detect and handle fixed/sticky elements:
+
+```
+If using --full flag:
+  1. Run Fixed Element Detection from SHARED_REFERENCES.screenshots
+  2. Store result as FIXED_ELEMENTS
+  3. If FIXED_ELEMENTS.count > 0:
+     - Hide fixed elements (per SHARED_REFERENCES.screenshots mitigation)
+     - Capture: agent-browser screenshot baseline-full.png --annotate --full
+     - Restore fixed elements immediately
+  4. If FIXED_ELEMENTS.count == 0:
+     - Capture: agent-browser screenshot baseline-full.png --annotate --full
 ```
 
 This produces a single image of the entire page with interactive element labels (@eN).
+Fixed/sticky elements (navbars, FABs) are hidden during full-page capture to prevent
+them from floating in the middle of the stitched image.
 
 ### 3. Per-section captures
 
@@ -113,6 +125,7 @@ These files are immutable for the session. They are NOT overwritten during itera
 |----------|------|----------|
 | `CAPTURE_SET_BASELINE` | object | `{overview, full, sections[], mobile, states[], elements_json, timestamp}` — immutable for session |
 | `ELEMENT_INVENTORY` | array | Interactive elements from `snapshot -i --json` with @eN refs, types, positions |
+| `FIXED_ELEMENTS` | object | `{count, elements[]}` — detected fixed/sticky elements hidden during `--full` captures |
 
 `CAPTURE_SET_BASELINE` is preserved for the entire session and used as the diff reference for iteration 0.
 </output-contract>

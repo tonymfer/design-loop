@@ -20,7 +20,7 @@ Arguments are checked inside the interview flow — no pre-processing needed her
 
 Read and follow `orchestrator/interview-flow.md` for the complete interview flow.
 
-Output variables from the interview: `MODE`, `TARGET_URL`, `FOCUS`, `DISCOVER_STATES`, `MAX_ITERATIONS`.
+Output variables from the interview: `MODE`, `TARGET_URL`, `FOCUS`, `DISCOVER_STATES`, `BOLDNESS_LEVEL`, `MAX_ITERATIONS`.
 These feed directly into Steps 2-6.
 
 ---
@@ -180,6 +180,7 @@ status: running
 iteration: 0
 max_iterations: [from Q3]
 mode: [MODE from Q0]
+boldness_level: [BOLDNESS_LEVEL from Q2.6, null for PP/CU]
 goal_threshold: [from MODE_INSTRUCTIONS, default 4.0]
 started_at: "[ISO timestamp]"
 discover_states: [true/false]
@@ -194,7 +195,7 @@ preview_mode: [PREVIEW_MODE from Q3.5]
 Read and follow `orchestrator/loop-engine.md` for the complete iteration loop.
 
 Input variables:
-- MODE, MODE_INSTRUCTIONS, TARGET_URL, MAX_ITERATIONS
+- MODE, MODE_INSTRUCTIONS, TARGET_URL, MAX_ITERATIONS, BOLDNESS_LEVEL
 - BRAND_FINGERPRINT, PROJECT_CONTEXT, DESIGN_SKILLS, SHARED_REFERENCES
 - CAPTURE_SET_BASELINE, ELEMENT_INVENTORY, REFERENCE_ANALYSIS
 - DISCOVER_STATES, FOCUS
@@ -238,7 +239,7 @@ On loop completion (POLISHED or max iterations):
 3. Generate report:
    Read and follow `orchestrator/report-engine.md`.
    Input: LOOP_RESULT, BRAND_FINGERPRINT, MODE, MODE_INSTRUCTIONS,
-          PROJECT_CONTEXT, SHARED_REFERENCES.
+          PROJECT_CONTEXT, SHARED_REFERENCES, REFERENCE_ANALYSIS.
    Output: REPORT_RESULT
 4. Clean up screenshots and checkpoints:
    ```bash

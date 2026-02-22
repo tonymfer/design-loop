@@ -35,6 +35,8 @@ agent-browser state save .claude/design-loop-state-N.json
 Capture current state as "before":
 - Follow `SHARED_REFERENCES.screenshots` for landmark detection + node/scroll strategy
 - Full-page annotated: `agent-browser screenshot iter-N-overview.png --annotate --full`
+  - If using `--full` flag: Run Fixed Element Detection from SHARED_REFERENCES.screenshots.
+    If FIXED_ELEMENTS.count > 0: hide fixed elements before capture, restore after.
 - Per-section: `agent-browser screenshot iter-N-section-M.png --annotate`
 - If iteration 0: use `CAPTURE_SET_BASELINE` as the before reference (skip re-capture)
 
@@ -75,6 +77,9 @@ Store results as `CAPTURE_SET_BEFORE`.
 #### Step 4: DIFF CAPTURE
 
 Capture after-fix state using same strategy as Phase A:
+
+If using `--full` flag: Run Fixed Element Detection. If FIXED_ELEMENTS.count > 0: hide before capture, restore after.
+
 ```bash
 agent-browser screenshot iter-N-after-overview.png --annotate --full
 agent-browser screenshot iter-N-after-section-M.png --annotate
@@ -105,11 +110,22 @@ Returns: `visual_fidelity`, `theme_fidelity`, `fidelity_notes`.
 
 #### Step 6: VISUAL REPORT
 
+Classify visual impact:
+```
+If pixel_delta_percentage < MODE_INSTRUCTIONS.visual_delta_threshold (default 0.02):
+  DIFF_REPORT.visual_impact = "code_quality_only"
+  DIFF_REPORT.visual_impact_note = "Token compliance improved but no visible pixel change detected."
+Else:
+  DIFF_REPORT.visual_impact = "visible"
+  DIFF_REPORT.visual_impact_note = null
+```
+
 Assemble the DIFF_REPORT:
 - Diff image manifest (paths to all diff-N-*.png files)
 - Fidelity scores: visual_fidelity, theme_fidelity (or null)
 - Regions changed: `[{selector, type: "improved"|"regressed", delta_px}]`
 - Viewport diffs: `{desktop: %, mobile: %}`
+- Visual impact: `visual_impact` classification + `visual_impact_note`
 - Fidelity notes: human-readable summary
 
 Store as `DIFF_REPORT`.
@@ -233,6 +249,6 @@ rm -f iter-*-elements.json iter-*-divergence.png
 |----------|------|----------|
 | `CAPTURE_SET_BEFORE` | object | `{overview, full, sections[], mobile, states[], elements_json, timestamp}` — per iteration |
 | `CAPTURE_SET_AFTER` | object | Same shape as BEFORE, captured post-fix |
-| `DIFF_REPORT` | object | `{visual_fidelity, theme_fidelity, diff_images[], regions_changed[], viewport_diffs, pixel_delta_percentage, fidelity_notes}` |
+| `DIFF_REPORT` | object | `{visual_fidelity, theme_fidelity, diff_images[], regions_changed[], viewport_diffs, pixel_delta_percentage, visual_impact, visual_impact_note, fidelity_notes}` |
 | `ELEMENT_INVENTORY` | array | Interactive elements from `snapshot -i --json` |
 </output-contract>

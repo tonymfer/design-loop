@@ -31,6 +31,7 @@ You receive all variables established by the orchestrator in Steps 1-5:
 | ELEMENT_INVENTORY | Step 5 (screenshot) | Interactive element inventory |
 | PREVIEW_MODE | Step 1 (interview) | confirm or auto — controls whether preview pauses for user confirmation |
 | SESSION_ID | orchestrator | CLAUDE_SESSION_ID for backup paths and apply-agent |
+| BOLDNESS_LEVEL | Step 1 (interview) | 1, 2, or 3 (null for PP/CU) |
 </input-contract>
 
 <loop-state>
@@ -72,6 +73,8 @@ LOOP_STATE:
   best_iteration: integer
   trend: string                    # "improving" | "plateau" | "regressing"
   strategy_hint: string | null     # set when plateau_count == 1 — suggests approach shift
+  code_quality_iteration_count: integer  # consecutive iterations where visual_impact == "code_quality_only"
+  boldness_level: integer | null         # 1, 2, or 3 (null for PP/CU)
 ```
 
 ### Initialization
@@ -90,7 +93,25 @@ LOOP_STATE:
   best_iteration: 0
   trend: "improving"
   strategy_hint: null
+  code_quality_iteration_count: 0
+  boldness_level: [BOLDNESS_LEVEL or null]
   safety_events: []
+```
+
+### Boldness-Aware Initialization (TRE only)
+
+```
+If MODE = theme-respect-elevate AND BOLDNESS_LEVEL is set:
+  Hard cap max_iterations:
+    Level 1: min(MAX_ITERATIONS or 8, 8)
+    Level 2: min(MAX_ITERATIONS or 12, 12)
+    Level 3: min(MAX_ITERATIONS or 15, 15)
+  goal_threshold:
+    Level 1: 4.0
+    Level 2: 4.2
+    Level 3: 4.5
+
+  If MAX_ITERATIONS = 0 (no limit), set to level max (8/12/15).
 ```
 
 ### Persistence
@@ -217,6 +238,18 @@ Apply fixes per MODE_INSTRUCTIONS constraints:
    c. If build fails → revert change, skip this fix, log to fixes_skipped
 4. All fixes must be within SHARED_REFERENCES.constraints guardrails
 5. Record fixes_applied[] and fixes_skipped[]
+6. Post-fix visual flag: If any fix modified CSS gradient, background-clip, mask,
+   clip-path, or opacity properties, set VISUAL_SPOT_CHECK=true.
+   Log: "Visual spot-check flagged: CSS visual property modified"
+   The Phase B re-score gate (Step 5) uses this flag to enforce closer inspection.
+```
+
+Boldness-aware fix count:
+```
+If BOLDNESS_LEVEL == 1: Max 5 fixes/iter, token swaps only (no structural changes)
+If BOLDNESS_LEVEL == 2: Max 5 fixes/iter, structural + token swaps allowed
+If BOLDNESS_LEVEL == 3: Max 7 fixes/iter, lead with structural/component changes
+If BOLDNESS_LEVEL is null: Use MODE_INSTRUCTIONS default (top 3 for PP, top 5 for CU)
 ```
 
 If strategy_hint is set (from plateau warning), adjust fix approach:
@@ -244,6 +277,31 @@ IF MODE = precision-polish AND DIFF_REPORT.visual_fidelity < 0.3:
   → Do NOT block, flag in report
 
 OTHERWISE: pass through
+```
+
+#### Phase B Re-Score Gate
+
+After DIFF screenshots are captured, run a quick re-score pass on CAPTURE_SET_AFTER:
+
+```
+1. Re-evaluate all 5 criteria on Phase B screenshots (same reviewer, same weights)
+2. Compare Phase B scores against Phase A scores from Step 3
+3. If ANY criterion DROPPED by >= 1 point vs Phase A:
+   → Flag as FIX_REGRESSION
+   → Log: "FIX_REGRESSION: {criterion} dropped {phaseA_score} → {phaseB_score}"
+   → Rollback: restore from Step 4's file checkpoint
+   → Re-run Step 5 DIFF with rolled-back state
+   → Record regression in fixes_skipped: "[fix_description] — caused {criterion} regression"
+4. Phase B re-score rendering check:
+   a. If MODE = creative-unleash:
+      → ALWAYS run full rendering defect scan on CAPTURE_SET_AFTER (mandatory, not gated)
+      → Check all 7 defect categories (SOLID_BLOCK through ANIMATION_FREEZE)
+      → If ANY rendering defect found: flag RENDERING_REGRESSION, prioritize fix
+      → Log: "CU mandatory re-score: [pass|N defects found]"
+   b. If VISUAL_SPOT_CHECK=true (any mode):
+      → Apply heightened scrutiny for gradient text, masks, clip effects
+      → Check for solid blocks, missing transparency, broken visual effects
+      → Flag as RENDERING_REGRESSION if visual effects are broken
 ```
 
 ### Step 5.5: PREVIEW — Change Preview & Confirmation Gate
@@ -316,6 +374,34 @@ IF APPLY_RESULT.status = "rollback":
   → All component changes reverted — proceed to Step 6 with zeroed deltas
 ```
 
+### Step 5.8: VISUAL IMPACT CHECK
+
+After Phase B diff, check whether fixes produced visible pixel changes:
+
+```
+5.8a. VISUAL IMPACT CLASSIFICATION:
+    Read DIFF_REPORT.visual_impact from iteration-workflow Phase B Step 6.
+
+    If DIFF_REPORT.visual_impact == "code_quality_only":
+      - Increment LOOP_STATE.code_quality_iteration_count
+      - CAP: weighted_average increase capped at +0.15 from previous iteration
+      - Log: "Code quality iteration — no visible pixel change. Score increase capped at +0.15."
+    Else:
+      - Reset LOOP_STATE.code_quality_iteration_count to 0
+
+5.8b. CONSECUTIVE CODE-QUALITY GATE:
+    If code_quality_iteration_count >= 2:
+      - If BOLDNESS_LEVEL >= 2:
+          strategy_hint: "Token swaps exhausted. Shift to structural improvements:
+          spacing hierarchy, emphasis rebalancing, interactive states, component upgrades."
+      - If BOLDNESS_LEVEL == 1:
+          strategy_hint: "Token swaps producing identical computed values.
+          Remaining improvements require BOLDNESS_LEVEL >= 2. Consider upgrading."
+      - If BOLDNESS_LEVEL is null (PP/CU mode):
+          strategy_hint: "Code-only changes detected for 2 iterations.
+          Shift to fixes that produce visible pixel differences."
+```
+
 ### Step 6: CHECK — Compute Deltas and Derived State
 
 After scoring, compute all derived LOOP_STATE fields:
@@ -361,12 +447,19 @@ Chain-of-Thought before each decision:
 </think>
 
 <decide>
+  <!-- P0: Floor constraint — any single criterion below 3 blocks completion -->
+  <if condition="ANY raw criterion score < 3">
+    Decision: CONTINUE — floor constraint violated
+    Log: "Floor constraint: {criterion} at {score}/5 (below 3). Must fix before POLISHED regardless of weighted average ({weighted_average})."
+    Note: This gate prevents high scores in other criteria from masking a broken criterion.
+  </if>
+
   <!-- P1: Goal reached — all criteria pass AND weighted average meets threshold -->
-  <if condition="consecutive_pass_count >= 2 AND weighted_average >= goal_threshold">
+  <elif condition="consecutive_pass_count >= 2 AND weighted_average >= goal_threshold">
     LOOP_STATE.status = "polished"
     Output: <promise>POLISHED</promise>
     Log: "All criteria >= 4/5 for 2 consecutive iterations. Weighted avg {value} >= {goal_threshold}."
-  </if>
+  </elif>
 
   <!-- P2: Max iterations reached -->
   <elif condition="current_iteration >= max_iterations AND max_iterations > 0">
@@ -594,7 +687,9 @@ LOOP_RESULT:
   safety_summary: string        # compact aggregate: "checkpoints=5 tests=4pass/1fail rollbacks=1"
   total_rollbacks: integer      # cumulative rollback count across all iterations
   total_components_installed: integer  # cumulative component installs across all iterations
-  iterations: array               # Full LOOP_STATE.iterations[] for report-engine
+  code_quality_iterations: integer  # total iterations where visual_impact == "code_quality_only"
+  boldness_level: integer | null    # 1, 2, or 3 (null for PP/CU)
+  iterations: array                 # Full LOOP_STATE.iterations[] for report-engine
     - iteration: integer
       scores: { composition, typography, color, identity, polish }
       raw_average: float
@@ -608,6 +703,8 @@ LOOP_RESULT:
       preview_action: string
       apply_status: string
       components_installed: [string]
+      visual_impact: string           # "visible" | "code_quality_only"
+      pixel_delta_percentage: float
 ```
 
 The orchestrator uses LOOP_RESULT for:

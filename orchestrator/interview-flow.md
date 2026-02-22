@@ -128,6 +128,44 @@ Should I discover and iterate on sub-screens within this page (tabs, modals, dra
 Store as `DISCOVER_STATES` (true/false).
 </question>
 
+<question id="Q2.6">
+## Boldness Level (Theme-Respect Elevate only)
+
+<think>
+This question ONLY appears when MODE = theme-respect-elevate.
+For PP and CU, skip — set BOLDNESS_LEVEL = null.
+If $ARGUMENTS[5] is provided, parse as integer 1-3.
+
+Boldness level also sets max_iterations ceiling:
+  Level 1 → cap MAX_ITERATIONS at 8
+  Level 2 → cap MAX_ITERATIONS at 12
+  Level 3 → cap MAX_ITERATIONS at 15
+If Q3 answer exceeds the cap, silently reduce to the cap.
+</think>
+
+**Skip this question entirely if MODE is NOT `theme-respect-elevate`.**
+
+Within your brand theme, how bold should the structural improvements be?
+
+1. **Minimal** — Safe cleaning only.
+   Token compliance, spacing normalization, consistent dim-text.
+   The page looks the same but the code is healthier.
+   (Max 8 iterations)
+
+2. **Medium** — Card rearrangement, section reordering allowed. (Recommended)
+   Visibly improved emphasis hierarchy, interactive states, whitespace rhythm.
+   Still 100% within your design tokens.
+   (Max 12 iterations)
+
+3. **Bold** — Full layout restructuring + new component introduction.
+   Dramatic structural UX improvements while respecting your theme 100%.
+   New components from your existing library (shadcn, radix, etc.).
+   Maximum visible impact within brand boundaries.
+   (Max 15 iterations)
+
+Store as `BOLDNESS_LEVEL` (integer: 1, 2, or 3).
+</question>
+
 <question id="Q2.7">
 ## Design Reference (Creative Unleash only)
 
@@ -170,10 +208,25 @@ How many visual iterations?
 4. No limit — run until all criteria >= 4/5
 
 **If MODE = `theme-respect-elevate`:**
+Options depend on BOLDNESS_LEVEL:
+
+*Level 1 (Minimal):*
+1. 3 (light touch)
+2. 5 (Recommended)
+3. 8 (maximum for Level 1)
+4. No limit — run until all criteria >= 4/5 (capped at 8)
+
+*Level 2 (Medium):*
 1. 5 (quick pass)
-2. 10 (thorough) (Recommended)
-3. 15 (deep refinement)
-4. No limit — run until all criteria >= 4/5
+2. 8 (Recommended)
+3. 12 (maximum for Level 2)
+4. No limit — run until all criteria >= 4/5 (capped at 12)
+
+*Level 3 (Bold):*
+1. 8 (focused)
+2. 12 (Recommended)
+3. 15 (maximum for Level 3)
+4. No limit — run until all criteria >= 4/5 (capped at 15)
 
 **If MODE = `creative-unleash`:**
 1. 10 (focused redesign)
@@ -222,8 +275,9 @@ Here's your design loop configuration:
   Target:       [TARGET_URL]
   Focus:        [FOCUS display name]
   Sub-screens:  [Yes/No description]
+  Boldness:     [Minimal/Medium/Bold] (Level [N])   ← only if MODE = theme-respect-elevate
   Reference:    [REFERENCE_TYPE]: [REFERENCE_VALUE summary]   ← only if MODE = creative-unleash and REFERENCE_TYPE is not null
-  Iterations:   [MAX_ITERATIONS or "No limit"]
+  Iterations:   [MAX_ITERATIONS or "No limit (capped at [level max])"]
   Preview:      [Confirm each iteration / Auto-approve]
 
 Ready to start, or want to change something?
@@ -238,9 +292,10 @@ What would you like to change?
 2. Target ([current])
 3. Focus ([current])
 4. Sub-screens ([current])
-5. Iterations ([current])
-6. Preview mode ([current])
-7. Reference ([current or "None"])   ← only if MODE = creative-unleash
+5. Boldness level ([current])   ← only if MODE = theme-respect-elevate
+6. Iterations ([current])
+7. Preview mode ([current])
+8. Reference ([current or "None"])   ← only if MODE = creative-unleash
 ```
 
 Then re-ask only the selected question and return to the confirmation summary.
@@ -251,7 +306,7 @@ If the user selects **"Start the loop"**, proceed.
 </interview>
 
 <output-contract>
-The interview produces exactly 8 output variables consumed by the orchestrator:
+The interview produces exactly 9 output variables consumed by the orchestrator:
 
 | Variable | Type | Values |
 |----------|------|--------|
@@ -259,10 +314,11 @@ The interview produces exactly 8 output variables consumed by the orchestrator:
 | `TARGET_URL` | string | URL or file path |
 | `FOCUS` | string | Specific criterion name or `full-audit` |
 | `DISCOVER_STATES` | boolean | `true` \| `false` |
-| `MAX_ITERATIONS` | integer | `0` (no limit) or positive integer |
+| `BOLDNESS_LEVEL` | integer \| null | `1` (Minimal), `2` (Medium), `3` (Bold). `null` for PP/CU. |
+| `MAX_ITERATIONS` | integer | `0` (no limit) or positive integer. Capped by BOLDNESS_LEVEL for TRE. |
 | `REFERENCE_TYPE` | string \| null | `url` \| `image` \| `description` \| `null` (PP/TRE always null) |
 | `REFERENCE_VALUE` | string \| null | The reference URL, file path, description text, or `null` |
 | `PREVIEW_MODE` | string | `confirm` \| `auto` (PP/TRE default confirm, CU default auto) |
 
-These feed directly into orchestrator Steps 2-4.
+These feed directly into orchestrator Steps 2-6.
 </output-contract>

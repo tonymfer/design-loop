@@ -19,6 +19,7 @@ Claude Code plugin for autonomous visual UI/UX iteration.
 - `skills/modes/theme-respect-elevate/SKILL.md` — Design-token-aware, elevate within system
 - `skills/modes/creative-unleash/SKILL.md` — Bold redesign, all companion skills loaded
 - `references/common/` — Shared references (rubric, screenshots, constraints, output-format)
+- `references/inspirations/sources.md` — Dynamic inspiration source directory (YAML knowledge base)
 - `agents/visual-reviewer.md` — Visual scoring agent (accepts mode weight overrides)
 - `agents/reviewers/precision-reviewer.md` — Pixel-level regression specialist (extends visual-reviewer)
 - `agents/reviewers/theme-respect-reviewer.md` — Design token compliance auditor (extends visual-reviewer)
