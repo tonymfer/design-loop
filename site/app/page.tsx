@@ -3,6 +3,7 @@
 import { IterationProvider, useIteration } from "@/lib/iteration-context";
 import { Hero } from "@/components/sections/hero";
 import { HowItWorks } from "@/components/sections/how-it-works";
+import { ModeShowcase } from "@/components/sections/mode-showcase";
 import { CriteriaGrid } from "@/components/sections/criteria-grid";
 import { IterationDemo } from "@/components/sections/iteration-demo";
 import { Install } from "@/components/sections/install";
@@ -20,6 +21,7 @@ function PageContent() {
       <Hero />
       <main>
         <HowItWorks />
+        <ModeShowcase />
         <CriteriaGrid />
         <IterationDemo />
         <Install />

@@ -426,3 +426,20 @@
 [data-iteration="0"] .ambient-glow::before {
   display: none;
 }
+
+/* ═══════════════════════════════════════════════
+   Report preview scrollbar
+   ═══════════════════════════════════════════════ */
+.report-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+.report-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.report-scroll::-webkit-scrollbar-thumb {
+  background: #262626;
+  border-radius: 3px;
+}
+.report-scroll::-webkit-scrollbar-thumb:hover {
+  background: #404040;
+}
