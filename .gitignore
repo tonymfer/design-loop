@@ -5,3 +5,9 @@ site-old/
 .playwright-mcp/
 *.png
 .vercel
+.claude/design-loop-history.md
+.claude/design-loop.state.md
+.claude/design-loop-report.*
+.claude/design-loop-report-assets/
+.claude/design-loop-safety.log
+.claude/ralph-prompt.md
