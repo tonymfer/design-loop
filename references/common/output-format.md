@@ -9,6 +9,7 @@ ITERATION [N]: Fixed [issue1], [issue2], [issue3]
 Scores: Comp:[x] Typo:[x] Color:[x] Ident:[x] Polish:[x] = Avg [x.x]/5
 Trend: [up/down/flat] from [prev avg] → [current avg]
 Safety: [checkpoint=X build=X test=X fidelity=X rollbacks=N]
+Preview: [auto-approved | user-approved | user-skipped | user-modified (kept N/M)]
 ```
 
 ## History Log

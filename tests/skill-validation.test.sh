@@ -300,6 +300,37 @@ assert_contains "T18r: loop-engine decision tree has MAX_REACHED" "MAX_REACHED" 
 assert_contains "T18s: loop-engine Step 4 wires checkpoint-manager" "checkpoint-manager" orchestrator/loop-engine.md
 assert_contains "T18t: loop-engine Step 4 wires test-runner" "test-runner" orchestrator/loop-engine.md
 
+# --- Test 19: Preview agent exists and has required content ---
+
+# Structure
+assert_true "T19a: preview-agent.md exists" test -f agents/preview-agent.md
+assert_contains "T19b: preview-agent has role" "<role>" agents/preview-agent.md
+assert_contains "T19c: preview-agent has input-contract" "input-contract" agents/preview-agent.md
+assert_contains "T19d: preview-agent has output-contract" "output-contract" agents/preview-agent.md
+assert_contains "T19e: preview-agent has anti-hardcode" "anti-hardcode" agents/preview-agent.md
+assert_contains "T19f: preview-agent has Beeper example" "Beeper" agents/preview-agent.md
+assert_contains "T19g: preview-agent has PREVIEW_RESULT" "PREVIEW_RESULT" agents/preview-agent.md
+assert_contains "T19h: preview-agent has preview-await tag" "preview-await" agents/preview-agent.md
+assert_contains "T19i: preview-agent has risk assessment" "risk" agents/preview-agent.md
+
+# Cross-file wiring: loop-engine ↔ preview-agent
+assert_contains "T19j: loop-engine has Step 5.5 PREVIEW" "Step 5.5" orchestrator/loop-engine.md
+assert_contains "T19k: loop-engine has PREVIEW_MODE input" "PREVIEW_MODE" orchestrator/loop-engine.md
+assert_contains "T19l: loop-engine delegates to preview-agent" "preview-agent.md" orchestrator/loop-engine.md
+
+# Interview ↔ orchestrator wiring
+assert_contains "T19m: interview has Q3.5" "Q3.5" orchestrator/interview-flow.md
+assert_contains "T19n: interview output has PREVIEW_MODE" "PREVIEW_MODE" orchestrator/interview-flow.md
+
+# Stop hook
+assert_contains "T19o: stop-hook recognizes preview-await" "preview-await" hooks/stop-hook.sh
+
+# Output format
+assert_contains "T19p: output-format has Preview line" "Preview:" references/common/output-format.md
+
+# Orchestrator state
+assert_contains "T19q: orchestrator state has preview_mode" "preview_mode" orchestrator/orchestrator.md
+
 # --- Summary ---
 TOTAL=$((TESTS_PASSED + TESTS_FAILED))
 echo ""

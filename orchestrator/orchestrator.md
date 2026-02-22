@@ -183,6 +183,7 @@ mode: [MODE from Q0]
 goal_threshold: [from MODE_INSTRUCTIONS, default 4.0]
 started_at: "[ISO timestamp]"
 discover_states: [true/false]
+preview_mode: [PREVIEW_MODE from Q3.5]
 ---
 
 [Phase 4 process prompt — the stop hook feeds this back each iteration]
@@ -197,6 +198,7 @@ Input variables:
 - BRAND_FINGERPRINT, PROJECT_CONTEXT, DESIGN_SKILLS, SHARED_REFERENCES
 - CAPTURE_SET_BASELINE, ELEMENT_INVENTORY, REFERENCE_ANALYSIS
 - DISCOVER_STATES, FOCUS
+- PREVIEW_MODE
 
 Output variable: `LOOP_RESULT` (status, total_iterations, scores, improvements).
 

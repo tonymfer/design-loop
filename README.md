@@ -33,7 +33,8 @@ design-loop is a [Claude Code](https://docs.anthropic.com/en/docs/claude-code) p
 2. **Screenshot** — Section-level captures via [agent-browser](https://github.com/vercel-labs/agent-browser). Detects semantic HTML landmarks (`header`, `main`, `section`, `footer`, `article`) and screenshots each one individually to disk with `--annotate` labels on interactive elements. If the page lacks landmarks, falls back to scroll-based captures with 30% overlap so nothing is missed. The headed browser daemon persists between commands — no re-launch per step.
 3. **Score** — 5 design criteria evaluated 1–5 with anti-slop detection, weighted by your chosen mode
 4. **Fix** — Top 3 issues fixed in code within mode constraints, build verified
-5. **Repeat** — Loop continues until all criteria hit 4/5+
+5. **Preview** — Code diff + risk assessment shown for approval (PP/TRE) or auto-logged (CU)
+6. **Repeat** — Loop continues until all criteria hit 4/5+
 
 design-loop prioritizes the highest-impact issues first and adapts its focus as scores improve. If it gets stuck on a criterion after 3 attempts, it documents the issue and moves on.
 
@@ -214,6 +215,7 @@ SKILL.md (wrapper)
       ├── orchestrator/screenshot-engine/ (baseline-init, iteration-workflow, fidelity-scoring)
       ├── references/common/ (rubric, screenshots, constraints, output-format)
       ├── agents/visual-reviewer.md (scoring with mode weight overrides)
+      ├── agents/preview-agent.md (per-iteration change preview + confirmation gate)
       ├── agents/reviewers/ (precision-reviewer, theme-respect-reviewer, creative-unleash-reviewer)
       └── skills/modes/
           ├── precision-polish/SKILL.md (CSS-only, tight constraints)
@@ -264,6 +266,7 @@ design-loop/
     stop-hook.sh          # Stop hook for autonomous iteration
   agents/
     visual-reviewer.md    # UI screenshot analysis agent
+    preview-agent.md  # Per-iteration change preview + confirmation gate
     reviewers/
       precision-reviewer.md     # Pixel-level regression specialist
       theme-respect-reviewer.md # Token compliance auditor

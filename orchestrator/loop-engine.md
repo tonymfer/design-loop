@@ -29,6 +29,7 @@ You receive all variables established by the orchestrator in Steps 1-5:
 | REFERENCE_ANALYSIS | Step 3b (reference) | CU-only reference patterns (empty for PP/TRE) |
 | CAPTURE_SET_BASELINE | Step 5 (screenshot) | Initial baseline screenshots |
 | ELEMENT_INVENTORY | Step 5 (screenshot) | Interactive element inventory |
+| PREVIEW_MODE | Step 1 (interview) | confirm or auto — controls whether preview pauses for user confirmation |
 </input-contract>
 
 <loop-state>
@@ -55,6 +56,7 @@ LOOP_STATE:
       top_issues: [string]
       decision: string           # CONTINUE | POLISHED | PLATEAU | MAX_REACHED | REGRESSION
       safety_status: string      # compact one-line safety summary
+      preview_action: string        # apply | skip | modify (from PREVIEW_RESULT)
 
   safety_events: array              # Centralized safety audit events
     - { timestamp, iteration, type, details }
@@ -240,6 +242,42 @@ IF MODE = precision-polish AND DIFF_REPORT.visual_fidelity < 0.3:
 
 OTHERWISE: pass through
 ```
+
+### Step 5.5: PREVIEW — Change Preview & Confirmation Gate
+
+Delegate to `agents/preview-agent.md` for structured change preview.
+
+Provide to preview agent:
+- FIXES_APPLIED, FIXES_SKIPPED (from Step 4)
+- DIFF_REPORT, CAPTURE_SET_BEFORE, CAPTURE_SET_AFTER (from Steps 2, 5)
+- BRAND_FINGERPRINT, MODE, MODE_INSTRUCTIONS, PREVIEW_MODE
+- LOOP_STATE (for safety event and rollback awareness)
+
+The preview agent returns PREVIEW_RESULT. Handle by action:
+
+```
+IF PREVIEW_RESULT.action = "apply":
+  → Proceed to Step 6 (CHECK). All fixes remain applied.
+
+IF PREVIEW_RESULT.action = "skip":
+  → Rollback from Step 4's file checkpoint
+  → Restore browser state: agent-browser state load .claude/design-loop-state-N.json
+  → Log safety_event: { type: "preview_skip", details: "User rejected all changes" }
+  → Proceed to Step 6 with zeroed score deltas.
+
+IF PREVIEW_RESULT.action = "modify":
+  → Rollback from Step 4's file checkpoint (restore all files)
+  → Re-apply ONLY fixes in PREVIEW_RESULT.approved_changes
+  → Re-run build verification for each re-applied fix
+  → Re-run Step 5 (DIFF) for updated visual diff
+  → Log safety_event: { type: "preview_modify", details: "Kept [N]/[M] fixes" }
+  → Proceed to Step 6 with updated DIFF_REPORT.
+```
+
+If PREVIEW_MODE = auto: preview is logged, action=apply returned automatically. No pause.
+If PREVIEW_MODE = confirm: `<preview-await>CONFIRM</preview-await>` is output. Stop hook detects it and exits cleanly (exit 0). User responds in conversation.
+
+Record PREVIEW_RESULT.action in iteration's preview_action field.
 
 ### Step 6: CHECK — Compute Deltas and Derived State
 
@@ -434,6 +472,7 @@ Step 4 FIX: checkpoint saved → iter-1/
   safety-engine test-runner: tests pass (2/2)
   safety-engine checkpoint-manager: checkpoint=saved
 Step 5 DIFF: visual_fidelity=0.82, theme_fidelity=0.78
+Step 5.5 PREVIEW: PREVIEW_MODE=auto → logged, action=apply (CU default)
 Step 6 CHECK: plateau_count=0, trend=improving
 Step 7 DECIDE: CONTINUE targeting composition (3/5)
 Safety: checkpoint=1 build=pass test=2pass/0fail fidelity=pass rollbacks=0
@@ -453,6 +492,7 @@ Step 4 FIX: checkpoint saved → iter-2/
   fixes_applied: ["depth-gradient", "border-hierarchy"]
   fixes_skipped: ["voxel-nav — test failure, rolled back"]
 Step 5 DIFF: visual_fidelity=0.79, theme_fidelity=0.75
+Step 5.5 PREVIEW: PREVIEW_MODE=auto → logged, action=apply (CU default)
 Step 6 CHECK: plateau_count=1, trend=improving (wavg 3.95 > 3.70)
 Step 7 DECIDE: CONTINUE — plateau_count=1, strategy_hint set
   strategy_hint: "Shift to pixel-aligned 3D depth via offset borders, avoid structural nav changes"
@@ -470,6 +510,7 @@ Step 4 FIX: checkpoint saved → iter-3/
   Fix 2: Introduce depth-aware color tinting per BRAND_FINGERPRINT.tokens
   safety-engine test-runner: tests pass (2/2)
 Step 5 DIFF: visual_fidelity=0.85, theme_fidelity=0.80
+Step 5.5 PREVIEW: PREVIEW_MODE=auto → logged, action=apply (CU default)
 Step 6 CHECK: consecutive_pass_count=1, plateau_count=0, trend=improving
 Step 7 DECIDE: CONTINUE — approaching goal (4.55 < 4.70), need consecutive_pass_count=2
 Safety: checkpoint=3 build=pass test=2pass/0fail fidelity=pass rollbacks=0

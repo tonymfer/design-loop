@@ -148,6 +148,16 @@ if [[ -n "$PROMISE_TEXT" ]] && [[ "$PROMISE_TEXT" =~ ^(POLISHED|PLATEAU|REGRESSI
   exit 0
 fi
 
+# Check for preview-await signal: <preview-await>CONFIRM</preview-await>
+PREVIEW_TEXT=$(echo "$LAST_OUTPUT" | perl -0777 -pe 's/.*?<preview-await>(.*?)<\/preview-await>.*/$1/s; s/^\s+|\s+$//g; s/\s+/ /g' 2>/dev/null || echo "")
+
+if [[ -n "$PREVIEW_TEXT" ]] && [[ "$PREVIEW_TEXT" == "CONFIRM" ]]; then
+  echo "⏸️  Design loop: Preview awaiting confirmation (iteration $ITERATION)"
+  # Exit 0 — allow turn to end so user can respond. Status stays "running".
+  # When user responds, Claude processes PREVIEW_RESULT and loop continues.
+  exit 0
+fi
+
 # Not complete - continue loop with SAME PROMPT
 NEXT_ITERATION=$((ITERATION + 1))
 

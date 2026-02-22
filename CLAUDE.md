@@ -22,6 +22,7 @@ Claude Code plugin for autonomous visual UI/UX iteration.
 - `agents/reviewers/precision-reviewer.md` — Pixel-level regression specialist (extends visual-reviewer)
 - `agents/reviewers/theme-respect-reviewer.md` — Design token compliance auditor (extends visual-reviewer)
 - `agents/reviewers/creative-unleash-reviewer.md` — Design conviction evaluator (extends visual-reviewer)
+- `agents/preview-agent.md` — Per-iteration change preview with code diffs and confirmation gate
 - `commands/design-loop.md` — `/design-loop` slash command entry point
 - `commands/doop.md` — `/doop` shorthand alias
 - `commands/export-loop.md` — `/export-loop` slash command

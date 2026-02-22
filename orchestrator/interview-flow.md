@@ -186,6 +186,30 @@ How many visual iterations?
 Store as `MAX_ITERATIONS`.
 </question>
 
+<question id="Q3.5">
+## Preview Mode
+
+<think>
+Defaults vary per mode:
+- Precision Polish → default "confirm" (surgical, user wants control)
+- Theme-Respect Elevate → default "confirm" (brand-critical, verify compliance)
+- Creative Unleash → default "auto" (bold changes, trust the loop)
+Skip if $ARGUMENTS[4] is provided.
+</think>
+
+Should I show you a preview of changes before continuing each iteration?
+
+**If MODE = `precision-polish` or `theme-respect-elevate`:**
+1. Yes, preview and confirm each iteration (Recommended)
+2. No, auto-apply
+
+**If MODE = `creative-unleash`:**
+1. Yes, preview and confirm each iteration
+2. No, auto-apply (Recommended)
+
+Store as `PREVIEW_MODE` ("confirm" | "auto").
+</question>
+
 <confirmation>
 ## Configuration Summary
 
@@ -200,6 +224,7 @@ Here's your design loop configuration:
   Sub-screens:  [Yes/No description]
   Reference:    [REFERENCE_TYPE]: [REFERENCE_VALUE summary]   ← only if MODE = creative-unleash and REFERENCE_TYPE is not null
   Iterations:   [MAX_ITERATIONS or "No limit"]
+  Preview:      [Confirm each iteration / Auto-approve]
 
 Ready to start, or want to change something?
 1. Start the loop
@@ -214,7 +239,8 @@ What would you like to change?
 3. Focus ([current])
 4. Sub-screens ([current])
 5. Iterations ([current])
-6. Reference ([current or "None"])   ← only if MODE = creative-unleash
+6. Preview mode ([current])
+7. Reference ([current or "None"])   ← only if MODE = creative-unleash
 ```
 
 Then re-ask only the selected question and return to the confirmation summary.
@@ -225,7 +251,7 @@ If the user selects **"Start the loop"**, proceed.
 </interview>
 
 <output-contract>
-The interview produces exactly 7 output variables consumed by the orchestrator:
+The interview produces exactly 8 output variables consumed by the orchestrator:
 
 | Variable | Type | Values |
 |----------|------|--------|
@@ -236,6 +262,7 @@ The interview produces exactly 7 output variables consumed by the orchestrator:
 | `MAX_ITERATIONS` | integer | `0` (no limit) or positive integer |
 | `REFERENCE_TYPE` | string \| null | `url` \| `image` \| `description` \| `null` (PP/TRE always null) |
 | `REFERENCE_VALUE` | string \| null | The reference URL, file path, description text, or `null` |
+| `PREVIEW_MODE` | string | `confirm` \| `auto` (PP/TRE default confirm, CU default auto) |
 
 These feed directly into orchestrator Steps 2-4.
 </output-contract>
