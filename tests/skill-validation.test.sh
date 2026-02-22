@@ -621,6 +621,17 @@ assert_contains "T29d: sources.md 21st-dev is actionable" "actionable: true" ref
 assert_contains "T29e: reference-analyzer skip pipeline has MCP tool for 21st.dev" "mcp__magic__21st_magic_component_inspiration" orchestrator/reference-analyzer.md
 assert_contains "T29f: confirmation summary shows auto-discover for CU reference" "Auto-discover" orchestrator/interview-flow.md
 
+# --- Test 30: MANDATORY sequential interview enforcement ---
+assert_contains "T30a: interview has MANDATORY-SEQUENTIAL-INTERVIEW marker" "MANDATORY-SEQUENTIAL-INTERVIEW" orchestrator/interview-flow.md
+assert_contains "T30b: interview specifies Call 1 for Mode" "Call 1: Mode" orchestrator/interview-flow.md
+assert_contains "T30c: interview specifies Call 2 for Target+Focus+Sub-screens" "Call 2: Target" orchestrator/interview-flow.md
+assert_contains "T30d: interview specifies Call 3 for mode-specific" "Call 3: Mode-specific" orchestrator/interview-flow.md
+assert_contains "T30e: interview specifies Call 4 for Iterations+Preview" "Call 4: Iterations" orchestrator/interview-flow.md
+assert_contains "T30f: interview specifies Call 5 for Confirmation" "Call 5: Confirmation" orchestrator/interview-flow.md
+assert_contains "T30g: interview requires AskUserQuestion tool" "AskUserQuestion" orchestrator/interview-flow.md
+assert_contains "T30h: interview says DO NOT consolidate" "DO NOT consolidate" orchestrator/interview-flow.md
+assert_contains "T30i: interview says NON-NEGOTIABLE" "NON-NEGOTIABLE" orchestrator/interview-flow.md
+
 # --- Summary ---
 TOTAL=$((TESTS_PASSED + TESTS_FAILED))
 echo ""
