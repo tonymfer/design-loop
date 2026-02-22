@@ -13,14 +13,184 @@ You are the Design Loop Orchestrator — a lightweight coordinator for autonomou
 ## Step 1: Mode Selection Interview
 
 <think>
-The interview is extracted into its own file for rich UX:
-mode descriptions, examples, mode-adaptive follow-ups, and a confirmation step.
-Arguments are checked inside the interview flow — no pre-processing needed here.
+The interview is 5 explicit sub-steps, each with exact AskUserQuestion parameters.
+DO NOT consolidate these into fewer calls. Each sub-step MUST execute in order.
+See orchestrator/interview-flow.md for detailed question rationale, examples, and option descriptions.
 </think>
 
-Read and follow `orchestrator/interview-flow.md` for the complete interview flow.
+### Step 1a: Ask Mode (Q0)
 
-Output variables from the interview: `MODE`, `TARGET_URL`, `FOCUS`, `DISCOVER_STATES`, `BOLDNESS_LEVEL`, `MAX_ITERATIONS`, `REFERENCE_TYPE`, `REFERENCE_VALUE`, `PREVIEW_MODE`.
+Skip if `$ARGUMENTS[2]` is provided (validate against: `precision-polish`, `theme-respect-elevate`, `creative-unleash`).
+
+Use `AskUserQuestion`:
+```json
+{
+  "questions": [{
+    "question": "Which design-loop mode do you want to use?",
+    "header": "Mode",
+    "multiSelect": false,
+    "options": [
+      { "label": "Precision Polish", "description": "Surgical CSS fixes. Spacing, alignment, contrast, consistency. Layout stays as-is." },
+      { "label": "Theme-Respect Elevate (Recommended)", "description": "Reads your design tokens and elevates using only what your theme provides." },
+      { "label": "Creative Unleash", "description": "Bold moves. New fonts, palette shifts, layout restructuring." }
+    ]
+  }]
+}
+```
+
+Store answer as `MODE` (`precision-polish` | `theme-respect-elevate` | `creative-unleash`).
+
+### Step 1b: Ask Target + Focus + Sub-screens (Q1 + Q2 + Q2.5)
+
+Skip Q1 if `$ARGUMENTS[0]` is provided (set `TARGET_URL` directly).
+
+Use `AskUserQuestion` with up to 3 questions in one call:
+```json
+{
+  "questions": [
+    {
+      "question": "Which page should the design loop target?",
+      "header": "Target",
+      "multiSelect": false,
+      "options": [
+        { "label": "http://localhost:3000", "description": "Default Next.js / React dev server" },
+        { "label": "http://localhost:5173", "description": "Default Vite dev server" }
+      ]
+    },
+    {
+      "question": "What aspects need the most improvement?",
+      "header": "Focus",
+      "multiSelect": false,
+      "options": "MODE-ADAPTIVE (see interview-flow.md Q2 for full option lists per mode)"
+    },
+    {
+      "question": "Discover sub-screens (tabs, modals, drawers)?",
+      "header": "Sub-screens",
+      "multiSelect": false,
+      "options": "MODE-ADAPTIVE (PP: No recommended; TRE/CU: Yes recommended)"
+    }
+  ]
+}
+```
+
+**Focus options per MODE:**
+- **precision-polish:** Spacing & Alignment, Typography, Color & Contrast, Full audit (Recommended)
+- **theme-respect-elevate:** Composition & Layout, Typography, Color & Contrast, Visual Identity, Full audit (Recommended)
+- **creative-unleash:** Composition & Layout, Typography & Fonts, Color & Palette, Visual Identity, Full audit (Recommended)
+
+**Sub-screen options per MODE:**
+- **precision-polish:** Yes / No (Recommended)
+- **theme-respect-elevate / creative-unleash:** Yes (Recommended) / No
+
+Store answers as `TARGET_URL`, `FOCUS`, `DISCOVER_STATES`.
+
+### Step 1c: Mode-Specific Question (CONDITIONAL)
+
+<!-- MANDATORY-STEP-1C: This step MUST execute for TRE and CU modes. DO NOT SKIP. -->
+
+**If MODE = `theme-respect-elevate`:**
+
+MANDATORY: Ask the boldness question. Without `BOLDNESS_LEVEL`, TRE mode cannot function correctly.
+
+Use `AskUserQuestion`:
+```json
+{
+  "questions": [{
+    "question": "How bold should structural improvements be within your theme?",
+    "header": "Boldness",
+    "multiSelect": false,
+    "options": [
+      { "label": "Minimal", "description": "Safe cleaning only. Token compliance, spacing normalization. Max 8 iterations." },
+      { "label": "Medium (Recommended)", "description": "Card rearrangement, section reordering. Improved hierarchy. Max 12 iterations." },
+      { "label": "Bold", "description": "Full layout restructuring + new components from your library. Max 15 iterations." }
+    ]
+  }]
+}
+```
+
+Store as `BOLDNESS_LEVEL` (1 = Minimal, 2 = Medium, 3 = Bold).
+
+**If MODE = `creative-unleash`:**
+
+Use `AskUserQuestion`:
+```json
+{
+  "questions": [{
+    "question": "Design reference or inspiration for this redesign?",
+    "header": "Reference",
+    "multiSelect": false,
+    "options": [
+      { "label": "URL", "description": "A website I want to draw inspiration from" },
+      { "label": "Description", "description": "I'll describe the vibe I'm going for" },
+      { "label": "Auto-discover (Recommended)", "description": "Search 21st.dev, inspiration libraries, and companion skills" }
+    ]
+  }]
+}
+```
+
+Store as `REFERENCE_TYPE` + `REFERENCE_VALUE`.
+
+**If MODE = `precision-polish`:**
+Set `BOLDNESS_LEVEL` = null, `REFERENCE_TYPE` = null, `REFERENCE_VALUE` = null. Skip this step.
+
+### Step 1d: Ask Iterations + Preview (Q3 + Q3.5)
+
+Skip Q3 if `$ARGUMENTS[1]` is provided (set `MAX_ITERATIONS` directly).
+
+Use `AskUserQuestion` with 2 questions:
+```json
+{
+  "questions": [
+    {
+      "question": "How many visual iterations?",
+      "header": "Iterations",
+      "multiSelect": false,
+      "options": "MODE-ADAPTIVE + BOLDNESS-ADAPTIVE (see interview-flow.md Q3)"
+    },
+    {
+      "question": "Preview changes before each iteration?",
+      "header": "Preview",
+      "multiSelect": false,
+      "options": "MODE-ADAPTIVE default"
+    }
+  ]
+}
+```
+
+**Iteration options per MODE** (see interview-flow.md Q3 for full details):
+- **precision-polish:** 3 / 5 (Recommended) / 10 / No limit
+- **theme-respect-elevate:** Depends on BOLDNESS_LEVEL (Level 1: max 8, Level 2: max 12, Level 3: max 15)
+- **creative-unleash:** 10 / 15 (Recommended) / 25 / No limit
+
+**Preview options per MODE:**
+- **precision-polish / theme-respect-elevate:** Yes, confirm each (Recommended) / No, auto-apply
+- **creative-unleash:** Yes, confirm each / No, auto-apply (Recommended)
+
+Store as `MAX_ITERATIONS`, `PREVIEW_MODE`.
+
+### Step 1e: Confirmation
+
+Display configuration summary, then use `AskUserQuestion`:
+```json
+{
+  "questions": [{
+    "question": "Ready to start the design loop?",
+    "header": "Confirm",
+    "multiSelect": false,
+    "options": [
+      { "label": "Start the loop", "description": "Begin iterating with the configuration above" },
+      { "label": "Change something", "description": "Re-ask one of the questions above" }
+    ]
+  }]
+}
+```
+
+If "Change something": re-ask only the selected question, then confirm again.
+
+**VALIDATION:** If MODE = `theme-respect-elevate` and BOLDNESS_LEVEL is null:
+Step 1c was skipped in error. Go back and execute Step 1c before proceeding.
+
+Output variables: `MODE`, `TARGET_URL`, `FOCUS`, `DISCOVER_STATES`, `BOLDNESS_LEVEL`, `MAX_ITERATIONS`, `REFERENCE_TYPE`, `REFERENCE_VALUE`, `PREVIEW_MODE`.
 These feed directly into Steps 2-6.
 
 ---
@@ -281,4 +451,3 @@ On loop completion (POLISHED or max iterations):
 <!-- 6. That's it. No other files change. -->
 <!-- 7. If your mode uses references, the reference-analyzer (orchestrator/reference-analyzer.md) handles it automatically -->
 </extension-guide>
-</output>

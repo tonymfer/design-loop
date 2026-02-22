@@ -1,77 +1,11 @@
 ---
 name: design-loop-interview
-description: Rich mode selection interview for design-loop v2.0. Handles mode selection with real-world examples, mode-adaptive follow-up questions, and a confirmation step before starting. Not user-invocable — called by orchestrator/orchestrator.md.
+description: Reference document for design-loop interview question content, rationale, and option lists. The orchestrator (orchestrator.md Step 1a-1e) drives actual AskUserQuestion calls. Not user-invocable.
 ---
 
 <role>
-You are the Design Loop Interview Guide. Your job is to help the user configure a design iteration loop through a short, friendly interview. Present options clearly, adapt follow-up questions based on mode selection, and confirm the full configuration before handing back to the orchestrator.
+This file is a reference for question content and rationale. The orchestrator (orchestrator.md Step 1a-1e) drives the actual AskUserQuestion tool calls. This file provides detailed option lists, examples, and the output contract that the orchestrator sub-steps reference.
 </role>
-
-<!-- MANDATORY-SEQUENTIAL-INTERVIEW: The interview MUST be presented as SEPARATE
-     sequential AskUserQuestion calls. DO NOT consolidate all questions into a single call.
-     Each call below MUST happen in order. Skipping questions = broken configuration. -->
-
-<tool-call-sequence>
-## MANDATORY Tool Call Sequence
-
-**You MUST use the `AskUserQuestion` tool for each step below in order.**
-**DO NOT combine all questions into one call. DO NOT skip questions.**
-**Each call MUST complete before the next begins (answers determine next options).**
-
-### Call 1: Mode (Q0)
-One question: "Which design-loop mode do you want to use?"
-3 options: Precision Polish, Theme-Respect Elevate, Creative Unleash.
-→ WAIT for response. Store as MODE. All subsequent calls adapt based on MODE.
-
-### Call 2: Target + Focus + Sub-screens (Q1 + Q2 + Q2.5)
-Three questions in one call:
-1. Q1: "Which page should the design loop target?" — options: localhost:3000, localhost:5173, Other (free text)
-2. Q2: "What aspects need the most improvement?" — options adapt per MODE (see Q2 below)
-3. Q2.5: "Discover sub-screens (tabs, modals, drawers)?" — options: Yes / No (default flips per mode)
-→ WAIT for response. Store TARGET_URL, FOCUS, DISCOVER_STATES.
-
-### Call 3: Mode-specific question (CONDITIONAL — exactly ONE of these)
-
-**If MODE = `theme-respect-elevate`:**
-  Q2.6: "How bold should structural improvements be?" — 3 options: Minimal, Medium, Bold
-  → MANDATORY. DO NOT SKIP. Store BOLDNESS_LEVEL.
-
-**If MODE = `creative-unleash`:**
-  Q2.7: "Design reference or inspiration?" — 4 options: URL, Image, Description, Auto-discover (Recommended)
-  → Store REFERENCE_TYPE, REFERENCE_VALUE.
-
-**If MODE = `precision-polish`:**
-  Skip Call 3 entirely. Set BOLDNESS_LEVEL = null, REFERENCE_TYPE = null, REFERENCE_VALUE = null.
-
-### Call 4: Iterations + Preview (Q3 + Q3.5)
-Two questions in one call:
-1. Q3: "How many visual iterations?" — options adapt per MODE and BOLDNESS_LEVEL
-2. Q3.5: "Preview changes before each iteration?" — options: Yes (confirm) / No (auto-apply)
-→ WAIT for response. Store MAX_ITERATIONS, PREVIEW_MODE.
-
-### Call 5: Confirmation
-Display the full configuration summary (see `<confirmation>` section below).
-One question: "Ready to start?" — options: Start the loop / Change something
-→ If "Change something": re-ask only the selected question, then show summary again.
-
-**Total: 4-5 AskUserQuestion calls. Never fewer. This is NON-NEGOTIABLE.**
-</tool-call-sequence>
-
-<cli-bypass>
-<think>
-Before presenting questions, check if arguments were passed via $ARGUMENTS:
-- $ARGUMENTS[0] = url → set TARGET_URL, skip Q1 from Call 2
-- $ARGUMENTS[1] = iterations → set MAX_ITERATIONS, skip Q3 from Call 4
-- $ARGUMENTS[2] = mode → set MODE, skip Call 1 (for CLI power users)
-
-If all three are provided, skip Calls 1-4 but STILL show confirmation (Call 5).
-If only some are provided, ask only the missing questions in their designated calls.
-Even with CLI bypass, the mode-specific Call 3 is NEVER skipped for TRE (boldness) or CU (reference).
-</think>
-
-If `$ARGUMENTS[2]` is set, validate it against: `precision-polish`, `theme-respect-elevate`, `creative-unleash`.
-If invalid, warn and fall through to Q0.
-</cli-bypass>
 
 <interview>
 

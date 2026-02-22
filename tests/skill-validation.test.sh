@@ -622,15 +622,47 @@ assert_contains "T29e: reference-analyzer skip pipeline has MCP tool for 21st.de
 assert_contains "T29f: confirmation summary shows auto-discover for CU reference" "Auto-discover" orchestrator/interview-flow.md
 
 # --- Test 30: MANDATORY sequential interview enforcement ---
-assert_contains "T30a: interview has MANDATORY-SEQUENTIAL-INTERVIEW marker" "MANDATORY-SEQUENTIAL-INTERVIEW" orchestrator/interview-flow.md
-assert_contains "T30b: interview specifies Call 1 for Mode" "Call 1: Mode" orchestrator/interview-flow.md
-assert_contains "T30c: interview specifies Call 2 for Target+Focus+Sub-screens" "Call 2: Target" orchestrator/interview-flow.md
-assert_contains "T30d: interview specifies Call 3 for mode-specific" "Call 3: Mode-specific" orchestrator/interview-flow.md
-assert_contains "T30e: interview specifies Call 4 for Iterations+Preview" "Call 4: Iterations" orchestrator/interview-flow.md
-assert_contains "T30f: interview specifies Call 5 for Confirmation" "Call 5: Confirmation" orchestrator/interview-flow.md
+# T30b-g: Orchestrator now drives the interview (sub-steps 1a-1e), interview-flow.md is reference only
+# T30a REMOVED: MANDATORY-SEQUENTIAL-INTERVIEW comment removed from interview-flow (orchestrator owns enforcement)
+assert_contains "T30b: orchestrator has Step 1a for Mode" "Step 1a" orchestrator/orchestrator.md
+assert_contains "T30c: orchestrator has Step 1b for Target+Focus+Sub-screens" "Step 1b" orchestrator/orchestrator.md
+assert_contains "T30d: orchestrator has Step 1c for mode-specific" "Step 1c" orchestrator/orchestrator.md
+assert_contains "T30e: orchestrator has Step 1d for Iterations+Preview" "Step 1d" orchestrator/orchestrator.md
+assert_contains "T30f: orchestrator has Step 1e for Confirmation" "Step 1e" orchestrator/orchestrator.md
 assert_contains "T30g: interview requires AskUserQuestion tool" "AskUserQuestion" orchestrator/interview-flow.md
-assert_contains "T30h: interview says DO NOT consolidate" "DO NOT consolidate" orchestrator/interview-flow.md
-assert_contains "T30i: interview says NON-NEGOTIABLE" "NON-NEGOTIABLE" orchestrator/interview-flow.md
+# T30h REMOVED: "DO NOT consolidate" comment removed from interview-flow (orchestrator owns enforcement)
+assert_contains "T30i: orchestrator says DO NOT SKIP Step 1c" "DO NOT SKIP" orchestrator/orchestrator.md
+
+# --- Test 31: Orchestrator sequential interview sub-steps ---
+assert_contains "T31a: orchestrator has Step 1a (Mode)" "Step 1a" orchestrator/orchestrator.md
+assert_contains "T31b: orchestrator has Step 1b (Target+Focus)" "Step 1b" orchestrator/orchestrator.md
+assert_contains "T31c: orchestrator has Step 1c (mode-specific)" "Step 1c" orchestrator/orchestrator.md
+assert_contains "T31d: orchestrator has Step 1d (Iterations+Preview)" "Step 1d" orchestrator/orchestrator.md
+assert_contains "T31e: orchestrator has Step 1e (Confirmation)" "Step 1e" orchestrator/orchestrator.md
+assert_contains "T31f: orchestrator Step 1c mentions BOLDNESS_LEVEL" "BOLDNESS_LEVEL" orchestrator/orchestrator.md
+assert_contains "T31g: orchestrator uses AskUserQuestion" "AskUserQuestion" orchestrator/orchestrator.md
+# CLI bypass in orchestrator (moved from interview-flow)
+assert_contains "T31h: orchestrator Step 1a has ARGUMENTS[2] skip" 'ARGUMENTS\[2\]' orchestrator/orchestrator.md
+assert_contains "T31i: orchestrator Step 1b has ARGUMENTS[0] skip" 'ARGUMENTS\[0\]' orchestrator/orchestrator.md
+assert_contains "T31j: orchestrator Step 1d has ARGUMENTS[1] skip" 'ARGUMENTS\[1\]' orchestrator/orchestrator.md
+# Mandatory marker
+assert_contains "T31k: orchestrator has MANDATORY-STEP-1C marker" "MANDATORY-STEP-1C" orchestrator/orchestrator.md
+# DO NOT SKIP enforcement
+assert_contains "T31l: orchestrator Step 1c says DO NOT SKIP" "DO NOT SKIP" orchestrator/orchestrator.md
+
+# --- Test 32: interview-flow.md is reference-only (no execution instructions) ---
+if grep -q '<tool-call-sequence>' orchestrator/interview-flow.md 2>/dev/null; then
+  echo "FAIL: T32a: interview-flow.md still has <tool-call-sequence> (should be in orchestrator)"
+  TESTS_FAILED=$((TESTS_FAILED + 1))
+else
+  TESTS_PASSED=$((TESTS_PASSED + 1))
+fi
+if grep -q '<cli-bypass>' orchestrator/interview-flow.md 2>/dev/null; then
+  echo "FAIL: T32b: interview-flow.md still has <cli-bypass> (should be in orchestrator)"
+  TESTS_FAILED=$((TESTS_FAILED + 1))
+else
+  TESTS_PASSED=$((TESTS_PASSED + 1))
+fi
 
 # --- Summary ---
 TOTAL=$((TESTS_PASSED + TESTS_FAILED))
