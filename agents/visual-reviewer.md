@@ -35,6 +35,7 @@ Return a strict JSON object for each section reviewed. This makes scores machine
 ```json
 {
   "section": "[name]",
+  "state": "default",
   "iteration": 1,
   "scores": {
     "composition": { "score": 3, "delta": "+1", "reason": "Improved grid spacing" },
@@ -58,6 +59,7 @@ Return a strict JSON object for each section reviewed. This makes scores machine
 ```
 
 Field reference:
+- `state`: Which view this score is for — `"default"` for the initial page view, or a state identifier like `"tab:Battery"`, `"modal:Recharge"`, `"accordion:FAQ"`. Always include this field.
 - `delta`: Change from previous iteration — `"+N"`, `"0"`, or `"-N"`. Use `"—"` for first iteration.
 - `top_issues`: Ranked by severity, max 3.
 - `recommended_fixes`: Specific CSS/Tailwind changes, one per issue, same order as `top_issues`.

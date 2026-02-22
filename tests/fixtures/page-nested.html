@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <div role="tablist">
+    <button role="tab" aria-selected="true" id="tab-main">Main</button>
+    <button role="tab" aria-selected="false" id="tab-details">Details</button>
+  </div>
+  <div role="tabpanel" id="panel-main">
+    <button aria-haspopup="dialog" id="open-confirm">Confirm Action</button>
+    <dialog id="confirm-dialog">
+      <h2>Are you sure?</h2>
+      <button aria-label="Close">X</button>
+    </dialog>
+  </div>
+  <div role="tabpanel" id="panel-details" hidden>Details content</div>
+</body>
+</html>

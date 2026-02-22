@@ -16,11 +16,16 @@ set -euo pipefail
 # Read hook input from stdin (advanced stop hook API)
 HOOK_INPUT=$(cat)
 
-# Check if design-loop is active
-STATE_FILE=".claude/design-loop.state.md"
+# Derive session-scoped state file
+SESSION_ID=$(echo "$HOOK_INPUT" | jq -r '.session_id // empty')
+if [[ -n "$SESSION_ID" ]]; then
+  STATE_FILE=".claude/design-loop.state-${SESSION_ID}.md"
+else
+  STATE_FILE=".claude/design-loop.state.md"  # fallback for older Claude Code versions
+fi
 
 if [[ ! -f "$STATE_FILE" ]]; then
-  # No active loop - allow exit
+  # No active loop for this session - allow exit
   exit 0
 fi
 
@@ -155,10 +160,19 @@ if [[ -z "$PROMPT_TEXT" ]]; then
   exit 0
 fi
 
-# Update iteration in frontmatter (portable across macOS and Linux)
+# Update iteration in frontmatter with file locking for concurrent safety
 TEMP_FILE="${STATE_FILE}.tmp.$$"
-sed "s/^iteration: .*/iteration: $NEXT_ITERATION/" "$STATE_FILE" > "$TEMP_FILE"
-mv "$TEMP_FILE" "$STATE_FILE"
+LOCK_FILE="${STATE_FILE}.lock"
+if command -v flock &>/dev/null; then
+  (flock -x 200
+    sed "s/^iteration: .*/iteration: $NEXT_ITERATION/" "$STATE_FILE" > "$TEMP_FILE"
+    mv "$TEMP_FILE" "$STATE_FILE"
+  ) 200>"$LOCK_FILE"
+else
+  # macOS fallback: flock not available, use atomic mv
+  sed "s/^iteration: .*/iteration: $NEXT_ITERATION/" "$STATE_FILE" > "$TEMP_FILE"
+  mv "$TEMP_FILE" "$STATE_FILE"
+fi
 
 # Build system message with iteration count
 if [[ $MAX_ITERATIONS -gt 0 ]]; then

@@ -21,11 +21,17 @@ Each iteration:
 ```
 1. CHECK agent-browser — run `agent-browser --version` via Bash
    If unavailable: run `npm install -g agent-browser && agent-browser install` via Bash
-2. OPEN browser session: `agent-browser --headed open <url>`
+2. GUARD: Check for concurrent design-loop sessions:
+   - Run: ls .claude/design-loop.state-*.md 2>/dev/null
+   - For each state file found, check if status is "running"
+   - If any running session found: warn user:
+     "Another design-loop is already running. Finish it first or run /design-loop on a different project."
+   - Stop — do NOT proceed with a second concurrent session
+3. OPEN browser session: `agent-browser --headed open <url>`
    --headed shows the browser window so the user can watch the loop work.
    The browser daemon persists between commands — no re-launch per step.
-3. WAIT for page load: `agent-browser wait --load networkidle`
-4. CHECK target URL — verify the page loaded (check for errors in output)
+4. WAIT for page load: `agent-browser wait --load networkidle`
+5. CHECK target URL — verify the page loaded (check for errors in output)
    If it responds: proceed
    If not: run the dev server recovery sequence below
 ```
@@ -101,6 +107,16 @@ Options (present in this exact order):
 4. Visual Identity & Polish
 5. Full audit — all criteria (Recommended)
 ```
+
+**Q2.5: Sub-screens**
+```
+"Should I discover and iterate on sub-screens within this page (tabs, modals, drawers)?"
+Options:
+1. Yes, discover all interactive states (Recommended)
+2. No, just the default view
+```
+
+Store the answer as `DISCOVER_STATES` (true/false).
 
 **Q3: Iterations** (skip if `$ARGUMENTS[1]` provided)
 ```
@@ -187,6 +203,94 @@ agent-browser set viewport 1440 900
 ```
 
 Use `Read` tool to view the mobile screenshot. Flag any responsive breakage (overflow, stacked elements colliding, text too small) as Polish issues in Phase 4.
+
+## Phase 3.5: State Discovery
+
+**Skip this phase if `DISCOVER_STATES` is false.**
+
+After initial screenshots, discover interactive states within the page. Run a JS probe via `agent-browser eval --stdin`:
+
+```bash
+agent-browser eval --stdin <<'JS'
+(() => {
+  const states = { tabs: [], modals: [], navItems: [], accordions: [] };
+
+  // Tab panels: [role="tablist"], [data-state], .tab, [aria-selected]
+  document.querySelectorAll('[role="tablist"] [role="tab"], [data-state], [aria-selected]').forEach(el => {
+    const label = el.textContent?.trim().slice(0, 50) || el.getAttribute('aria-label') || '';
+    const isActive = el.getAttribute('aria-selected') === 'true'
+      || el.getAttribute('data-state') === 'active'
+      || el.classList.contains('active');
+    if (label) {
+      states.tabs.push({
+        label,
+        selector: el.id ? '#' + el.id : `[role="tab"]:nth-child(${Array.from(el.parentElement.children).indexOf(el) + 1})`,
+        active: isActive
+      });
+    }
+  });
+
+  // Navigation items: bottom nav, sidebar links, screen switchers
+  document.querySelectorAll('nav a, [role="navigation"] a, [data-screen]').forEach(el => {
+    const label = el.textContent?.trim().slice(0, 50) || el.getAttribute('aria-label') || '';
+    const href = el.getAttribute('href') || '';
+    if (label && !states.navItems.find(n => n.label === label)) {
+      states.navItems.push({ label, href, selector: el.id ? '#' + el.id : null });
+    }
+  });
+
+  // Modals/drawers: buttons with aria-haspopup, data-dialog-trigger
+  document.querySelectorAll('[aria-haspopup], [data-dialog-trigger], [data-modal-trigger]').forEach(el => {
+    const label = el.textContent?.trim().slice(0, 50) || el.getAttribute('aria-label') || '';
+    if (label) {
+      states.modals.push({
+        trigger: el.id ? '#' + el.id : el.tagName.toLowerCase() + (el.className ? '.' + el.className.split(' ')[0] : ''),
+        label
+      });
+    }
+  });
+
+  // Accordions/collapsibles
+  document.querySelectorAll('details > summary, [role="button"][aria-expanded]').forEach(el => {
+    const label = el.textContent?.trim().slice(0, 50) || '';
+    if (label) {
+      states.accordions.push({ label, expanded: el.parentElement?.open || el.getAttribute('aria-expanded') === 'true' });
+    }
+  });
+
+  const total = states.tabs.length + states.modals.length + states.navItems.length + states.accordions.length;
+  return JSON.stringify({ ...states, totalStates: total });
+})()
+JS
+```
+
+Store the result as `DISCOVERED_STATES`.
+
+If `totalStates > 0`, iterate through each discovered state:
+
+```
+For each inactive tab in DISCOVERED_STATES.tabs:
+  1. Click the tab: agent-browser eval "document.querySelector('<selector>').click()"
+  2. Wait for render: agent-browser wait 500
+  3. Screenshot using Phase 3 strategy (node mode or scroll mode)
+     - Name files: state-tab-<label>-section-N.png
+  4. Store screenshots with state metadata: { state: "tab:<label>", screenshots: [...] }
+  5. Return to default state by clicking the originally-active tab
+
+For each modal trigger in DISCOVERED_STATES.modals:
+  1. Click the trigger: agent-browser eval "document.querySelector('<trigger>').click()"
+  2. Wait for animation: agent-browser wait 800
+  3. Screenshot the modal overlay: agent-browser screenshot state-modal-<label>.png --annotate
+  4. Close the modal: agent-browser eval "document.querySelector('[data-dismiss], [aria-label=\"Close\"], dialog button, .modal-close')?.click() || document.dispatchEvent(new KeyboardEvent('keydown', {key: 'Escape'}))"
+  5. Wait: agent-browser wait 500
+
+For each accordion in DISCOVERED_STATES.accordions (if not expanded):
+  1. Click to expand
+  2. Screenshot
+  3. Click to collapse (restore state)
+```
+
+All state screenshots feed into Phase 4 alongside the default-view screenshots. Each discovered state gets its own score row in the evaluation.
 
 ## Phase 4: Evaluate & Fix
 
@@ -301,9 +405,9 @@ If issues are found, include them alongside screenshot-based observations when s
 
 ### Process (each iteration)
 
-1. **SCREENSHOT**: Use Phase 3 strategy (node mode or scroll mode + responsive pass)
+1. **SCREENSHOT**: Use Phase 3 strategy (node mode or scroll mode + responsive pass). If `DISCOVER_STATES` is true, also re-run Phase 3.5 to capture all discovered states.
 2. **AUDIT**: Run the CSS Layout Audit JS above. Merge any issues found into the analysis.
-3. **ANALYZE**: Review screenshots + audit results against all 5 criteria. Score each 1–5. List top 3 issues by severity. Show score deltas from previous iteration.
+3. **ANALYZE**: Review ALL screenshots (default view + discovered states) against all 5 criteria. Score each state independently. List top 3 issues by severity across all states. Show score deltas from previous iteration.
 4. **FIX**: Targeted CSS/component edits for top 3 issues.
    - Before editing code, save browser state for rollback:
      `agent-browser state save .claude/design-loop-state-N.json`
@@ -354,6 +458,14 @@ If issues are found, include them alongside screenshot-based observations when s
 
 ## Phase 5: Loop Control
 
+**State file naming:** Use session-scoped state files to allow concurrent sessions on different projects:
+
+```
+.claude/design-loop.state-${CLAUDE_SESSION_ID}.md
+```
+
+Where `$CLAUDE_SESSION_ID` is the session ID from the Claude Code environment. If unavailable, fall back to `.claude/design-loop.state.md`.
+
 **Write state file BEFORE iteration 1** — the stop hook depends on it:
 
 ```yaml
@@ -362,15 +474,16 @@ status: running
 iteration: 0
 max_iterations: [from Q3, 0 for no limit]
 started_at: "[ISO timestamp]"
+discover_states: [true/false from Q2.5]
 ---
 
 [Phase 4 process prompt — fed back by stop hook each iteration]
 ```
 
 Execute iterations. After each:
-1. Update `iteration` count in `.claude/design-loop.state.md` frontmatter
+1. Update `iteration` count in the session-scoped state file frontmatter
 2. Check completion:
-   - ALL 5 criteria >= 4/5 for 2 consecutive iterations → output `<promise>POLISHED</promise>`
+   - ALL 5 criteria >= 4/5 for 2 consecutive iterations (across ALL states if discovery is on) → output `<promise>POLISHED</promise>`
    - `max_iterations > 0` and iteration >= max_iterations → stop with final summary
    - `max_iterations = 0` → no iteration limit, continue until POLISHED
 3. The stop hook intercepts session exit:
@@ -387,6 +500,7 @@ On completion (POLISHED or max iterations reached), close the browser and delete
 ```bash
 agent-browser close
 rm -f design-loop-*.png section-*.png scroll-*.png overview.png mobile-overview.png
+rm -f state-tab-*.png state-modal-*.png state-accordion-*.png
 rm -f .claude/design-loop-state-*.json
 ```
 
