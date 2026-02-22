@@ -90,18 +90,22 @@ function ScoreCounter() {
 export function FinalCTA() {
   return (
     <section className="relative section-divider py-28 text-center overflow-hidden">
-      {/* Warm ambient glow — CTA gets warm temperature */}
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_50%_40%,rgba(var(--accent-3-rgb),0.04),transparent_70%)]" />
+      {/* Layered depth — 3 translucent panels at different z-levels */}
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_30%,rgba(var(--accent-rgb),0.06),transparent_60%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_50%_40%_at_30%_50%,rgba(var(--accent-2-rgb),0.04),transparent_50%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_70%_60%,rgba(var(--accent-3-rgb),0.05),transparent_50%)]" />
+      </div>
       {/* Subtle dot grid background */}
       <div className="absolute inset-0 dot-grid" />
 
       <div className="relative mx-auto max-w-[1100px] px-6">
         <ScrollReveal>
-          <div className="mx-auto mb-6 accent-bar accent-bar-warm" />
-          <h2 className="font-display text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl xl:text-6xl text-[var(--text-primary)]">
-            Stop guessing.
+          <div className="mx-auto mb-8 accent-bar accent-bar-warm" />
+          <h2 className="font-serif text-4xl sm:text-5xl lg:text-6xl xl:text-7xl leading-[1.1] text-[var(--text-primary)]" style={{ letterSpacing: "-0.03em" }}>
+            <span className="font-bold">Stop guessing.</span>
             <br />
-            <span className="bg-gradient-to-r from-[var(--accent)] via-[var(--accent-2)] to-[var(--accent)] bg-clip-text text-transparent">
+            <span className="italic bg-gradient-to-r from-[var(--accent)] via-[var(--accent-2)] to-[var(--accent)] bg-[length:200%_auto] bg-clip-text text-transparent animate-[shimmer_4s_ease-in-out_infinite]">
               Start measuring.
             </span>
           </h2>

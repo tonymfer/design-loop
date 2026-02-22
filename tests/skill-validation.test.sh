@@ -581,6 +581,46 @@ else
   TESTS_PASSED=$((TESTS_PASSED + 1))
 fi
 
+# --- Test 25: BOLDNESS_LEVEL persistence wiring (from prior session) ---
+assert_contains "T25a: stop-hook extracts boldness_level" "boldness_level" hooks/stop-hook.sh
+assert_contains "T25b: stop-hook includes boldness in system message" "BOLDNESS_DISPLAY" hooks/stop-hook.sh
+assert_contains "T25c: stop-hook extracts preview_mode" "preview_mode" hooks/stop-hook.sh
+assert_contains "T25d: orchestrator lists all 9 interview variables" "PREVIEW_MODE" orchestrator/orchestrator.md
+
+# --- Test 26: Independent reviewer spawning enforcement ---
+assert_contains "T26a: loop-engine has MANDATORY subagent instruction" "MANDATORY" orchestrator/loop-engine.md
+assert_contains "T26b: loop-engine has subagent in scoring step" "subagent" orchestrator/loop-engine.md
+assert_contains "T26c: loop-engine has MANDATORY-SUBAGENT marker" "MANDATORY-SUBAGENT" orchestrator/loop-engine.md
+assert_contains "T26d: visual-reviewer has independent scorer identity" "independent" agents/visual-reviewer.md
+
+# --- Test 27: Multi-viewport enforcement ---
+assert_contains "T27a: baseline-init has MULTI-VIEWPORT-MANDATORY marker" "MULTI-VIEWPORT-MANDATORY" orchestrator/screenshot-engine/baseline-init.md
+assert_contains "T27b1: baseline-init has 1440 viewport" "1440" orchestrator/screenshot-engine/baseline-init.md
+assert_contains "T27b2: baseline-init has 768 viewport" "768" orchestrator/screenshot-engine/baseline-init.md
+assert_contains "T27c: iteration-workflow has MULTI-VIEWPORT-MANDATORY marker" "MULTI-VIEWPORT-MANDATORY" orchestrator/screenshot-engine/iteration-workflow.md
+assert_contains "T27d: iteration-workflow references standard viewport list" "standard viewport list" orchestrator/screenshot-engine/iteration-workflow.md
+
+# --- Test 28: TRE boldness question enforcement ---
+# T28a: Q2.6 must NOT use double-negative "NOT" for TRE gating
+if grep -q 'Skip this question entirely if MODE is NOT' orchestrator/interview-flow.md 2>/dev/null; then
+  echo "FAIL: T28a: interview-flow.md Q2.6 still uses double-negative phrasing"
+  TESTS_FAILED=$((TESTS_FAILED + 1))
+else
+  TESTS_PASSED=$((TESTS_PASSED + 1))
+fi
+assert_contains "T28b: interview-flow has MANDATORY-BOLDNESS-GATE marker" "MANDATORY-BOLDNESS-GATE" orchestrator/interview-flow.md
+assert_contains "T28c: interview-flow confirmation validates BOLDNESS_LEVEL for TRE" "MANDATORY-BOLDNESS-VALIDATION" orchestrator/interview-flow.md
+assert_contains "T28d: interview-flow Q2.6 has positive ASK assertion" "ASK this question when MODE = theme-respect-elevate" orchestrator/interview-flow.md
+assert_contains "T28e: interview-flow Q2.7 option 4 mentions 21st.dev" "21st.dev" orchestrator/interview-flow.md
+
+# --- Test 29: CU auto-discover default wiring ---
+assert_contains "T29a: Q2.7 auto-discover is recommended for CU" "Recommended" orchestrator/interview-flow.md
+assert_contains "T29b: reference-analyzer skip pipeline loads inspiration KB" "references/inspirations/sources.md" orchestrator/reference-analyzer.md
+assert_contains "T29c: sources.md includes 21st-dev entry" "21st-dev" references/inspirations/sources.md
+assert_contains "T29d: sources.md 21st-dev is actionable" "actionable: true" references/inspirations/sources.md
+assert_contains "T29e: reference-analyzer skip pipeline has MCP tool for 21st.dev" "mcp__magic__21st_magic_component_inspiration" orchestrator/reference-analyzer.md
+assert_contains "T29f: confirmation summary shows auto-discover for CU reference" "Auto-discover" orchestrator/interview-flow.md
+
 # --- Summary ---
 TOTAL=$((TESTS_PASSED + TESTS_FAILED))
 echo ""

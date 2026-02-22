@@ -193,6 +193,17 @@ JS
 
 ### Step 3: SCORE — Reviewer Routing with LOOP_STATE
 
+<!-- MANDATORY-SUBAGENT: Scoring MUST be delegated to an independent reviewer subagent.
+     NEVER score inline. The fixer and scorer must be separate agents to prevent
+     confirmation bias. Use the Task tool to spawn the reviewer as an isolated subagent.
+     This is a structural invariant — scoring your own work is the design equivalent
+     of writing tests that just assert what the code does. -->
+
+MANDATORY: Spawn the reviewer as an **independent subagent** using the Task tool.
+Do NOT score inline — the agent that applies fixes must NEVER be the same agent
+that evaluates their quality. This separation prevents confirmation bias where the
+fixer sees what they intended rather than what actually rendered.
+
 Delegate to the mode-specific reviewer:
 
 <reviewer-routing>

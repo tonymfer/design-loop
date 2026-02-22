@@ -75,9 +75,29 @@ For each detected section:
 agent-browser screenshot baseline-section-N.png --annotate
 ```
 
-### 4. Responsive pass (mobile)
+### 4. Responsive pass — MULTI-VIEWPORT-MANDATORY
+
+<!-- MULTI-VIEWPORT-MANDATORY: Baseline MUST capture at multiple viewports to catch
+     responsive issues. A single viewport misses layout breakage at other sizes.
+     This is a structural invariant — all viewports below must be captured. -->
+
+MANDATORY: Capture at ALL viewports in the standard viewport list. Single-viewport
+capture is insufficient — responsive issues at untested sizes go undetected.
+
+**Standard viewport list** (shared across baseline and iteration captures):
+
+| Name | Width | Height | Purpose |
+|------|-------|--------|---------|
+| desktop | 1440 | 900 | Primary — already captured in step 2 |
+| tablet | 768 | 1024 | Responsive breakpoint — catches layout collapse |
+| mobile | 375 | 667 | Small screen — catches overflow and stacking |
 
 ```bash
+# Tablet pass
+agent-browser set viewport 768 1024
+agent-browser screenshot baseline-tablet.png --annotate
+
+# Mobile pass
 agent-browser set viewport 375 667
 agent-browser screenshot baseline-mobile.png --annotate
 ```
@@ -111,7 +131,8 @@ agent-browser screenshot baseline-state-{name}.png --annotate
 All baseline files use the `baseline-` prefix:
 - `baseline-full.png` — full-page annotated capture
 - `baseline-section-N.png` — per-section captures (N = 0, 1, 2...)
-- `baseline-mobile.png` — mobile responsive capture
+- `baseline-tablet.png` — tablet responsive capture (768x1024)
+- `baseline-mobile.png` — mobile responsive capture (375x667)
 - `baseline-state-{name}.png` — state-specific captures (e.g., baseline-state-tab-settings.png)
 - `baseline-elements.json` — interactive element inventory
 

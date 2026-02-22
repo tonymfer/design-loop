@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, forwardRef } from "react";
 import {
   motion,
   useMotionValue,
@@ -9,13 +9,13 @@ import {
 } from "motion/react";
 import { cn } from "@/lib/utils";
 
-export function Spotlight({
-  children,
-  className,
-}: {
-  children: React.ReactNode;
-  className?: string;
-}) {
+export const Spotlight = forwardRef<
+  HTMLDivElement,
+  {
+    children: React.ReactNode;
+    className?: string;
+  }
+>(function Spotlight({ children, className }, ref) {
   const [isHovered, setIsHovered] = useState(false);
 
   const mouseX = useMotionValue(0);
@@ -34,6 +34,7 @@ export function Spotlight({
 
   return (
     <div
+      ref={ref}
       className={cn("relative overflow-hidden", className)}
       onMouseMove={handleMouseMove}
       onMouseEnter={() => setIsHovered(true)}
@@ -48,4 +49,4 @@ export function Spotlight({
       {children}
     </div>
   );
-}
+});

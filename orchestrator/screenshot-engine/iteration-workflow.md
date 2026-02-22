@@ -50,9 +50,20 @@ agent-browser snapshot -i --json > iter-N-elements.json
 - Cross-reference with previous iteration's element inventory (or CAPTURE_SET_BASELINE.elements_json for iteration 0)
 - Identify elements that changed between iterations
 
-#### Step 3: VIEWPORT CYCLING
+#### Step 3: VIEWPORT CYCLING — MULTI-VIEWPORT-MANDATORY
+
+<!-- MULTI-VIEWPORT-MANDATORY: Iteration captures MUST match the standard viewport
+     list from baseline-init.md. Single-viewport iteration misses responsive regressions. -->
 
 Desktop (1440x900) — already captured in step 1.
+
+MANDATORY: Capture at ALL viewports in the standard viewport list (same as baseline-init.md).
+
+Tablet pass:
+```bash
+agent-browser set viewport 768 1024
+agent-browser screenshot iter-N-tablet.png --annotate
+```
 
 Mobile pass:
 ```bash
@@ -91,6 +102,13 @@ agent-browser diff screenshot --baseline iter-N-overview.png -t <THRESHOLD> -o d
 agent-browser diff screenshot --baseline iter-N-section-M.png -t <THRESHOLD> -o diff-N-section-M.png
 ```
 
+Tablet diff:
+```bash
+agent-browser set viewport 768 1024
+agent-browser screenshot iter-N-after-tablet.png --annotate
+agent-browser diff screenshot --baseline iter-N-tablet.png -t <THRESHOLD> -o diff-N-tablet.png
+```
+
 Mobile diff:
 ```bash
 agent-browser set viewport 375 667
@@ -98,7 +116,7 @@ agent-browser screenshot iter-N-after-mobile.png --annotate
 agent-browser diff screenshot --baseline iter-N-mobile.png -t <THRESHOLD> -o diff-N-mobile.png
 ```
 
-- Compute `pixel_delta_percentage` per image pair
+- Compute `pixel_delta_percentage` per image pair (desktop, tablet, mobile)
 - Store as `CAPTURE_SET_AFTER` + diff images
 
 #### Step 5: FIDELITY SCORING
@@ -124,7 +142,7 @@ Assemble the DIFF_REPORT:
 - Diff image manifest (paths to all diff-N-*.png files)
 - Fidelity scores: visual_fidelity, theme_fidelity (or null)
 - Regions changed: `[{selector, type: "improved"|"regressed", delta_px}]`
-- Viewport diffs: `{desktop: %, mobile: %}`
+- Viewport diffs: `{desktop: %, tablet: %, mobile: %}`
 - Visual impact: `visual_impact` classification + `visual_impact_note`
 - Fidelity notes: human-readable summary
 
@@ -221,13 +239,16 @@ Iteration 1:
 Per-iteration files use the `iter-N-` prefix:
 - `iter-N-overview.png` — before overview (full-page annotated)
 - `iter-N-section-M.png` — before section captures
-- `iter-N-mobile.png` — before mobile capture
+- `iter-N-tablet.png` — before tablet capture (768x1024)
+- `iter-N-mobile.png` — before mobile capture (375x667)
 - `iter-N-elements.json` — interactive element snapshot
 - `iter-N-after-overview.png` — after overview
 - `iter-N-after-section-M.png` — after section captures
+- `iter-N-after-tablet.png` — after tablet capture
 - `iter-N-after-mobile.png` — after mobile capture
 - `diff-N-overview.png` — diff overlay (desktop)
 - `diff-N-section-M.png` — diff overlay (per-section)
+- `diff-N-tablet.png` — diff overlay (tablet)
 - `diff-N-mobile.png` — diff overlay (mobile)
 - `iter-N-divergence.png` — theme divergence highlights (from fidelity-scoring)
 </file-naming>

@@ -10,7 +10,7 @@ export function Install() {
       <div className="mx-auto max-w-[1100px] px-6">
         <ScrollReveal>
           <div className="accent-bar accent-bar-warm mb-6" />
-          <h2 className="font-display text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl text-[var(--text-primary)]">
+          <h2 className="font-serif text-4xl italic sm:text-5xl lg:text-6xl text-[var(--text-primary)]" style={{ letterSpacing: "-0.03em" }}>
             One command away
           </h2>
           <p className="mt-4 max-w-xl text-[var(--text-secondary)]">

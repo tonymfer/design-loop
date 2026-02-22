@@ -131,9 +131,14 @@ Store as `DISCOVER_STATES` (true/false).
 <question id="Q2.6">
 ## Boldness Level (Theme-Respect Elevate only)
 
+<!-- MANDATORY-BOLDNESS-GATE: Q2.6 MUST be asked when MODE = theme-respect-elevate.
+     Without BOLDNESS_LEVEL, TRE falls back to null defaults and the user loses
+     control over how aggressively the loop modifies their design. -->
+
 <think>
-This question ONLY appears when MODE = theme-respect-elevate.
-For PP and CU, skip — set BOLDNESS_LEVEL = null.
+MANDATORY: ASK this question when MODE = theme-respect-elevate.
+For precision-polish: set BOLDNESS_LEVEL = null, skip this question.
+For creative-unleash: set BOLDNESS_LEVEL = null, skip this question.
 If $ARGUMENTS[5] is provided, parse as integer 1-3.
 
 Boldness level also sets max_iterations ceiling:
@@ -143,7 +148,8 @@ Boldness level also sets max_iterations ceiling:
 If Q3 answer exceeds the cap, silently reduce to the cap.
 </think>
 
-**Skip this question entirely if MODE is NOT `theme-respect-elevate`.**
+**When MODE = `theme-respect-elevate`: ASK this question. It is MANDATORY for TRE mode.**
+**When MODE = `precision-polish` or `creative-unleash`: skip, set BOLDNESS_LEVEL = null.**
 
 Within your brand theme, how bold should the structural improvements be?
 
@@ -173,16 +179,22 @@ Store as `BOLDNESS_LEVEL` (integer: 1, 2, or 3).
 This question ONLY appears when MODE = creative-unleash.
 For PP and TRE, skip entirely — set REFERENCE_TYPE = null, REFERENCE_VALUE = null.
 If $ARGUMENTS[3] is provided (4th CLI arg), parse it as REFERENCE_VALUE and auto-detect type.
+
+DEFAULT: Option 4 (Auto-discover) is the recommended default for CU mode.
+It uses the full inspiration matching pipeline (21st.dev, Spline, Awwwards, etc.)
+to find the best sources for the project's personality, focus, and stack.
+Only offer URL/Image/Description if the user has a specific reference in mind.
 </think>
 
-**Skip this question entirely if MODE is NOT `creative-unleash`.**
+**When MODE = `creative-unleash`: ASK this question.**
+**When MODE = `precision-polish` or `theme-respect-elevate`: skip, set REFERENCE_TYPE = null, REFERENCE_VALUE = null.**
 
 Do you have a design reference or inspiration for this redesign?
 
 1. URL — a website I want to draw inspiration from
 2. Image — a screenshot or mockup (provide file path)
 3. Description — I'll describe the vibe I'm going for
-4. Skip — let the loop discover direction from my existing code and companion skills
+4. Auto-discover — search 21st.dev, inspiration libraries, and companion skills for the best match (Recommended)
 
 Store as `REFERENCE_TYPE` ("url" | "image" | "description" | null) and `REFERENCE_VALUE` (the URL, path, or text).
 </question>
@@ -266,6 +278,15 @@ Store as `PREVIEW_MODE` ("confirm" | "auto").
 <confirmation>
 ## Configuration Summary
 
+<!-- MANDATORY-BOLDNESS-VALIDATION: Before displaying the summary, verify that
+     BOLDNESS_LEVEL is set for TRE mode. If MODE = theme-respect-elevate and
+     BOLDNESS_LEVEL is null/unset, Q2.6 was skipped in error — go back and ask it. -->
+
+**Pre-confirmation validation:**
+If MODE = `theme-respect-elevate` and BOLDNESS_LEVEL is null or unset:
+  → Q2.6 was skipped in error. Go back and ask Q2.6 before showing the summary.
+  → Log: "Validation catch: BOLDNESS_LEVEL missing for TRE mode, re-asking Q2.6"
+
 After all questions are answered (or skipped via CLI arguments), display:
 
 ```
@@ -276,7 +297,7 @@ Here's your design loop configuration:
   Focus:        [FOCUS display name]
   Sub-screens:  [Yes/No description]
   Boldness:     [Minimal/Medium/Bold] (Level [N])   ← only if MODE = theme-respect-elevate
-  Reference:    [REFERENCE_TYPE]: [REFERENCE_VALUE summary]   ← only if MODE = creative-unleash and REFERENCE_TYPE is not null
+  Reference:    [REFERENCE_TYPE]: [REFERENCE_VALUE summary] or "Auto-discover (21st.dev + inspiration libraries)"   ← only if MODE = creative-unleash
   Iterations:   [MAX_ITERATIONS or "No limit (capped at [level max])"]
   Preview:      [Confirm each iteration / Auto-approve]
 
@@ -295,7 +316,7 @@ What would you like to change?
 5. Boldness level ([current])   ← only if MODE = theme-respect-elevate
 6. Iterations ([current])
 7. Preview mode ([current])
-8. Reference ([current or "None"])   ← only if MODE = creative-unleash
+8. Reference ([current or "Auto-discover"])   ← only if MODE = creative-unleash
 ```
 
 Then re-ask only the selected question and return to the confirmation summary.
@@ -316,7 +337,7 @@ The interview produces exactly 9 output variables consumed by the orchestrator:
 | `DISCOVER_STATES` | boolean | `true` \| `false` |
 | `BOLDNESS_LEVEL` | integer \| null | `1` (Minimal), `2` (Medium), `3` (Bold). `null` for PP/CU. |
 | `MAX_ITERATIONS` | integer | `0` (no limit) or positive integer. Capped by BOLDNESS_LEVEL for TRE. |
-| `REFERENCE_TYPE` | string \| null | `url` \| `image` \| `description` \| `null` (PP/TRE always null) |
+| `REFERENCE_TYPE` | string \| null | `url` \| `image` \| `description` \| `null` (PP/TRE always null; CU null = auto-discover from 21st.dev + inspiration KB) |
 | `REFERENCE_VALUE` | string \| null | The reference URL, file path, description text, or `null` |
 | `PREVIEW_MODE` | string | `confirm` \| `auto` (PP/TRE default confirm, CU default auto) |
 

@@ -80,25 +80,31 @@ export function ModeShowcase() {
       <div className="mx-auto max-w-[1100px] px-6">
         <ScrollReveal>
           <span className="slash-motif heading-mono">Modes</span>
-          <h2 className="mt-3 font-display text-3xl font-bold tracking-tight sm:text-4xl text-[var(--text-primary)]">
-            Three modes.{" "}
-            <span className="text-[var(--text-secondary)]">One loop.</span>
+          <h2 className="mt-3 font-serif text-4xl sm:text-5xl leading-[1.1] text-[var(--text-primary)]" style={{ letterSpacing: "-0.02em" }}>
+            <span className="font-bold">Three modes.</span>{" "}
+            <span className="italic text-[var(--text-secondary)]">One loop.</span>
           </h2>
           <p className="mt-4 max-w-xl text-[var(--text-secondary)]">
             Different creative latitude for different contexts.
           </p>
         </ScrollReveal>
 
-        <div className="mt-10 grid gap-4 sm:grid-cols-3">
+        {/* Progressive sizing — cards grow with creative latitude */}
+        <div className="mt-10 grid gap-4 sm:grid-cols-12">
           {MODE_CARDS.map((card, i) => {
             const Icon = card.icon;
             const isActive = activeMode === card.mode;
+            // Progressive column spans: PP=3, TRE=4, CU=5
+            const colSpan = i === 0 ? "sm:col-span-3" : i === 1 ? "sm:col-span-4" : "sm:col-span-5";
+            // Progressive padding: PP=compact, TRE=standard, CU=generous
+            const padding = i === 0 ? "p-5" : i === 1 ? "p-6" : "p-7 lg:p-8";
 
             return (
-              <ScrollReveal key={card.mode} delay={i * 0.08}>
+              <ScrollReveal key={card.mode} delay={i * 0.08} className={colSpan}>
                 <motion.div
                   className={cn(
-                    "group relative flex h-full flex-col rounded-xl border p-6 transition-all cursor-pointer overflow-hidden",
+                    "group relative flex h-full flex-col rounded-xl border transition-all cursor-pointer overflow-hidden",
+                    padding,
                     isActive
                       ? "border-[color-mix(in_srgb,var(--accent),transparent_40%)] bg-[var(--surface)]"
                       : "border-[var(--border)] bg-[var(--card-bg)] hover:border-[color-mix(in_srgb,var(--accent),transparent_70%)] hover:bg-[var(--surface)]"

@@ -40,6 +40,8 @@ GOAL_THRESHOLD=$(echo "$FRONTMATTER" | awk -F': *' '/^goal_threshold:/ {print $2
 if [[ -z "$GOAL_THRESHOLD" ]]; then
   GOAL_THRESHOLD="4.0"
 fi
+BOLDNESS_LEVEL=$(echo "$FRONTMATTER" | awk -F': *' '/^boldness_level:/ {print $2}')
+PREVIEW_MODE=$(echo "$FRONTMATTER" | awk -F': *' '/^preview_mode:/ {print $2}')
 
 # If status is not "running", allow exit (completed, paused, etc.)
 if [[ "$STATUS" != "running" ]]; then
@@ -200,7 +202,15 @@ MODE_DISPLAY=""
 if [[ -n "$MODE" ]]; then
   MODE_DISPLAY=" | mode: $MODE"
 fi
-SYSTEM_MSG="🔄 design-loop iteration $ITER_DISPLAY$MODE_DISPLAY | goal: weighted avg >= $GOAL_THRESHOLD + all criteria >= 4/5 for 2 consecutive iterations, then output <promise>POLISHED</promise>"
+BOLDNESS_DISPLAY=""
+if [[ -n "$BOLDNESS_LEVEL" ]] && [[ "$BOLDNESS_LEVEL" != "null" ]]; then
+  BOLDNESS_DISPLAY=" | boldness: $BOLDNESS_LEVEL"
+fi
+PREVIEW_DISPLAY=""
+if [[ -n "$PREVIEW_MODE" ]] && [[ "$PREVIEW_MODE" != "null" ]]; then
+  PREVIEW_DISPLAY=" | preview: $PREVIEW_MODE"
+fi
+SYSTEM_MSG="🔄 design-loop iteration $ITER_DISPLAY$MODE_DISPLAY$BOLDNESS_DISPLAY$PREVIEW_DISPLAY | goal: weighted avg >= $GOAL_THRESHOLD + all criteria >= 4/5 for 2 consecutive iterations, then output <promise>POLISHED</promise>"
 
 # Output JSON to block the stop and feed prompt back
 jq -n \

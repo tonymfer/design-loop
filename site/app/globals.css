@@ -649,6 +649,25 @@
 }
 
 /* ═══════════════════════════════════════════════
+   Glow cycle — tricolor glow rotation for hero elements
+   ═══════════════════════════════════════════════ */
+@keyframes glow-cycle {
+  0%, 100% {
+    box-shadow: 0 0 40px rgba(var(--accent-rgb), 0.12), 0 0 80px rgba(var(--accent-rgb), 0.04);
+  }
+  33% {
+    box-shadow: 0 0 40px rgba(var(--accent-2-rgb), 0.12), 0 0 80px rgba(var(--accent-2-rgb), 0.04);
+  }
+  66% {
+    box-shadow: 0 0 40px rgba(var(--accent-3-rgb), 0.10), 0 0 80px rgba(var(--accent-3-rgb), 0.04);
+  }
+}
+
+.glow-cycle {
+  animation: glow-cycle 8s ease-in-out infinite;
+}
+
+/* ═══════════════════════════════════════════════
    Glow card variant — for highlighted features
    ═══════════════════════════════════════════════ */
 .glow-card {
