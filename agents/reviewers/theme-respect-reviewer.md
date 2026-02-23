@@ -233,6 +233,5 @@ Return the base JSON schema from `agents/visual-reviewer.md` plus these theme-re
 | `a11y_issues` | array | `{element, issue_type, details}` for each a11y finding |
 | `visual_delta_check` | object | `{pixel_delta, impact, score_cap_applied}` — visual equivalence gate result |
 
-Completion criteria: All 5 criteria >= 4/5 raw for 2 consecutive iterations.
-No exemptions — all criteria must pass including Identity.
+Return scores only. Completion logic is in loop-engine Step 7.
 </output-contract>

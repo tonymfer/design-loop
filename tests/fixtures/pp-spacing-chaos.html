@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SparkFlow — Features</title>
+  <style>
+    * { margin: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', system-ui, sans-serif; color: #1a1a2e; background: #f8f9fa; }
+
+    /* Hero — chaotic spacing starts here */
+    .hero {
+      padding: 31px 17px 12px 23px;
+      text-align: center;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+    }
+    .hero h1 { font-size: 2.5rem; margin-bottom: 9px; }
+    .hero p { font-size: 1.1rem; margin-bottom: 23px; opacity: 0.9; }
+    .hero .cta {
+      display: inline-block;
+      padding: 12px 31px;
+      background: white;
+      color: #667eea;
+      border-radius: 4px;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    /* Feature cards — intentionally chaotic spacing + mixed radius */
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 17px;
+      padding: 31px 23px 9px 12px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .card {
+      background: white;
+      overflow: hidden;
+    }
+    .card:nth-child(1) {
+      padding: 12px;
+      border-radius: 0px;
+    }
+    .card:nth-child(2) {
+      padding: 23px;
+      border-radius: 16px;
+    }
+    .card:nth-child(3) {
+      padding: 9px;
+      border-radius: 4px;
+    }
+    .card:nth-child(4) {
+      padding: 31px;
+      border-radius: 8px;
+    }
+    .card-icon {
+      font-size: 2rem;
+      margin-bottom: 17px;
+    }
+    .card h3 { font-size: 1.2rem; margin-bottom: 12px; }
+    .card p { font-size: 0.95rem; color: #555; line-height: 1.5; }
+
+    /* Stats row — more spacing inconsistency */
+    .stats {
+      display: flex;
+      justify-content: center;
+      gap: 31px;
+      padding: 23px 12px 17px 9px;
+      background: #1a1a2e;
+      color: white;
+    }
+    .stat { text-align: center; }
+    .stat-value { font-size: 2rem; font-weight: 700; }
+    .stat-label { font-size: 0.85rem; opacity: 0.7; margin-top: 9px; }
+
+    /* Footer */
+    .footer {
+      padding: 17px 23px 31px 12px;
+      text-align: center;
+      color: #888;
+      font-size: 0.85rem;
+    }
+    .footer a { color: #667eea; text-decoration: none; }
+  </style>
+</head>
+<body>
+  <section class="hero">
+    <h1>Ship faster with SparkFlow</h1>
+    <p>The workflow automation platform trusted by 2,000+ engineering teams worldwide.</p>
+    <a href="#features" class="cta">Explore Features</a>
+  </section>
+
+  <section class="features" id="features">
+    <div class="card">
+      <div class="card-icon">&#9889;</div>
+      <h3>Instant Deploys</h3>
+      <p>Push to production in under 30 seconds with zero-downtime rolling deployments and automatic rollback.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">&#128274;</div>
+      <h3>Built-in Security</h3>
+      <p>SOC 2 compliant infrastructure with end-to-end encryption, audit logging, and role-based access control.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">&#128200;</div>
+      <h3>Real-time Metrics</h3>
+      <p>Monitor deployments, error rates, and performance metrics from a single unified dashboard.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">&#129309;</div>
+      <h3>Team Collaboration</h3>
+      <p>Code review workflows, shared environments, and integrated chat keep your team aligned.</p>
+    </div>
+  </section>
+
+  <section class="stats">
+    <div class="stat">
+      <div class="stat-value">2,400+</div>
+      <div class="stat-label">Teams</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value">14M</div>
+      <div class="stat-label">Deploys</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value">99.97%</div>
+      <div class="stat-label">Uptime</div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <p>&copy; 2026 SparkFlow, Inc. &middot; <a href="#">Privacy</a> &middot; <a href="#">Terms</a></p>
+  </footer>
+</body>
+</html>

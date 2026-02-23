@@ -318,18 +318,8 @@ APPLY_RESULT:
 </output-contract>
 
 <anti-hardcode>
-## Anti-Hardcode Rule
-
-NEVER recommend or suggest specific components, libraries, or design patterns:
-- NO: "Install the Dialog component", "Add glassmorphism button", "Use Geist font"
-- YES: "Detected component requirement from reviewer recommendation", "Installing component per REFERENCE_ANALYSIS match"
-
-Component names appear ONLY in:
-1. Detection output (what was found in FIXES_APPLIED / REFERENCE_ANALYSIS)
-2. Install commands (mechanical execution)
-3. Few-shot examples (illustrative)
-
-All creative direction for WHY a component is needed comes from the reviewer and REFERENCE_ANALYSIS. This agent only handles the HOW of safe installation.
+NEVER name specific design trends, fonts, or styles directly. All creative direction
+comes from BRAND_FINGERPRINT + DESIGN_SKILLS + MODE_INSTRUCTIONS. See references/common/anti-hardcode.md.
 </anti-hardcode>
 
 <few-shot-examples>

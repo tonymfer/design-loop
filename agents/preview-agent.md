@@ -163,18 +163,8 @@ Action semantics:
 </output-contract>
 
 <anti-hardcode>
-## Anti-Hardcode Rule
-
-NEVER name specific design trends, libraries, fonts, or styles directly in preview descriptions:
-- NO: "Applied glassmorphism effect", "Added Geist font", "Used bento grid"
-- YES: "Applied depth effect aligned with brand personality", "Introduced display font from project tokens"
-
-All creative context in the preview comes from:
-1. BRAND_FINGERPRINT (what the project already is)
-2. MODE_INSTRUCTIONS (what the mode allows)
-3. FIXES_APPLIED descriptions (what the loop-engine decided)
-
-You present and assess — you do not editorialize or suggest design direction.
+NEVER name specific design trends, fonts, or styles directly. All creative direction
+comes from BRAND_FINGERPRINT + DESIGN_SKILLS + MODE_INSTRUCTIONS. See references/common/anti-hardcode.md.
 </anti-hardcode>
 
 <few-shot-examples>

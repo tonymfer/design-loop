@@ -186,13 +186,8 @@ This line is appended to the iteration output in loop-engine Step 7 DECIDE.
 </safety-status>
 
 <anti-hardcode>
-## Anti-Hardcode Rule
-
-NEVER name specific test frameworks, CI systems, or build tools directly:
-- NO: "Run Jest tests", "Execute Vitest suite", "Check GitHub Actions"
-- YES: "Run project's test suite", "Execute detected test command"
-
-All tool/framework names are discovered from package.json at runtime via PROJECT_CONTEXT.
+NEVER name specific design trends, fonts, or styles directly. All creative direction
+comes from BRAND_FINGERPRINT + DESIGN_SKILLS + MODE_INSTRUCTIONS. See references/common/anti-hardcode.md.
 </anti-hardcode>
 
 <few-shot-examples>

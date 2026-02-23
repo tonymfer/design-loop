@@ -33,6 +33,7 @@ If `designing-beautiful-websites` is installed: apply its full UX/UI strategy.
 If `ui-skills` is installed: follow its opinionated constraints.
 All companion skills stack — the more installed, the richer the creative direction.
 
+<MODE_SCORING>
 ## Scoring Weights
 
 | Criterion | Weight | Sensitivity |
@@ -51,6 +52,7 @@ All companion skills stack — the more installed, the richer the creative direc
 - **Identity 5**: You could not tell this was AI-generated. It has a point of view — minimal, brutal, playful, refined, whatever — but it's consistent and intentional. The "portfolio test" passes easily.
 - **Polish 5**: Consistent but not rigid. The design rules are visible and applied, but with the confidence to break them when it serves the composition.
 
+<MODE_FIXING>
 ## Fix Constraints
 
 ### Allowed Changes
@@ -216,6 +218,8 @@ Before the first fix in each iteration:
    If BRAND_FINGERPRINT informed the direction, note: "Direction informed by brand fingerprint: [personality]"
 ```
 
+</MODE_FIXING>
+
 ## Diff Configuration
 
 - `diff_threshold`: 0.25 (wide — large visual changes expected and encouraged)
@@ -232,3 +236,4 @@ Before the first fix in each iteration:
 - Identity MUST >= 4 — does NOT pass without a design point of view.
 - `completion_exemptions`: []
 - `required_minimum`: { "identity": 4 }
+</MODE_SCORING>

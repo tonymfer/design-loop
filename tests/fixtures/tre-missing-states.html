@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notewell — Documentation</title>
+  <style>
+    :root {
+      --color-primary: #0ea5e9;
+      --color-primary-hover: #0284c7;
+      --color-surface: #ffffff;
+      --color-surface-alt: #f0f9ff;
+      --color-border: #e0f2fe;
+      --color-text: #0c4a6e;
+      --color-text-muted: #7dd3fc;
+      --space-2: 0.5rem;
+      --space-3: 0.75rem;
+      --space-4: 1rem;
+      --space-6: 1.5rem;
+      --space-8: 2rem;
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+      --font-heading: 'Inter', system-ui, sans-serif;
+      --font-body: 'Inter', system-ui, sans-serif;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+    }
+
+    * { margin: 0; box-sizing: border-box; }
+    body {
+      font-family: var(--font-body);
+      background: var(--color-surface);
+      color: var(--color-text);
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      min-height: 100vh;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      background: var(--color-surface-alt);
+      border-right: 1px solid var(--color-border);
+      padding: var(--space-6);
+    }
+    .sidebar-brand {
+      font-family: var(--font-heading);
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--color-primary);
+      margin-bottom: var(--space-8);
+    }
+    .sidebar-section {
+      margin-bottom: var(--space-6);
+    }
+    .sidebar-section h3 {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--color-text);
+      opacity: 0.5;
+      margin-bottom: var(--space-3);
+    }
+
+    /* FLAW: nav links have NO hover state at all */
+    .sidebar-nav a {
+      display: block;
+      padding: var(--space-2) var(--space-3);
+      color: var(--color-text);
+      text-decoration: none;
+      border-radius: var(--radius-md);
+      font-size: 0.875rem;
+      margin-bottom: 2px;
+      /* NO :hover background */
+    }
+    /* FLAW: active nav looks identical to inactive — no aria-current styling */
+    .sidebar-nav a[aria-current="page"] {
+      /* intentionally same as default — no visual distinction */
+      color: var(--color-text);
+    }
+
+    /* Main content */
+    .main-content {
+      padding: var(--space-8);
+      max-width: 760px;
+    }
+    .main-content h1 {
+      font-family: var(--font-heading);
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin-bottom: var(--space-4);
+    }
+    .main-content h2 {
+      font-family: var(--font-heading);
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-top: var(--space-8);
+      margin-bottom: var(--space-4);
+    }
+    .main-content p {
+      font-size: 0.95rem;
+      line-height: 1.7;
+      color: var(--color-text);
+      margin-bottom: var(--space-4);
+    }
+
+    /* Code block */
+    .code-block {
+      background: #0c4a6e;
+      color: #e0f2fe;
+      padding: var(--space-4);
+      border-radius: var(--radius-md);
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 0.85rem;
+      line-height: 1.6;
+      overflow-x: auto;
+      margin-bottom: var(--space-6);
+    }
+
+    /* Inline link — FLAW: no hover state */
+    .main-content a {
+      color: var(--color-primary);
+      text-decoration: underline;
+      /* NO :hover color change */
+    }
+
+    /* Buttons — FLAW: no focus ring, no hover state */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-2) var(--space-4);
+      background: var(--color-primary);
+      color: white;
+      border: none;
+      border-radius: var(--radius-md);
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      /* NO :hover, NO :focus-visible */
+    }
+    .btn-ghost {
+      background: transparent;
+      color: var(--color-primary);
+      border: 1px solid var(--color-border);
+    }
+
+    /* Table */
+    .doc-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: var(--space-6);
+      font-size: 0.9rem;
+    }
+    .doc-table th,
+    .doc-table td {
+      text-align: left;
+      padding: var(--space-3) var(--space-4);
+      border-bottom: 1px solid var(--color-border);
+    }
+    .doc-table th {
+      font-weight: 600;
+      background: var(--color-surface-alt);
+    }
+
+    /* Callout box */
+    .callout {
+      background: var(--color-surface-alt);
+      border-left: 3px solid var(--color-primary);
+      padding: var(--space-4) var(--space-6);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      margin-bottom: var(--space-6);
+    }
+    .callout p {
+      margin-bottom: 0;
+      font-size: 0.9rem;
+    }
+
+    /* Pagination — FLAW: no hover/focus on page buttons */
+    .pagination {
+      display: flex;
+      justify-content: space-between;
+      margin-top: var(--space-8);
+      padding-top: var(--space-6);
+      border-top: 1px solid var(--color-border);
+    }
+    .pagination a {
+      color: var(--color-primary);
+      text-decoration: none;
+      font-size: 0.9rem;
+      /* NO :hover */
+    }
+    .pagination span {
+      color: var(--color-text-muted);
+      font-size: 0.8rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="sidebar-brand">Notewell</div>
+      <div class="sidebar-section">
+        <h3>Getting Started</h3>
+        <nav class="sidebar-nav">
+          <a href="#" aria-current="page">Installation</a>
+          <a href="#">Quick Start</a>
+          <a href="#">Configuration</a>
+        </nav>
+      </div>
+      <div class="sidebar-section">
+        <h3>Core Concepts</h3>
+        <nav class="sidebar-nav">
+          <a href="#">Notes</a>
+          <a href="#">Collections</a>
+          <a href="#">Tags</a>
+          <a href="#">Search</a>
+        </nav>
+      </div>
+      <div class="sidebar-section">
+        <h3>API Reference</h3>
+        <nav class="sidebar-nav">
+          <a href="#">Authentication</a>
+          <a href="#">Endpoints</a>
+          <a href="#">Webhooks</a>
+        </nav>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <section>
+        <h1>Installation</h1>
+        <p>Get Notewell up and running in your project with a single command. Supports Node.js 18+ and all major package managers.</p>
+
+        <div class="code-block">
+          npm install notewell --save
+        </div>
+
+        <div class="callout">
+          <p>Notewell requires Node.js 18 or higher. Check your version with <code>node --version</code>.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2>System Requirements</h2>
+        <table class="doc-table">
+          <thead>
+            <tr>
+              <th>Requirement</th>
+              <th>Minimum</th>
+              <th>Recommended</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Node.js</td>
+              <td>18.0</td>
+              <td>20.x LTS</td>
+            </tr>
+            <tr>
+              <td>Memory</td>
+              <td>256 MB</td>
+              <td>512 MB</td>
+            </tr>
+            <tr>
+              <td>Disk Space</td>
+              <td>50 MB</td>
+              <td>200 MB</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2>Next Steps</h2>
+        <p>Once installed, follow the <a href="#">Quick Start guide</a> to create your first note collection. For advanced configuration options, see the <a href="#">Configuration reference</a>.</p>
+        <div style="display: flex; gap: 0.75rem; margin-top: 1rem;">
+          <button class="btn">Quick Start Guide</button>
+          <button class="btn btn-ghost">View on GitHub</button>
+        </div>
+      </section>
+
+      <nav class="pagination">
+        <div>
+          <span>Previous</span><br>
+          <a href="#">Overview</a>
+        </div>
+        <div style="text-align: right;">
+          <span>Next</span><br>
+          <a href="#">Quick Start</a>
+        </div>
+      </nav>
+    </main>
+  </div>
+</body>
+</html>

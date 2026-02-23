@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Metrix — Dashboard</title>
+  <style>
+    * { margin: 0; box-sizing: border-box; }
+    body { font-family: system-ui, -apple-system, sans-serif; color: #333; background: #f5f5f5; }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.875rem 1.5rem;
+      background: white;
+      border-bottom: 1px solid #e5e5e5;
+    }
+    .topbar-brand { font-size: 1.1rem; font-weight: 600; color: #333; }
+    .topbar-nav { display: flex; gap: 1.25rem; }
+    .topbar-nav a { color: #888; text-decoration: none; font-size: 0.85rem; }
+
+    .dashboard {
+      max-width: 1100px;
+      margin: 1.5rem auto;
+      padding: 0 1.5rem;
+    }
+    .dashboard-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+    .dashboard-header h1 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #222;
+    }
+    .dashboard-header .period {
+      font-size: 0.85rem;
+      color: #999;
+    }
+
+    /* FLAW: 6 equal-sized metric cards in uniform 3x2 grid — no hero metric */
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .metric-card {
+      background: white;
+      border: 1px solid #e5e5e5;
+      border-radius: 8px;
+      padding: 1.25rem;
+      /* FLAW: no hover state, no shadow, no accent color */
+    }
+    .metric-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      /* FLAW: grey on white, no accent */
+      color: #999;
+      margin-bottom: 0.5rem;
+    }
+    /* FLAW: all numbers same font-size — no size hierarchy */
+    .metric-value {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #333;
+    }
+    .metric-change {
+      font-size: 0.75rem;
+      color: #999;
+      margin-top: 0.375rem;
+    }
+
+    /* Chart area — flat */
+    .chart-row {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .chart-box {
+      background: white;
+      border: 1px solid #e5e5e5;
+      border-radius: 8px;
+      padding: 1.25rem;
+    }
+    .chart-box h2 {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 1rem;
+    }
+    .chart-placeholder {
+      height: 180px;
+      background: #fafafa;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ccc;
+      font-size: 0.85rem;
+    }
+
+    /* Distribution list — flat */
+    .distribution-list {
+      list-style: none;
+      padding: 0;
+    }
+    .distribution-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.625rem 0;
+      border-bottom: 1px solid #f0f0f0;
+      font-size: 0.85rem;
+    }
+    .distribution-item:last-child { border-bottom: none; }
+    .distribution-item .label { color: #555; }
+    .distribution-item .value { color: #333; font-weight: 500; }
+
+    /* Table section — flat */
+    .table-section {
+      background: white;
+      border: 1px solid #e5e5e5;
+      border-radius: 8px;
+      padding: 1.25rem;
+    }
+    .table-section h2 {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 1rem;
+    }
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+    .data-table th,
+    .data-table td {
+      text-align: left;
+      padding: 0.625rem 0.75rem;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .data-table th {
+      font-weight: 500;
+      color: #999;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .data-table td { color: #555; }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-brand">Metrix</div>
+    <nav class="topbar-nav">
+      <a href="#">Overview</a>
+      <a href="#">Analytics</a>
+      <a href="#">Reports</a>
+      <a href="#">Settings</a>
+    </nav>
+  </header>
+
+  <main class="dashboard">
+    <header class="dashboard-header">
+      <h1>Overview</h1>
+      <span class="period">Feb 1 — Feb 23, 2026</span>
+    </header>
+
+    <section class="metric-grid">
+      <div class="metric-card">
+        <div class="metric-label">Total Revenue</div>
+        <div class="metric-value">$34,520</div>
+        <div class="metric-change">+12.3% vs prior period</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Active Users</div>
+        <div class="metric-value">2,847</div>
+        <div class="metric-change">+8.1% vs prior period</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Conversion Rate</div>
+        <div class="metric-value">3.42%</div>
+        <div class="metric-change">-0.3% vs prior period</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Avg Session</div>
+        <div class="metric-value">4m 12s</div>
+        <div class="metric-change">+15s vs prior period</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Bounce Rate</div>
+        <div class="metric-value">38.7%</div>
+        <div class="metric-change">-2.1% vs prior period</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">New Signups</div>
+        <div class="metric-value">412</div>
+        <div class="metric-change">+22.5% vs prior period</div>
+      </div>
+    </section>
+
+    <section class="chart-row">
+      <div class="chart-box">
+        <h2>Revenue Over Time</h2>
+        <div class="chart-placeholder">Line chart area</div>
+      </div>
+      <div class="chart-box">
+        <h2>Traffic Sources</h2>
+        <ul class="distribution-list">
+          <li class="distribution-item">
+            <span class="label">Direct</span>
+            <span class="value">42%</span>
+          </li>
+          <li class="distribution-item">
+            <span class="label">Organic Search</span>
+            <span class="value">28%</span>
+          </li>
+          <li class="distribution-item">
+            <span class="label">Social</span>
+            <span class="value">18%</span>
+          </li>
+          <li class="distribution-item">
+            <span class="label">Referral</span>
+            <span class="value">8%</span>
+          </li>
+          <li class="distribution-item">
+            <span class="label">Email</span>
+            <span class="value">4%</span>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="table-section">
+      <h2>Top Pages</h2>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Page</th>
+            <th>Views</th>
+            <th>Unique Visitors</th>
+            <th>Avg. Time</th>
+            <th>Bounce Rate</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>/dashboard</td>
+            <td>12,480</td>
+            <td>8,320</td>
+            <td>3m 45s</td>
+            <td>22%</td>
+          </tr>
+          <tr>
+            <td>/pricing</td>
+            <td>8,650</td>
+            <td>6,210</td>
+            <td>2m 10s</td>
+            <td>35%</td>
+          </tr>
+          <tr>
+            <td>/features</td>
+            <td>6,340</td>
+            <td>4,890</td>
+            <td>1m 55s</td>
+            <td>41%</td>
+          </tr>
+          <tr>
+            <td>/docs/getting-started</td>
+            <td>5,120</td>
+            <td>3,750</td>
+            <td>5m 20s</td>
+            <td>18%</td>
+          </tr>
+          <tr>
+            <td>/blog</td>
+            <td>3,890</td>
+            <td>2,940</td>
+            <td>4m 05s</td>
+            <td>45%</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+  </main>
+</body>
+</html>

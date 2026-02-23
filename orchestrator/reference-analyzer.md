@@ -22,55 +22,15 @@ If MODE is not `creative-unleash`, stop here. Output `REFERENCE_ANALYSIS = {}`.
 <mode-evaluation-context>
 ## Mode Evaluation Context
 
-The reference analyzer's output feeds into mode-specific reviewers with different
-scoring environments. This table documents the downstream evaluation context so
-the analyzer can calibrate its output — especially `scoring_guidance` and
-`aesthetic_direction` — for the consuming mode.
+Scoring weights, rendering sensitivity, and defect taxonomy are defined in the mode skills
+and SHARED_REFERENCES.rubric. Key calibration points for analyzer output:
 
-### Scoring Weight Summary
-
-| Criterion | Precision Polish | Theme-Respect Elevate | Creative Unleash |
-|-----------|-----------------|----------------------|-----------------|
-| Composition | 1.0x | 1.2x | 1.5x |
-| Typography | 1.0x | 1.2x | 1.3x |
-| Color & Contrast | 1.0x | 1.3x | 1.2x |
-| Visual Identity | 1.0x | **1.8x** | **2.0x (PRIMARY)** |
-| Polish | 1.0x | 1.3x | 1.0x |
-| goal_threshold | 4.0 | 4.2 | 4.7 |
-
-### Rendering Artifact Sensitivity
-
-| Aspect | PP | TRE | CU |
-|--------|-----|-----|-----|
-| Detection | Basic (Step 0 scan) | Strong (Step 0 + token check) | Zero-tolerance |
-| Polish cap | 2/5 on defect | 2/5 on defect | 2/5 on defect |
-| Phase B re-score | On VISUAL_SPOT_CHECK | On VISUAL_SPOT_CHECK | **MANDATORY every iteration** |
-| Defect priority | Fix after score-driven issues | Fix after token alignment | **Fix FIRST, before all other issues** |
-
-### Rendering Defect Taxonomy
-
-Formal categories for rendering failure detection (used by all modes):
-
-| Category | Detection Signal | Example |
-|----------|-----------------|---------|
-| `SOLID_BLOCK` | Opaque rectangle where gradient/transparency expected | `background: linear-gradient(...)` renders as flat color |
-| `MISSING_GRADIENT` | CSS gradient fallback to solid color | `background-clip: text` not applied, text invisible |
-| `CLIPPED_TEXT` | Text cut off or overflowing container | `overflow: hidden` truncating without ellipsis |
-| `MISSING_EFFECT` | Visual effect not rendering | `mask`, `clip-path`, `backdrop-filter` not applied |
-| `BROKEN_ELEMENT` | Empty box, missing SVG, broken image | `<svg>` not loading, `<img>` 404 |
-| `STACKING_ERROR` | Z-index overlap hiding content | Modal behind overlay, text under image |
-| `ANIMATION_FREEZE` | CSS transition/animation not firing | `@keyframes` defined but element static |
-
-These categories are referenced by the visual-reviewer Step 0 scan and all mode-specific reviewers.
-
-### Creative Unleash Philosophy
-
-> "Give AI eyes and let it keep watching and upgrading until truly complete."
-
-Creative Unleash embodies autonomous visual perfection: screenshot → score → fix → re-screenshot → verify rendering → repeat. The Phase B mandatory re-score ensures every CSS change is visually verified, not just syntactically correct. Rendering defects are zero-tolerance — they are always bugs, never style.
-
-The hero is the moment AI proves it can see. When FOCUS targets a specific section, the analyzer prioritizes component matches and inspiration sources that deliver concrete behaviors — a 3D element tracking the cursor, words staggering in one by one, an underline drawing on scroll. The visual transformation narrative (BEFORE static → AFTER alive) is the primary output that feeds into `scoring_guidance`. The hero can also demonstrate the loop itself: showing its own iteration progression as live content.
-
+- CU rendering: Zero-tolerance. Defects (SOLID_BLOCK, ANIMATION_FREEZE, etc.) fix FIRST.
+  Phase B re-score MANDATORY every CU iteration.
+- CU philosophy: "Give AI eyes and let it keep watching and upgrading until truly complete."
+  The hero is the moment AI proves it can see — prioritize component matches and inspiration
+  sources that deliver concrete behaviors (cursor tracking, per-word stagger, scroll reward).
+- Scoring weights and defect taxonomy: see MODE_INSTRUCTIONS + SHARED_REFERENCES.rubric.
 </mode-evaluation-context>
 
 <input-contract>
@@ -377,24 +337,8 @@ The reference still has value: its aesthetic_direction and detected_patterns gui
 </current-stack-mode>
 
 <anti-hardcode>
-## Anti-Hardcode Rules
-
-CRITICAL: This analyzer NEVER:
-- Names specific design trends (brutalism, glassmorphism, neumorphism, etc.)
-- Hardcodes library recommendations (framer-motion, three.js, etc.)
-- Assumes any library is "better" without analyzing the reference
-- Recommends libraries not evidenced in the reference analysis
-
-All recommendations emerge FROM the reference analysis or signal matching:
-- URL shows 3D elements → search for 3D libraries compatible with stack
-- Image shows animations → search for animation libraries compatible with stack
-- Description mentions "retro" → search 21st.dev for retro-styled components
-- If no reference provided → score inspiration KB sources against project signals
-  - Source URLs, names, and metadata come from `references/inspirations/sources.md`
-  - Match reasons are generated from signal intersections, not pre-written
-  - Zero URLs are hardcoded in this analyzer file
-
-The analyzer is a lens that discovers, not an oracle that prescribes.
+NEVER name specific design trends, fonts, or styles directly. All creative direction
+comes from BRAND_FINGERPRINT + DESIGN_SKILLS + MODE_INSTRUCTIONS. See references/common/anti-hardcode.md.
 </anti-hardcode>
 
 <few-shot-examples>
@@ -402,61 +346,34 @@ The analyzer is a lens that discovers, not an oracle that prescribes.
 ### Example 1: Beeper Contacts — Retro Redesign
 
 ```yaml
-Input:
-  REFERENCE_TYPE: "url"
-  REFERENCE_VALUE: "https://poolsuite.net"
+Input: { REFERENCE_TYPE: "url", REFERENCE_VALUE: "https://poolsuite.net" }
 
 Analysis:
   aesthetic_direction: "Retro-digital with pixel precision and warm nostalgia"
-  detected_patterns:
-    - "Pixel/bitmap font usage for headings"
-    - "High-contrast warm color palette (cream, orange, dark brown)"
-    - "Rigid grid with intentional overflow elements"
-    - "CRT-screen texture effects on images"
-  recommended_libraries:
-    - { name: "detected-pixel-font-lib", reason: "Reference uses pixel fonts, project has none", compatible: true }
-  component_matches:
-    - { name: "retro-card", source: "21st.dev", match_reason: "Visual similarity to reference card pattern" }
+  detected_patterns: ["Pixel/bitmap fonts", "Warm high-contrast palette", "Rigid grid", "CRT textures"]
+  recommended_libraries: [{ name: "detected-pixel-font-lib", compatible: true }]
+  component_matches: [{ name: "retro-card", source: "21st.dev" }]
 
-User: "N" (current stack mode)
-
-Output:
+User: "N" (current stack mode) → Output:
   REFERENCE_ANALYSIS:
-    source: "url"
+    source: "url", install_mode: "current-stack", installed: []
     aesthetic_direction: "Retro-digital with pixel precision and warm nostalgia"
-    detected_patterns: [...]
-    install_mode: "current-stack"
-    installed: []
     scoring_guidance: "Reward pixel-perfect alignment, warm palette, intentional retro elements. Penalize modern gradients and rounded cards."
 ```
 
 ### Example 2: Clean Dashboard — Editorial Direction
 
 ```yaml
-Input:
-  REFERENCE_TYPE: "description"
-  REFERENCE_VALUE: "Clean editorial magazine layout, like a Monocle spread"
+Input: { REFERENCE_TYPE: "description", REFERENCE_VALUE: "Clean editorial magazine layout, like a Monocle spread" }
 
 Analysis:
   aesthetic_direction: "Editorial minimalism with strong typographic hierarchy"
-  detected_patterns:
-    - "Serif headings with generous tracking"
-    - "Asymmetric two-column layout"
-    - "Monochrome with single accent color"
-    - "Large whitespace as design element"
-  recommended_libraries: []  # Description-only, no specific library signals
-  component_matches:
-    - { name: "editorial-hero", source: "21st.dev", match_reason: "Magazine-style hero layout" }
+  detected_patterns: ["Serif headings with tracking", "Asymmetric two-column", "Monochrome + single accent", "Large whitespace"]
+  component_matches: [{ name: "editorial-hero", source: "21st.dev" }]
 
-User: "Skip install" (no libraries recommended)
-
-Output:
+User: "Skip install" → Output:
   REFERENCE_ANALYSIS:
-    source: "description"
-    aesthetic_direction: "Editorial minimalism with strong typographic hierarchy"
-    detected_patterns: [...]
-    install_mode: "current-stack"
-    installed: []
+    source: "description", install_mode: "current-stack", installed: []
     scoring_guidance: "Reward serif typography, generous whitespace, column asymmetry. Penalize uniform grids and sans-serif monotony."
 ```
 
@@ -465,72 +382,30 @@ Output:
 ```yaml
 Input:
   REFERENCE_TYPE: null  # User chose "Skip" in Q2.7
-  BRAND_FINGERPRINT:
-    visual:
-      personality: [playful, retro]
-    tokens:
-      background: "#1A1A2E"  # Dark (luminance < 0.3 → dark_mode = true)
-      accent: "#FF6B00"
-  PROJECT_CONTEXT:
-    framework: "react"
-    componentLibrary: "shadcn"
+  BRAND_FINGERPRINT: { personality: [playful, retro], bg: "#1A1A2E", accent: "#FF6B00" }
+  PROJECT_CONTEXT: { framework: "react", componentLibrary: "shadcn" }
   FOCUS: "identity"
-
-  # Note: BRAND_FINGERPRINT shown here for the ideal case (cached from prior run).
-  # On first run, personality_tokens [playful, retro] would be inferred from:
-  #   PROJECT_CONTEXT.designTokens: fonts "Press Start 2P" → retro,
-  #   colors accent "#FF6B00" warm+vibrant → playful, shape radii 0px → technical
-  #   → personality_tokens = [retro, playful] (same result)
 
 Inspiration KB loaded: references/inspirations/sources.md (13 sources)
 
-Scoring (top 5 before diversity filter):
-  httpster:          playful(+1.5) + retro(+1.5) + identity(+2.0) + high(+0.5) = 5.5
-  godly:             bold→miss + dark_mode(+1.5) + high(+0.5) = 2.0
-  spline-community:  playful(+1.5) + bold→miss + react(+2.0) + high(+0.5) + actionable(+0.5) = 4.5
-  awwwards:          playful(+1.5) + identity(+2.0) + high(+0.5) = 4.0
-  21st-dev:          shadcn(+1.0) + react(+2.0) + high(+0.5) + actionable(+0.5) = 4.0
-  darkmodedesign:    dark_mode(+1.5) + medium(+0.25) = 1.75
+Scoring (top 5 — personality_boost + focus + stack + diversity):
+  httpster(5.5), spline-community(4.5), awwwards(4.0), 21st-dev(4.0), godly(2.0)
+  Diversity enforcement: 1 indie-creative, 2 component-integrable, 1 award-winning, 1 dark-immersive
 
-Diversity enforcement:
-  - httpster (indie-creative): included (1st indie-creative)
-  - spline-community (component-integrable): included (1st component-integrable)
-  - awwwards (award-winning): included (1st award-winning)
-  - 21st-dev (component-integrable): included (2nd component-integrable)
-  - darkmodedesign (dark-immersive): included (1st dark-immersive)
-  Note: godly (award-winning) would be 2nd award-winning but scores lower → included since < 2 per category
-
-Final top 5: httpster(5.5), spline-community(4.5), awwwards(4.0), 21st-dev(4.0), godly(2.0)
-
-User prompt:
-  "Based on your project's personality and focus, here are inspiration sources:
-    1. [top-source.name] — [match_reason from signal intersection]  ([top-source.url])
-    2. [2nd-source.name] — [match_reason]  ([2nd-source.url])
-    3. [3rd-source.name] — [match_reason]  ([3rd-source.url])
-    4. [4th-source.name] — [match_reason]  ([4th-source.url])
-    5. [5th-source.name] — [match_reason]  ([5th-source.url])
-
-    [actionable sources] have directly installable components. Search for matching components? (Y/N)"
-
+User prompt: "[top 5 with match_reason]. [actionable sources] have installable components. Search? (Y/N)"
 User: "N"
 
 Output:
   REFERENCE_ANALYSIS:
-    skipped: false
-    source: "inspiration-kb"
+    skipped: false, source: "inspiration-kb"
     aesthetic_direction: "Indie-creative personality with playful retro character"
-    detected_patterns: []
-    recommended_libraries: []
-    component_matches: []
-    install_mode: "current-stack"
-    installed: []
-    scoring_guidance: "Reward personality-driven identity, retro creative elements, unconventional layout. Penalize corporate uniformity."
-    inspiration_sources:   # All data populated from sources.md — zero hardcoded URLs here
-      - { id: "[top-match-id]", relevance_score: 5.5, match_reason: "Aligns with playful/retro aesthetic, strong identity patterns", categories: [indie-creative], actionable: false }
-      - { id: "[2nd-match-id]", relevance_score: 4.5, match_reason: "Compatible with React stack, directly embeddable components", categories: [component-integrable, indie-creative], actionable: true }
-      - { id: "[3rd-match-id]", relevance_score: 4.0, match_reason: "Aligns with playful aesthetic, strong identity patterns", categories: [award-winning, indie-creative], actionable: false }
-      - { id: "[4th-match-id]", relevance_score: 4.0, match_reason: "Compatible with React + shadcn stack, components installable", categories: [component-integrable, saas-product], actionable: true }
-      - { id: "[5th-match-id]", relevance_score: 2.0, match_reason: "Dark-themed collection matching dark palette", categories: [award-winning, dark-immersive], actionable: false }
+    scoring_guidance: "Reward personality-driven identity, retro creative elements. Penalize corporate uniformity."
+    inspiration_sources:  # All data from sources.md — zero hardcoded URLs
+      - { id: "[top]", score: 5.5, categories: [indie-creative], actionable: false }
+      - { id: "[2nd]", score: 4.5, categories: [component-integrable], actionable: true }
+      - { id: "[3rd]", score: 4.0, categories: [award-winning], actionable: false }
+      - { id: "[4th]", score: 4.0, categories: [component-integrable], actionable: true }
+      - { id: "[5th]", score: 2.0, categories: [dark-immersive], actionable: false }
 ```
 
 ### Example 4: Hero Section Upgrade — 3D Eye + Kinetic Tagline
@@ -538,101 +413,44 @@ Output:
 ```yaml
 Input:
   REFERENCE_TYPE: null  # Skip pipeline
-  BRAND_FINGERPRINT:
-    visual:
-      personality: [bold, technical]
-    tokens:
-      background: "#0A0A0A"
-      accent: "#00FF88"
-      fontDisplay: "Space Grotesk"
-  PROJECT_CONTEXT:
-    framework: "nextjs"
-    componentLibrary: "shadcn"
+  BRAND_FINGERPRINT: { personality: [bold, technical], bg: "#0A0A0A", accent: "#00FF88", fontDisplay: "Space Grotesk" }
+  PROJECT_CONTEXT: { framework: "nextjs", componentLibrary: "shadcn" }
   FOCUS: "hero"
 
-Scoring (top 3):
-  [component-integrable-source]:  hero(+2.0) + nextjs(+2.0) + shadcn(+1.0) + high(+0.5) + actionable(+0.5) = 6.0
-  [3d-creative-source]:           bold(+1.5) + hero(+2.0) + nextjs(+2.0) + high(+0.5) + actionable(+0.5) = 6.5
-  [dark-immersive-source]:        bold(+1.5) + dark_mode(+1.5) + high(+0.5) = 3.5
+Scoring (top 3): [3d-creative](6.5), [component-integrable](6.0), [dark-immersive](3.5)
 
-User confirmation gate:
-  "I found 5 inspiration sources matching your bold/technical personality + hero focus:
-
-    1. [3d-creative-source] — 3D interactive scenes, embeddable into your Next.js project (score: 6.5)
-    2. [component-integrable-source] — Installable hero components for shadcn + Next.js (score: 6.0)
-    3. [dark-immersive-source] — Dark atmospheric design patterns (score: 3.5)
-    4. [award-source] — Bold award-winning hero treatments (score: 3.0)
-    5. [indie-source] — Unconventional hero layouts with personality (score: 2.5)
-
-    Sources 1-2 have directly installable components.
-
+User confirmation:
+  "I found 5 inspiration sources... Sources 1-2 have installable components.
     → Pick sources to explore (numbers, e.g. '1,2'), or 'all' to browse everything
     → Type 'skip' to proceed with fingerprint-only direction"
+User: "1,2"
 
-User: "1,2" (explore 3D + component sources)
+  → Spline search: 3D eye model tracking cursor via onMouseMove, spring easing, particle field
+  → 21st.dev search: kinetic tagline hero — Per-word stagger, 80ms delay, Y oscillation, accent underline draw
 
-  → Spline search: "eye 3D scene interactive dark"
-  → Scene match: floating 3D eye model that tracks cursor position via onMouseMove,
-    rotating on X/Y axes with spring easing. Pupil dilates on hover. Ambient
-    particle field orbits the eye at 0.5rpm with depth-of-field blur.
+  → Behavioral techniques (what the user SEES):
+    - Cursor tracking: 3D eye rotates via onMouseMove + transform: rotate3d()
+    - Per-word stagger: <span> per word, translateY(20px), 80ms animation-delay, post-entry oscillation
+    - Scroll-triggered draw: accent underline on IntersectionObserver (animation-play-state: paused → running)
+    - Layered depth: backdrop-filter: blur(12px) + rgba panels at different z-levels with parallax
+    - Live iteration meta: score badge animates 2→5, background morphs through iteration states
 
-  → 21st.dev search: "hero section dark kinetic text"
-  → Component match: kinetic tagline hero — headline splits into individual
-    <span> per word, each word staggers in from bottom with 80ms delay,
-    then floats with subtle Y oscillation (±3px, 4s ease-in-out infinite).
-    Accent color underline draws left-to-right on viewport entry.
-
-  → Behavioral technique vocabulary (what the user SEES):
-    - Cursor tracking: 3D eye rotates on X/Y axes following mouse via onMouseMove + transform: rotate3d().
-      Pupil dilates on hover. Particle field orbits at 0.5rpm with depth-of-field blur.
-    - Per-word stagger: headline splits into <span> per word, each enters from translateY(20px)
-      with 80ms animation-delay between words. Post-entry: subtle Y oscillation (±3px, 4s infinite).
-    - Scroll-triggered draw: accent underline (#00FF88) draws left-to-right on IntersectionObserver
-      entry. CSS: animation-play-state: paused → running on intersection.
-    - Layered depth: backdrop-filter: blur(12px) + background: rgba(10,10,10,0.6) panels at
-      different z-levels. Mouse parallax shifts layers at 0.5x and 0.8x cursor delta rates.
-    - Specular glow: box-shadow: 0 0 40px rgba(0,255,136,0.15) on 3D eye creating surface light.
-    - Live iteration meta: score badge animates 2→5 over 3s. Background morphs through
-      5 iteration states (data-iteration="0" through "4"). The hero IS the before/after.
-
-Visual transformation narrative (feeds into scoring_guidance):
-  BEFORE: Static <h1> + <p> + <button> on dark background. No focal point.
-          Nothing responds to cursor. Text appears all at once. No scroll reward.
-          Screenshot = forgettable dark page. Identity score: 2/5.
-  AFTER:  3D eye tracks cursor in real-time (rotates on X/Y, pupil dilates on hover).
-          Tagline words stagger in one-by-one (80ms delay per word, then float with oscillation).
-          Accent underline (#00FF88) draws left-to-right when scrolled into view.
-          Depth panels with backdrop-filter create atmospheric layering.
-          Score badge animates 2.1 → 4.8 showing the loop's own work.
-          Screenshot = unforgettable. Identity score target: 5/5.
-  META:   Hero demonstrates design-loop by showing its iteration history as live content.
-          The before/after isn't documented — it's animated within the section itself.
+Visual transformation narrative:
+  BEFORE: Static h1, no focal point, no cursor response, no scroll reward. Identity: 2/5.
+  AFTER:  3D eye tracks cursor. Words stagger one-by-one. Accent underline draws on scroll.
+          Depth panels with backdrop-filter. Score badge animates 2.1→4.8. Identity: 5/5.
+  META:   Hero demonstrates design-loop via iteration history as live content.
 
 Output:
   REFERENCE_ANALYSIS:
-    skipped: false
-    source: "inspiration-kb"
+    skipped: false, source: "inspiration-kb"
     aesthetic_direction: "Dark technical with 3D depth and kinetic energy"
-    detected_patterns: []
     component_matches:
-      - { name: "[3d-eye-scene]", source: "spline", match_reason: "Interactive 3D eye tracking cursor, particle field, depth-of-field" }
-      - { name: "[kinetic-hero]", source: "21st.dev", match_reason: "Staggered word entry, floating oscillation, accent underline draw" }
-    install_mode: "current-stack"
-    installed: []
-    scoring_guidance: "Hero is the moment AI proves it can see. 3D eye must track cursor smoothly (not ANIMATION_FREEZE). Words must stagger in one-by-one with visible delay (not all-at-once). Accent underline must draw on scroll (not static). Layered depth panels must show transparency (not SOLID_BLOCK). If hero demonstrates its own iteration (score animation, state morphing), +0.5 identity. Penalize static flat layouts, frozen animations, or invisible embeds."
-    inspiration_sources: [...]
+      - { name: "[3d-eye-scene]", source: "spline" }
+      - { name: "[kinetic-hero]", source: "21st.dev" }
+    scoring_guidance: "Hero is the moment AI proves it can see. 3D eye must track cursor (not ANIMATION_FREEZE). Words must stagger one-by-one (not all-at-once). Underline must draw on scroll. Depth panels must show transparency (not SOLID_BLOCK). +0.5 identity for iteration meta. Penalize static layouts, frozen animations, invisible embeds."
 
-Rendering check emphasis (CU zero-tolerance):
-  - 3D embed: verify Spline scene renders (not blank iframe or BROKEN_ELEMENT)
-  - Cursor tracking: verify onMouseMove fires, eye rotates (not ANIMATION_FREEZE)
-  - Staggered text: verify words animate in sequence (not all-at-once or static)
-  - Gradient accent: verify background-clip:text applies (not SOLID_BLOCK)
-  - Underline draw: verify CSS animation on intersection observer (not ANIMATION_FREEZE)
-  - Layered depth: verify backdrop-filter renders transparency (not SOLID_BLOCK or MISSING_EFFECT)
-  - Variable alpha: verify rgba panels show through to layers below (not opaque fallback)
-  - Per-word stagger: verify animation-delay produces visible sequential entry (not simultaneous)
-  - Live iteration meta: verify data-iteration switching produces visible state changes
-  Mode: CU → Phase B re-score MANDATORY → all checks verified visually after every fix
+Rendering checks (CU zero-tolerance): verify 3D embed renders, cursor tracking fires, words animate in sequence, backdrop-filter shows transparency, variable alpha panels show through, Per-word stagger produces sequential entry, Live iteration meta state changes visible. Phase B re-score MANDATORY.
 ```
 
 ### Example 5: Self-Demonstrating Product Hero — design-loop Demo Site
@@ -640,110 +458,49 @@ Rendering check emphasis (CU zero-tolerance):
 ```yaml
 Input:
   REFERENCE_TYPE: null  # Skip pipeline
-  BRAND_FINGERPRINT:
-    visual:
-      personality: [technical, bold]
-    tokens:
-      background: "#030712"
-      accent: "#06b6d4"
-      accent_2: "#8b5cf6"
-      fontDisplay: "Space Grotesk"
-      fontSerif: "Instrument Serif"
-      fontMono: "JetBrains Mono"
-  PROJECT_CONTEXT:
-    framework: "nextjs"
-    componentLibrary: null  # Custom components (Spotlight, Threads, AnimatedGroup, GlowButton)
+  BRAND_FINGERPRINT: { personality: [technical, bold], bg: "#030712", accent: "#06b6d4", accent_2: "#8b5cf6" }
+  PROJECT_CONTEXT: { framework: "nextjs", componentLibrary: null }  # Custom: Spotlight, Threads, AnimatedGroup, GlowButton
   FOCUS: "hero"
-  DESIGN_SKILLS: []
 
 Existing hero inventory (behavioral gap analysis):
   PRESENT:
-    - Cursor-responsive glow: Spotlight component tracks mouse via onMouseMove,
-      renders radial-gradient at cursor position (spring physics, damping=30, stiffness=200).
-      This IS cursor-reactive but is BACKGROUND only — not a distinct focal OBJECT.
-    - WebGL kinetic lines: Threads component renders 40 Perlin-noise lines via OGL
-      fragment shader, mouse-reactive amplitude. Only activates at iteration >= 3.
-    - Score badge: floating 2.1→4.8 comparison with translateY/rotate animation (4s).
-      But values are STATIC text, not animated counters.
-    - Aurora background: animated radial gradient (12s drift) + floating orb (8s drift).
-      Driven by --effects-opacity per iteration state.
-    - AnimatedGroup: children stagger in (0.08s per child, spring bounce). But wraps
-      ENTIRE elements (badge, wordmark, headline) — not per-WORD.
-
+    - Spotlight: cursor-reactive radial glow (BACKGROUND only, not focal OBJECT)
+    - Threads: WebGL kinetic lines (iteration >= 3 only)
+    - Score badge: static 2.1→4.8 text (not animated counters)
+    - AnimatedGroup: block-level stagger (NOT per-WORD)
   MISSING (per Hero Upgrade Decision Tree):
-    - Priority 1 PARTIAL: Spotlight is cursor-reactive background, not a focal OBJECT.
-      No 3D element, rotating SVG, or canvas scene that IS the hero's visual anchor.
-    - Priority 2 MISSING: Headline renders all at once via AnimatedGroup (block-level).
-      Individual WORDS do not stagger.
-    - Priority 3 MISSING: No translucent depth panels. Aurora bg + orb are
-      pointer-events-none background layers. No foreground translucent surfaces with
-      backdrop-filter or variable-alpha stacking.
-    - Priority 4 PARTIAL: AnimatedGroup triggers on mount (animate="visible"), not on
-      scroll intersection. No IntersectionObserver-driven animation.
-    - Priority 5 PARTIAL: Score badge shows 2.1→4.8 as static text, not animated
-      count-up. data-iteration changes colors/opacity but hero text content does NOT
-      transform between states.
+    - P1 PARTIAL: No focal object (Spotlight is background)
+    - P2 MISSING: No per-word stagger (AnimatedGroup is block-level)
+    - P3 MISSING: No translucent depth panels with backdrop-filter
+    - P4 PARTIAL: No IntersectionObserver scroll trigger
+    - P5 PARTIAL: Score badge not animated, text doesn't transform between states
 
-Upgrade targets (Hero Upgrade Decision Tree priority order):
-  1. KINETIC TAGLINE (Priority 2 — highest impact for this project):
-     - Split headline into <span> per word, each staggers from translateY(20px)
-       with 80ms animation-delay
-     - Iteration-aware text transformation:
-       iteration 0-1: "AI can code your UI. But it can't see it."
-       iteration 3-4: "AI can code your UI. Now it can see it."
-     - The tagline ITSELF demonstrates the before/after.
+Upgrade targets (priority order):
+  1. KINETIC TAGLINE (P2): Split into <span> per word, 80ms delay. Iteration-aware: "can't see" → "can see."
+  2. DEPTH PANELS (P3): 2-3 translucent panels, parallax on mousemove, luminous edges.
+  3. SCORE BADGE ANIMATION (P4+5): Count-up on IntersectionObserver entry.
+  4. THREADS: Lower activation from iteration >= 3 to >= 2.
 
-  2. DEPTH PANELS (Priority 3):
-     - Add 2-3 translucent panels: backdrop-filter: blur(12px) + rgba(bg, 0.3/0.5)
-     - Panels shift at different parallax rates on mousemove (0.3x, 0.6x cursor delta)
-     - Luminous edge treatment: inset box-shadow with accent at 0.08 alpha
-     - Panels appear at iteration >= 2 (driven by --effects-opacity)
-
-  3. SCORE BADGE ANIMATION (Priority 4+5):
-     - Animate 2.1→4.8 as count-up on IntersectionObserver entry (2.5s easeOutExpo)
-     - Doubles as scroll reward: triggers on scroll entry, not page load
-
-  4. THREADS ACTIVATION THRESHOLD:
-     - Lower from iteration >= 3 to iteration >= 2
-
-Visual transformation narrative (feeds into scoring_guidance):
-  BEFORE: Headline appears as block-level children via AnimatedGroup. Spotlight glow
-          tracks cursor on BACKGROUND only. Score badge static text. No depth panels.
-          Threads only at iteration 3+. Text content identical across all states.
-          Identity: 3.5/5 — polished but not unforgettable.
-  AFTER:  Each word staggers in with 80ms delay. 2-3 translucent depth panels with
-          backdrop-filter create atmospheric layering, shifting on mousemove.
-          Score badge counts up 2.1→4.8 on scroll intersection. Threads at iteration 2.
-          At iteration 3-4, tagline transforms "can't see" → "can see."
-          Identity target: 5/5 — self-demonstrating.
-  META:   The hero IS the before/after. Iteration 0 = problem (static, flat, "can't see").
-          Iteration 4 = solution (kinetic, deep, "can see"). The design-loop's product
-          is demonstrated within the hero section itself.
+Visual transformation narrative:
+  BEFORE: Block-level AnimatedGroup. Spotlight background only. Static score badge. No depth. Identity: 3.5/5.
+  AFTER:  Per-word stagger. Depth panels with backdrop-filter. Score counts up on scroll. Tagline transforms. Identity: 5/5.
+  META:   Hero IS the before/after. Iteration 0 = problem ("can't see"), Iteration 4 = solution ("can see").
 
 Output:
   REFERENCE_ANALYSIS:
-    skipped: false
-    source: "inspiration-kb"
+    skipped: false, source: "inspiration-kb"
     aesthetic_direction: "Dark technical with kinetic depth and self-demonstrating narrative"
-    detected_patterns: []
-    component_matches: []  # All upgrades use existing custom components
-    install_mode: "current-stack"
-    installed: []
-    scoring_guidance: "Hero is the moment AI proves it can see. Words must stagger per-word
-      with visible delay (not block-level AnimatedGroup). Depth panels must show translucent
-      layering with backdrop-filter (not just background gradients). Score badge must animate
-      on scroll entry (not static text). Tagline text must CHANGE between iteration states
-      for self-demonstrating bonus. Threads should activate at iteration 2, not 3. Penalize:
-      all-at-once text, flat single-plane layouts, static score values, identical text across
-      all states."
-    inspiration_sources: [...]
+    scoring_guidance: "Words must stagger per-word (not block-level). Depth panels must use
+      backdrop-filter (not just gradients). Score badge must animate on scroll. Tagline must
+      CHANGE between iteration states. Threads at iteration 2. Penalize: all-at-once text,
+      flat layouts, static scores, identical text across states."
 
-Component reference map (existing demo site):
-  - Spotlight (ui/spotlight.tsx): cursor-tracking radial glow. P1 background reactivity. Keep.
-  - Threads (ui/threads.tsx): WebGL kinetic lines. Lower activation to iteration >= 2.
+Component reference map:
+  - Spotlight (ui/spotlight.tsx): cursor glow. Keep.
+  - Threads (ui/threads.tsx): kinetic lines. Lower to iteration >= 2.
   - AnimatedGroup (ui/animated-group.tsx): block-level stagger. NOT per-word.
   - GlowButton (ui/glow-button.tsx): gradient CTA. No changes.
-  - iteration-context (lib/iteration-context.tsx): provides iteration + mode state.
+  - iteration-context (lib/iteration-context.tsx): iteration + mode state.
 ```
 </few-shot-examples>
 

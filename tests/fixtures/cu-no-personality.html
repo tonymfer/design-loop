@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pixel Studio — Creative Agency</title>
+  <style>
+    * { margin: 0; box-sizing: border-box; }
+    /* FLAW: system-ui only, no display/decorative fonts */
+    body { font-family: system-ui, -apple-system, sans-serif; color: #333; background: #fff; }
+
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      border-bottom: 1px solid #eee;
+    }
+    .nav-brand { font-size: 1.1rem; font-weight: 600; color: #333; }
+    .nav-links { display: flex; gap: 1.5rem; }
+    .nav-links a { color: #666; text-decoration: none; font-size: 0.9rem; }
+
+    /* Hero — technically fine but bland */
+    .hero {
+      padding: 4rem 2rem;
+      max-width: 800px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .hero h1 {
+      /* FLAW: system-ui, no display font */
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: #222;
+      margin-bottom: 1rem;
+      line-height: 1.2;
+    }
+    .hero p {
+      font-size: 1.1rem;
+      /* FLAW: grey-on-white, passes AA but zero personality */
+      color: #666;
+      line-height: 1.6;
+      margin-bottom: 2rem;
+    }
+    .hero-cta {
+      display: inline-block;
+      padding: 0.75rem 2rem;
+      /* FLAW: safe grey button, no boldness */
+      background: #333;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 1rem;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    /* Work section — standard grid, no shadows, no depth */
+    .work {
+      padding: 4rem 2rem;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    .work h2 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #222;
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+    .work-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+    /* FLAW: no box-shadow, no hover, no animations, no decorative elements */
+    .work-card {
+      border: 1px solid #eee;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .work-card-image {
+      width: 100%;
+      height: 200px;
+      /* FLAW: grey placeholder, no visual interest */
+      background: #f0f0f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #bbb;
+      font-size: 0.85rem;
+    }
+    .work-card-body {
+      padding: 1.25rem;
+    }
+    .work-card-body h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #222;
+      margin-bottom: 0.5rem;
+    }
+    .work-card-body p {
+      font-size: 0.85rem;
+      color: #888;
+      line-height: 1.5;
+    }
+
+    /* About — competent but forgettable */
+    .about {
+      padding: 4rem 2rem;
+      background: #f9f9f9;
+      text-align: center;
+    }
+    .about h2 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #222;
+      margin-bottom: 1rem;
+    }
+    .about p {
+      font-size: 1rem;
+      color: #666;
+      max-width: 600px;
+      margin: 0 auto 2rem;
+      line-height: 1.6;
+    }
+    .stats-row {
+      display: flex;
+      justify-content: center;
+      gap: 4rem;
+    }
+    .stat-item {
+      text-align: center;
+    }
+    .stat-number {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: #222;
+    }
+    .stat-label {
+      font-size: 0.8rem;
+      color: #999;
+      margin-top: 0.25rem;
+    }
+
+    /* Services — flat list */
+    .services {
+      padding: 4rem 2rem;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    .services h2 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #222;
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+    }
+    .service-item {
+      padding: 1.5rem;
+      border: 1px solid #eee;
+      border-radius: 8px;
+      /* FLAW: no shadow, no depth, no hover effect, no animation */
+    }
+    .service-item h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 0.5rem;
+    }
+    .service-item p {
+      font-size: 0.85rem;
+      color: #888;
+      line-height: 1.5;
+    }
+
+    .footer {
+      padding: 2rem;
+      text-align: center;
+      border-top: 1px solid #eee;
+      color: #999;
+      font-size: 0.8rem;
+    }
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav-brand">Pixel Studio</div>
+    <div class="nav-links">
+      <a href="#">Work</a>
+      <a href="#">Services</a>
+      <a href="#">About</a>
+      <a href="#">Contact</a>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <h1>We Create Digital Experiences</h1>
+    <p>Pixel Studio is a creative agency specializing in brand design, web development, and digital strategy for forward-thinking companies.</p>
+    <a href="#" class="hero-cta">View Our Work</a>
+  </section>
+
+  <section class="work">
+    <h2>Selected Work</h2>
+    <div class="work-grid">
+      <div class="work-card">
+        <div class="work-card-image">Project Image</div>
+        <div class="work-card-body">
+          <h3>Meridian Rebrand</h3>
+          <p>Complete brand identity and website redesign for a fintech startup.</p>
+        </div>
+      </div>
+      <div class="work-card">
+        <div class="work-card-image">Project Image</div>
+        <div class="work-card-body">
+          <h3>Atlas Dashboard</h3>
+          <p>Data visualization dashboard for enterprise analytics platform.</p>
+        </div>
+      </div>
+      <div class="work-card">
+        <div class="work-card-image">Project Image</div>
+        <div class="work-card-body">
+          <h3>Bloom Commerce</h3>
+          <p>E-commerce experience for a sustainable fashion brand.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="about">
+    <h2>About Us</h2>
+    <p>We are a team of designers, developers, and strategists passionate about crafting meaningful digital products that solve real problems.</p>
+    <div class="stats-row">
+      <div class="stat-item">
+        <div class="stat-number">120+</div>
+        <div class="stat-label">Projects</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number">8</div>
+        <div class="stat-label">Years</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number">45</div>
+        <div class="stat-label">Clients</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="services">
+    <h2>What We Do</h2>
+    <div class="services-grid">
+      <div class="service-item">
+        <h3>Brand Identity</h3>
+        <p>Logo design, visual systems, and brand guidelines that tell your story.</p>
+      </div>
+      <div class="service-item">
+        <h3>Web Development</h3>
+        <p>Fast, accessible, and responsive websites built with modern technologies.</p>
+      </div>
+      <div class="service-item">
+        <h3>Product Design</h3>
+        <p>User-centered design for SaaS products, apps, and digital platforms.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <p>&copy; 2026 Pixel Studio. All rights reserved.</p>
+  </footer>
+</body>
+</html>

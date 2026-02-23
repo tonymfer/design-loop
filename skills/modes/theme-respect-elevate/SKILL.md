@@ -32,6 +32,7 @@ extracting tokens directly from PROJECT_CONTEXT.designTokens:
 All fixes MUST use values from the fingerprint tokens or fallback extraction.
 If a desired value doesn't exist in the theme, use the closest available token.
 
+<MODE_FIXING>
 ## Brand Safety Invariant (ALL LEVELS)
 
 Regardless of boldness level, ALL changes MUST:
@@ -233,6 +234,9 @@ settings list" to "polished retro terminal experience" without adding a
 single non-theme value.
 ```
 
+</MODE_FIXING>
+
+<MODE_SCORING>
 ## Visual Impact Gate
 
 ```yaml
@@ -289,3 +293,4 @@ Level 3: goal_threshold: 4.5, max_iterations: 15
 Per-criterion: All 5 criteria >= 4/5 raw for 2 consecutive iterations.
 Exemptions: None — all criteria must pass.
 `completion_exemptions`: []
+</MODE_SCORING>

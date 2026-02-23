@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Account Settings — Lumina</title>
+  <style>
+    * { margin: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', system-ui, sans-serif; background: #fff; color: #333; }
+
+    .page-header {
+      padding: 1.5rem 2rem;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .page-header h1 { font-size: 1.5rem; color: #222; }
+
+    .settings-layout {
+      display: flex;
+      max-width: 900px;
+      margin: 2rem auto;
+      gap: 2rem;
+      padding: 0 1.5rem;
+    }
+
+    /* Sidebar nav */
+    .settings-nav {
+      width: 200px;
+      flex-shrink: 0;
+    }
+    .settings-nav a {
+      display: block;
+      padding: 0.5rem 0.75rem;
+      /* FLAW: pale blue link on white — contrast ~3.2:1 */
+      color: #88aacc;
+      text-decoration: none;
+      border-radius: 6px;
+      margin-bottom: 0.25rem;
+      font-size: 0.9rem;
+      /* FLAW: no hover state */
+    }
+    .settings-nav a.active {
+      background: #f0f4ff;
+      color: #88aacc;
+    }
+
+    /* Form section */
+    .settings-form {
+      flex: 1;
+    }
+    .form-section {
+      margin-bottom: 2rem;
+    }
+    .form-section h2 {
+      font-size: 1.1rem;
+      color: #222;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+    .form-label {
+      display: block;
+      margin-bottom: 0.375rem;
+      font-size: 0.875rem;
+      /* FLAW: light gray on white — contrast ~2.8:1 */
+      color: #999999;
+    }
+    .form-input {
+      width: 100%;
+      padding: 0.625rem 0.75rem;
+      /* FLAW: near-invisible border — #eee on white */
+      border: 1px solid #eeeeee;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      color: #333;
+      background: #fff;
+      /* FLAW: no focus state */
+    }
+    .form-hint {
+      margin-top: 0.25rem;
+      font-size: 0.8rem;
+      /* FLAW: even lighter gray — contrast ~2.3:1 */
+      color: #bbbbbb;
+    }
+    .link {
+      /* FLAW: pale blue on white — contrast ~3.2:1 */
+      color: #88aacc;
+      text-decoration: none;
+      font-size: 0.875rem;
+    }
+
+    /* Buttons — no hover/focus states */
+    .btn {
+      display: inline-block;
+      padding: 0.625rem 1.25rem;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      /* FLAW: no hover state, no focus ring */
+    }
+    .btn-primary {
+      background: #4a7dfc;
+      color: white;
+    }
+    .btn-secondary {
+      background: #f0f0f0;
+      color: #555;
+    }
+    .btn-danger {
+      background: transparent;
+      /* FLAW: pale red on white — contrast ~3.5:1 */
+      color: #e89090;
+      border: 1px solid #e89090;
+    }
+
+    .button-row {
+      display: flex;
+      gap: 0.75rem;
+      margin-top: 1.5rem;
+    }
+  </style>
+</head>
+<body>
+  <header class="page-header">
+    <h1>Account Settings</h1>
+  </header>
+
+  <section class="settings-layout">
+    <nav class="settings-nav">
+      <a href="#" class="active">Profile</a>
+      <a href="#">Security</a>
+      <a href="#">Notifications</a>
+      <a href="#">Billing</a>
+      <a href="#">API Keys</a>
+    </nav>
+
+    <main class="settings-form">
+      <div class="form-section">
+        <h2>Profile Information</h2>
+        <div class="form-group">
+          <label class="form-label" for="name">Display Name</label>
+          <input class="form-input" type="text" id="name" value="Alex Morgan">
+          <p class="form-hint">This is how your name appears to other team members.</p>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="email">Email Address</label>
+          <input class="form-input" type="email" id="email" value="alex@company.com">
+          <p class="form-hint">Used for login and notifications. <a class="link" href="#">Change email</a></p>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="role">Role</label>
+          <input class="form-input" type="text" id="role" value="Senior Engineer" readonly>
+          <p class="form-hint">Contact your admin to change roles.</p>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h2>Danger Zone</h2>
+        <p class="form-label">Permanently delete your account and all associated data.</p>
+        <div class="button-row">
+          <button class="btn btn-primary">Save Changes</button>
+          <button class="btn btn-secondary">Cancel</button>
+          <button class="btn btn-danger">Delete Account</button>
+        </div>
+      </div>
+    </main>
+  </section>
+
+  <section class="settings-layout" style="max-width: 900px; margin: 0 auto; padding: 1rem 1.5rem;">
+    <p class="form-hint">Last updated: Feb 15, 2026 &middot; <a class="link" href="#">View activity log</a></p>
+  </section>
+</body>
+</html>

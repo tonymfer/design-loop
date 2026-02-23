@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashwave — Analytics</title>
+  <style>
+    :root {
+      /* Design tokens — defined but often ignored */
+      --color-primary: #3b82f6;
+      --color-primary-hover: #2563eb;
+      --color-secondary: #8b5cf6;
+      --color-surface: #ffffff;
+      --color-surface-alt: #f8fafc;
+      --color-border: #e2e8f0;
+      --color-text: #0f172a;
+      --color-text-muted: #64748b;
+      --color-success: #22c55e;
+      --color-warning: #f59e0b;
+      --color-danger: #ef4444;
+      --space-1: 0.25rem;
+      --space-2: 0.5rem;
+      --space-3: 0.75rem;
+      --space-4: 1rem;
+      --space-6: 1.5rem;
+      --space-8: 2rem;
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+      --font-heading: 'Inter', system-ui, sans-serif;
+      --font-body: 'Inter', system-ui, sans-serif;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+      --shadow-md: 0 4px 6px rgba(0,0,0,0.07);
+    }
+
+    * { margin: 0; box-sizing: border-box; }
+    body {
+      font-family: var(--font-body);
+      /* FLAW: hardcoded instead of var(--color-surface-alt) */
+      background: #f8fafc;
+      /* FLAW: hardcoded instead of var(--color-text) */
+      color: #0f172a;
+    }
+
+    .dashboard {
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      min-height: 100vh;
+    }
+
+    /* Sidebar — mix of tokens and hardcoded */
+    .sidebar {
+      /* FLAW: hardcoded instead of var(--color-surface) */
+      background: #ffffff;
+      /* FLAW: hardcoded border instead of var(--color-border) */
+      border-right: 1px solid #e2e8f0;
+      padding: var(--space-6);
+    }
+    .sidebar-brand {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--color-primary);
+      margin-bottom: var(--space-8);
+    }
+    .sidebar-nav a {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      /* FLAW: hardcoded padding instead of var(--space-3) */
+      padding: 0.75rem;
+      /* FLAW: hardcoded color instead of var(--color-text-muted) */
+      color: #64748b;
+      text-decoration: none;
+      /* FLAW: hardcoded radius instead of var(--radius-md) */
+      border-radius: 8px;
+      font-size: 0.9rem;
+      margin-bottom: var(--space-1);
+    }
+    .sidebar-nav a.active {
+      /* FLAW: hardcoded background instead of using token */
+      background: #eff6ff;
+      /* FLAW: hardcoded instead of var(--color-primary) */
+      color: #3b82f6;
+      font-weight: 500;
+    }
+
+    /* Main content */
+    .main {
+      padding: var(--space-8);
+    }
+    .main-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--space-6);
+    }
+    .main-header h1 {
+      font-family: var(--font-heading);
+      font-size: 1.5rem;
+    }
+
+    /* Metric cards — mostly hardcoded */
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      /* FLAW: hardcoded gap instead of var(--space-6) */
+      gap: 1.5rem;
+      margin-bottom: var(--space-8);
+    }
+    .metric-card {
+      /* FLAW: hardcoded background instead of var(--color-surface) */
+      background: #ffffff;
+      /* FLAW: hardcoded padding instead of var(--space-6) */
+      padding: 1.5rem;
+      /* FLAW: hardcoded radius instead of var(--radius-lg) */
+      border-radius: 12px;
+      /* FLAW: hardcoded shadow instead of var(--shadow-sm) */
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    }
+    .metric-label {
+      font-size: 0.8rem;
+      /* FLAW: hardcoded color instead of var(--color-text-muted) */
+      color: #64748b;
+      margin-bottom: var(--space-2);
+    }
+    .metric-value {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--color-text);
+    }
+    .metric-trend {
+      font-size: 0.8rem;
+      margin-top: var(--space-2);
+    }
+    .metric-trend.up { color: var(--color-success); }
+    .metric-trend.down { color: var(--color-danger); }
+
+    /* Chart placeholder */
+    .chart-section {
+      background: var(--color-surface);
+      /* FLAW: hardcoded radius instead of var(--radius-lg) */
+      border-radius: 12px;
+      padding: var(--space-6);
+      box-shadow: var(--shadow-sm);
+      margin-bottom: var(--space-6);
+    }
+    .chart-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--space-4);
+    }
+    .chart-header h2 { font-size: 1.1rem; }
+    .chart-placeholder {
+      height: 200px;
+      /* FLAW: hardcoded background instead of var(--color-surface-alt) */
+      background: #f8fafc;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      /* FLAW: hardcoded color */
+      color: #94a3b8;
+      font-size: 0.9rem;
+    }
+
+    /* Button — hardcoded */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      /* FLAW: hardcoded padding */
+      padding: 0.5rem 1rem;
+      /* FLAW: hardcoded bg instead of var(--color-primary) */
+      background: #3b82f6;
+      color: white;
+      border: none;
+      /* FLAW: hardcoded radius instead of var(--radius-md) */
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    /* Activity list */
+    .activity {
+      background: var(--color-surface);
+      border-radius: var(--radius-lg);
+      padding: var(--space-6);
+      box-shadow: var(--shadow-sm);
+    }
+    .activity h2 {
+      font-size: 1.1rem;
+      margin-bottom: var(--space-4);
+    }
+    .activity-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      /* FLAW: hardcoded padding instead of var(--space-3) */
+      padding: 0.75rem 0;
+      /* FLAW: hardcoded border color instead of var(--color-border) */
+      border-bottom: 1px solid #e2e8f0;
+      font-size: 0.9rem;
+    }
+    .activity-item:last-child { border-bottom: none; }
+    .activity-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      /* FLAW: hardcoded instead of var(--color-primary) */
+      background: #3b82f6;
+    }
+    .activity-time {
+      margin-left: auto;
+      /* FLAW: hardcoded color */
+      color: #94a3b8;
+      font-size: 0.8rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard">
+    <aside class="sidebar">
+      <div class="sidebar-brand">Dashwave</div>
+      <nav class="sidebar-nav">
+        <a href="#" class="active">&#128202; Analytics</a>
+        <a href="#">&#128101; Customers</a>
+        <a href="#">&#128230; Products</a>
+        <a href="#">&#128176; Revenue</a>
+        <a href="#">&#9881; Settings</a>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <header class="main-header">
+        <h1>Analytics Overview</h1>
+        <button class="btn">&#8595; Export Report</button>
+      </header>
+
+      <section class="metrics">
+        <div class="metric-card">
+          <div class="metric-label">Total Revenue</div>
+          <div class="metric-value">$48,250</div>
+          <div class="metric-trend up">+12.5% from last month</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Active Users</div>
+          <div class="metric-value">3,842</div>
+          <div class="metric-trend up">+8.2% from last month</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Conversion Rate</div>
+          <div class="metric-value">3.24%</div>
+          <div class="metric-trend down">-0.8% from last month</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Avg. Order Value</div>
+          <div class="metric-value">$67.30</div>
+          <div class="metric-trend up">+5.1% from last month</div>
+        </div>
+      </section>
+
+      <section class="chart-section">
+        <div class="chart-header">
+          <h2>Revenue Over Time</h2>
+          <button class="btn">Last 30 days &#9662;</button>
+        </div>
+        <div class="chart-placeholder">Chart visualization area</div>
+      </section>
+
+      <section class="activity">
+        <h2>Recent Activity</h2>
+        <div class="activity-item">
+          <div class="activity-dot"></div>
+          <span>New subscription — Enterprise plan</span>
+          <span class="activity-time">2 min ago</span>
+        </div>
+        <div class="activity-item">
+          <div class="activity-dot"></div>
+          <span>Payment processed — Invoice #4821</span>
+          <span class="activity-time">15 min ago</span>
+        </div>
+        <div class="activity-item">
+          <div class="activity-dot"></div>
+          <span>User signup — alex@company.com</span>
+          <span class="activity-time">1 hour ago</span>
+        </div>
+        <div class="activity-item">
+          <div class="activity-dot"></div>
+          <span>Feature request submitted — Dark mode</span>
+          <span class="activity-time">3 hours ago</span>
+        </div>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

@@ -215,17 +215,25 @@ Delegate to the mode-specific reviewer:
 | (fallback / no mode)    | `agents/visual-reviewer.md`                         |
 </reviewer-routing>
 
-Provide to reviewer:
-- CAPTURE_SET_BEFORE screenshots
-- AUDIT results (CSS layout audit)
-- `SHARED_REFERENCES.rubric` for scoring definitions
-- `MODE_INSTRUCTIONS` for mode-specific scoring weights and sensitivities
-- `DESIGN_SKILLS` for companion skill enrichment (if any)
-- `PROJECT_CONTEXT` for design token awareness
-- `BRAND_FINGERPRINT` for brand-aware scoring context
-- `REFERENCE_ANALYSIS` for reference alignment scoring (CU-only; empty {} for PP/TRE)
-- `DIFF_REPORT` from previous iteration (if iteration > 1)
-- `LOOP_STATE` for trend awareness and repeated-fix detection
+<scorer-context-assembly>
+When spawning the reviewer subagent, provide ONLY:
+- SHARED_REFERENCES.rubric (canonical scoring criteria + defect taxonomy)
+- MODE_INSTRUCTIONS.<MODE_SCORING> section only (weights, score-5 calibration, thresholds)
+  — EXCLUDE <MODE_FIXING> (fix constraints, fix strategy, allowed/prohibited changes)
+- Mode-specific reviewer file (CoT, calibration, output contract)
+- BRAND_FINGERPRINT (tokens + visual personality)
+- REFERENCE_ANALYSIS.scoring_guidance (CU only; 1-2 sentences, not full analysis)
+- DESIGN_SKILLS (full bodies for CU, guidance excerpts for TRE, empty for PP)
+- LOOP_STATE.iterations (trend data)
+- DIFF_REPORT (if iteration > 1)
+- CAPTURE_SET_BEFORE + AUDIT
+
+Do NOT provide to scorer:
+- <MODE_FIXING> section (fix constraints, strategy, allowed changes)
+- SHARED_REFERENCES.constraints (edit guardrails — fixer only)
+- SHARED_REFERENCES.screenshots (capture strategy — capture step only)
+- Full REFERENCE_ANALYSIS (scorer gets scoring_guidance excerpt only)
+</scorer-context-assembly>
 
 The reviewer returns structured JSON scores per section.
 
@@ -328,11 +336,16 @@ After DIFF screenshots are captured, run a quick re-score pass on CAPTURE_SET_AF
 
 Delegate to `agents/preview-agent.md` for structured change preview.
 
+<previewer-context-assembly>
 Provide to preview agent:
-- FIXES_APPLIED, FIXES_SKIPPED (from Step 4)
-- DIFF_REPORT, CAPTURE_SET_BEFORE, CAPTURE_SET_AFTER (from Steps 2, 5)
-- BRAND_FINGERPRINT, MODE, MODE_INSTRUCTIONS, PREVIEW_MODE
-- LOOP_STATE (for safety event and rollback awareness)
+- FIXES_APPLIED, FIXES_SKIPPED
+- DIFF_REPORT summary (pixel_delta, fidelity scores)
+- MODE name + PREVIEW_MODE
+- BRAND_FINGERPRINT.tokens (for theme check)
+- LOOP_STATE.current_iteration + safety_events
+
+Do NOT provide: full MODE_INSTRUCTIONS, SHARED_REFERENCES.rubric, reviewer files
+</previewer-context-assembly>
 
 The preview agent returns PREVIEW_RESULT. Handle by action:
 
@@ -364,9 +377,16 @@ Record PREVIEW_RESULT.action in iteration's preview_action field.
 
 Delegate to `agents/apply-agent.md`.
 
-Provide: PREVIEW_RESULT, FIXES_APPLIED, FIXES_SKIPPED, REFERENCE_ANALYSIS,
-PROJECT_CONTEXT, BRAND_FINGERPRINT, MODE, MODE_INSTRUCTIONS, LOOP_STATE,
-SESSION_ID, ITERATION.
+<applier-context-assembly>
+Provide to apply agent:
+- PREVIEW_RESULT
+- REFERENCE_ANALYSIS.component_matches + installed[] (CU only)
+- PROJECT_CONTEXT.componentLibrary + packageManager
+- MODE name + mode_gate
+- SESSION_ID, iteration number
+
+Do NOT provide: scoring weights, rubric, BRAND_FINGERPRINT.visual, DESIGN_SKILLS
+</applier-context-assembly>
 
 Handle APPLY_RESULT:
 
@@ -529,161 +549,70 @@ If CONTINUE, proceed to next iteration (Step 1).
 </workflow>
 
 <anti-hardcode>
-## Anti-Hardcode Rule
-
-NEVER name specific design trends, libraries, fonts, or styles directly in decisions or logs:
-- NO: "Add glassmorphism", "Use Geist font", "Apply bento grid layout"
-- YES: "Apply depth effects aligned with brand personality", "Introduce display font from project tokens"
-
-All creative direction flows from:
-1. BRAND_FINGERPRINT.visual.personality (what the project already is)
-2. DESIGN_SKILLS (what companion skills recommend)
-3. MODE_INSTRUCTIONS (what the mode allows)
-4. REFERENCE_ANALYSIS (CU-only direction from user's reference)
-
-You are a loop controller, not a design opinion source.
+NEVER name specific design trends, fonts, or styles directly. All creative direction
+comes from BRAND_FINGERPRINT + DESIGN_SKILLS + MODE_INSTRUCTIONS. See references/common/anti-hardcode.md.
 </anti-hardcode>
 
 <few-shot-examples>
 
 ### Example 1: Beeper Retro Pixel Preservation During 3D Addition
 
-**Scenario:** CU mode, retro pixel-art messenger (Press Start 2P, 0px radii, 2px borders). Iteration 4 adds CSS 3D transforms + smooth shadows. Identity drops 5 to 3, visual_fidelity regresses.
+**Scenario:** CU mode, retro pixel-art messenger. Iteration 4 adds smooth 3D transforms conflicting with pixel aesthetic. Identity drops 5→3.
 
-**Loop-engine reasoning:**
 ```
 <think>
-Iteration 4: 3D transforms conflict with pixel-art aesthetic. BRAND_FINGERPRINT.visual.personality
-is "Playful / Retro" with sharp 0px radii and chunky borders. The smooth shadows and backdrop-blur
-introduce non-pixel smoothing, directly conflicting with the established identity.
-
-Identity dropped from 5 to 3. Weighted average dropped 4.90 to 4.10. regression_count=1.
-Not terminal (need 3), but strategy must shift.
-
-Next iteration: add depth using PIXEL-ALIGNED techniques from the retro tradition — solid-color
-offset shadows, double borders, border-based depth. NOT smooth gradients or blur.
+3D transforms conflict with pixel-art aesthetic. BRAND_FINGERPRINT is "Playful / Retro" with 0px radii.
+Smooth shadows introduce non-pixel smoothing. Identity 5→3, wavg 4.90→4.10, regression_count=1.
 </think>
-
-Decision: CONTINUE — but strategy shift: depth via pixel-aligned techniques, not smooth effects.
-strategy_hint: "Use pixel-aligned depth (solid-color offset shadows, double borders) instead of smooth effects"
+Decision: CONTINUE — strategy shift: depth via pixel-aligned techniques (offset shadows, double borders).
+strategy_hint: "Use pixel-aligned depth instead of smooth effects"
 ```
 
 ### Example 2: Clean Dashboard — Plateau Detection
 
-**Scenario:** PP mode (goal_threshold=4.0), scores stuck at {4,4,4,3,3} for 2 iterations. Weighted avg 3.80. max_delta < 0.2 for 2 iterations. plateau_count = 2.
+**Scenario:** PP mode (goal_threshold=4.0), scores stuck {4,4,4,3,3} for 2 iterations. plateau_count=2.
 
-**Loop-engine reasoning:**
 ```
 <think>
-1. weighted_average (3.80) < goal_threshold (4.0) — NOT met
-2. Trend: plateau — max delta 0.0 for 2 iterations
-3. Stuck criteria: Identity (3, but PP-exempt) and Polish (3)
-4. Plateau risk: YES — plateau_count = 2, triggering P4
-5. Regression: No — scores are flat, not declining
-6. Max iterations: Not reached
+wavg 3.80 < 4.0. plateau_count=2 → triggers P4. Identity (3, PP-exempt) + Polish (3) stuck.
 </think>
-
 Decision: PLATEAU
 <promise>PLATEAU</promise>
-Log: "Max delta < 0.2 for 2 iterations. Stuck: Identity (PP-exempt), Polish (3/5).
-Best: 3.80/5. Consider Theme-Respect Elevate or Creative Unleash mode for identity improvements."
 ```
 
 ### Example 3: Successful Completion
 
-**Scenario:** TRE mode (goal_threshold=4.2), iteration 6. All criteria >= 4 for second consecutive iteration. Weighted avg 4.35.
+**Scenario:** TRE mode (goal_threshold=4.2), iteration 6. All criteria >= 4 for 2 consecutive. Weighted avg 4.35.
 
-**Loop-engine reasoning:**
 ```
 <think>
-1. weighted_average (4.35) >= goal_threshold (4.2) — MET
-2. consecutive_pass_count = 2 — MET (all raw >= 4 for 2 iterations)
-3. Both gates satisfied: per-criterion pass + weighted average threshold
+wavg 4.35 >= 4.2 — MET. consecutive_pass_count=2 — MET.
 </think>
-
 Decision: POLISHED
 <promise>POLISHED</promise>
-Log: "All criteria >= 4/5 for 2 consecutive iterations. Weighted avg 4.35 >= 4.2."
 ```
 
 ### Example 4: Beeper Full-Loop — 3D/Spline Reference with Checkpoint Rollback
 
-**Scenario:** CU mode, retro pixel-art messenger (Press Start 2P, 0px radii). User provided a 3D/Spline reference site. REFERENCE_ANALYSIS has `aesthetic_direction: "pixel-art meets volumetric depth"`, `detected_patterns: ["isometric perspective", "voxel shadows"]`. 3 iterations showing full per-iteration flow.
+**Scenario:** CU mode, retro pixel-art messenger. 3D/Spline reference. 3 iterations with test failure Rollback.
 
-**Iteration 1 — Reference-aligned layout restructure:**
-```
-Step 1 LOAD: current_iteration=1, strategy_hint=null, REFERENCE_ANALYSIS loaded
-Step 3 SCORE: {comp:3, typo:4, color:3, ident:4, polish:3} wavg=3.70
-  reference_alignment: "partial" — layout flat, reference suggests volumetric depth
-Step 4 FIX: checkpoint saved → iter-1/
-  Fix 1: Restructure hero with isometric card stack (pixel-aligned offsets)
-  Fix 2: Add voxel-style shadows using solid-color offsets (2px steps)
-  Fix 3: Reserve accent orange for interactive depth cues
-  safety-engine test-runner: tests pass (2/2)
-  safety-engine checkpoint-manager: checkpoint=saved
-Step 5 DIFF: visual_fidelity=0.82, theme_fidelity=0.78
-Step 5.5 PREVIEW: PREVIEW_MODE=auto → logged, action=apply (CU default)
-Step 5.7 APPLY: mode_gate=full_cu, no components detected → status=skipped
-Step 6 CHECK: plateau_count=0, trend=improving
-Step 7 DECIDE: CONTINUE targeting composition (3/5)
+**Iteration 1:** SCORE {comp:3,typo:4,color:3,ident:4,polish:3} wavg=3.70. FIX: isometric card stack + voxel shadows. Tests pass. DECIDE: CONTINUE targeting composition.
 Safety: checkpoint=1 build=pass test=2pass/0fail fidelity=pass apply=skipped rollbacks=0
-```
 
-**Iteration 2 — Test failure triggers Rollback:**
-```
-Step 1 LOAD: current_iteration=2, strategy_hint=null
-Step 3 SCORE: {comp:4, typo:4, color:3, ident:4, polish:3} wavg=3.95
-  reference_alignment: "partial" — depth improving, color system needs reference cues
-Step 4 FIX: checkpoint saved → iter-2/
-  Fix 1: Add depth-based color gradient to card stack → build pass
-  Fix 2: Restructure sidebar nav with voxel tab indicators
-    safety-engine test-runner: FAIL — nav accessibility test broken
-    → Rollback from iter-2/ checkpoint. Fix 2 skipped.
-  Fix 3: Tighten border-accent hierarchy → build pass, tests pass
-  fixes_applied: ["depth-gradient", "border-hierarchy"]
-  fixes_skipped: ["voxel-nav — test failure, rolled back"]
-Step 5 DIFF: visual_fidelity=0.79, theme_fidelity=0.75
-Step 5.5 PREVIEW: PREVIEW_MODE=auto → logged, action=apply (CU default)
-Step 5.7 APPLY: mode_gate=full_cu, no components detected → status=skipped
-Step 6 CHECK: plateau_count=1, trend=improving (wavg 3.95 > 3.70)
-Step 7 DECIDE: CONTINUE — plateau_count=1, strategy_hint set
-  strategy_hint: "Shift to pixel-aligned 3D depth via offset borders, avoid structural nav changes"
+**Iteration 2:** SCORE {comp:4,typo:4,color:3,ident:4,polish:3} wavg=3.95. FIX: depth-gradient pass, voxel-nav FAIL → Rollback from checkpoint. fixes_skipped: ["voxel-nav — test failure, rolled back"]. DECIDE: CONTINUE, strategy_hint set.
 Safety: checkpoint=2 build=pass test=1pass/1fail fidelity=pass apply=skipped rollbacks=1
-```
 
-**Iteration 3 — Strategy shift, scores jump:**
-```
-Step 1 LOAD: current_iteration=3, strategy_hint="pixel-aligned 3D depth via offset borders"
-  Log: "Strategy shift: pixel-aligned 3D depth via offset borders"
-Step 3 SCORE: {comp:4, typo:4, color:4, ident:5, polish:4} wavg=4.55
-  reference_alignment: "strong" — isometric depth + pixel aesthetic merged convincingly
-Step 4 FIX: checkpoint saved → iter-3/
-  Fix 1: Add multi-layer offset shadow system (1px, 2px, 4px steps)
-  Fix 2: Introduce depth-aware color tinting per BRAND_FINGERPRINT.tokens
-  safety-engine test-runner: tests pass (2/2)
-Step 5 DIFF: visual_fidelity=0.85, theme_fidelity=0.80
-Step 5.5 PREVIEW: PREVIEW_MODE=auto → logged, action=apply (CU default)
-Step 5.7 APPLY: mode_gate=full_cu, no components detected → status=skipped
-Step 6 CHECK: consecutive_pass_count=1, plateau_count=0, trend=improving
-Step 7 DECIDE: CONTINUE — approaching goal (4.55 < 4.70), need consecutive_pass_count=2
+**Iteration 3:** Strategy shift applied. SCORE {comp:4,typo:4,color:4,ident:5,polish:4} wavg=4.55. FIX: multi-layer offset shadows + depth-aware color tinting. Tests pass. DECIDE: CONTINUE (4.55 < 4.70, need consecutive_pass_count=2).
 Safety: checkpoint=3 build=pass test=2pass/0fail fidelity=pass apply=skipped rollbacks=0
-```
 
 ### Example 5: Beeper Theme-Respect — Fidelity Gate Blocks Off-Brand Fix
 
-**Scenario:** TRE mode, retro pixel-art messenger. Iteration applies smooth gradient that violates theme tokens. Fidelity gate catches it.
+**Scenario:** TRE mode, retro pixel-art messenger. Smooth gradient violates theme tokens.
 
 ```
-Step 4 FIX: checkpoint saved → iter-2/
-  Fix 1: Apply smooth linear-gradient to hero section (replacing flat pixel bg)
-Step 5 DIFF: visual_fidelity=0.90, theme_fidelity=0.65
-  → FIDELITY GATE: theme_fidelity 0.65 < 0.8 → BLOCKED
-  → Revert: agent-browser state load .claude/design-loop-state-2.json
-  → Revise: Apply stepped gradient using only BRAND_FINGERPRINT.tokens.colors (4 solid bands)
-  → Re-run Step 5: visual_fidelity=0.88, theme_fidelity=0.92 → pass
-  fixes_applied: ["stepped-gradient (revised from smooth)"]
-Step 6 CHECK: trend=improving, plateau_count=0
-Step 7 DECIDE: CONTINUE
+FIX: smooth linear-gradient → theme_fidelity=0.65 < 0.8 → BLOCKED
+Revise: stepped gradient using BRAND_FINGERPRINT.tokens.colors (4 solid bands)
+Re-run: theme_fidelity=0.92 → pass
 Safety: checkpoint=1 build=pass test=pass fidelity=blocked→revised rollbacks=0
 ```
 

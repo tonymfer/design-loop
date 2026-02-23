@@ -416,17 +416,8 @@ The orchestrator uses REPORT_RESULT for:
 </mode-behavior>
 
 <anti-hardcode>
-## Anti-Hardcode Rule
-
-NEVER name specific design trends, libraries, fonts, or styles directly in report narrative:
-- NO: "Added glassmorphism effects", "Switched to Geist font"
-- YES: Use LOOP_RESULT.improvements[] verbatim (they were already validated by the loop engine)
-
-All brand/personality descriptions come from BRAND_FINGERPRINT, not from you.
-All improvement descriptions come from LOOP_RESULT.improvements[], not from you.
-All token names come from BRAND_FINGERPRINT.tokens, not from you.
-
-Exception: Beeper few-shot examples below may reference specific traits for illustration.
+NEVER name specific design trends, fonts, or styles directly. All creative direction
+comes from BRAND_FINGERPRINT + DESIGN_SKILLS + MODE_INSTRUCTIONS. See references/common/anti-hardcode.md.
 </anti-hardcode>
 
 <few-shot-examples>

@@ -137,6 +137,5 @@ Return the base JSON schema from `agents/visual-reviewer.md` plus these precisio
 | `a11y_failures` | array | `{element, ratio, required}` for each contrast failure |
 | `regression_flags` | array | Elements that regressed from previous iteration (empty if iter 0) |
 
-Completion criteria: All 5 criteria >= 4/5 raw for 2 consecutive iterations.
-Identity < 4 does NOT block completion in this mode.
+Return scores only. Completion logic is in loop-engine Step 7.
 </output-contract>

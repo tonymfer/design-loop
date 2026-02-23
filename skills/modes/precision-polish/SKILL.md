@@ -7,6 +7,7 @@ description: "Surgical CSS fixes only. Minimal risk. Stays within existing layou
 
 Conservative, targeted CSS fixes. Zero layout changes. The safest mode for production sites where visual regression risk must be minimal.
 
+<MODE_SCORING>
 ## Scoring Weights
 
 All 5 criteria are scored at equal weight. This mode cares most about alignment, consistency, and spacing — not creative ambition.
@@ -27,6 +28,7 @@ All 5 criteria are scored at equal weight. This mode cares most about alignment,
 - **Identity 5**: N/A — this mode does not target identity improvements.
 - **Polish 5**: Pixel-perfect consistency. Same border-radius everywhere. No mixed spacing scales.
 
+<MODE_FIXING>
 ## Fix Constraints
 
 ### Allowed Changes
@@ -57,6 +59,8 @@ All 5 criteria are scored at equal weight. This mode cares most about alignment,
 4. **Maximum 3 fixes per iteration** — conservative pace prevents regression
 5. **Skip if uncertain** — if a fix could break layout on other viewports, skip it
 
+</MODE_FIXING>
+
 ## Diff Configuration
 
 - `diff_threshold`: 0.05 (tight — only significant pixel changes register)
@@ -69,3 +73,4 @@ All 5 criteria are scored at equal weight. This mode cares most about alignment,
 - Per-criterion: All 5 criteria >= 4/5 raw for 2 consecutive iterations.
 - Exemption: Visual Identity < 4 does NOT block completion.
 - `completion_exemptions`: ["identity"]
+</MODE_SCORING>

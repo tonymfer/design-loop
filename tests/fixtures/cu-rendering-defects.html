@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prism — Creative Platform</title>
+  <style>
+    * { margin: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', system-ui, sans-serif; color: #1a1a2e; background: #0a0a1a; }
+
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.25rem 2rem;
+    }
+    .nav-brand {
+      font-size: 1.3rem;
+      font-weight: 800;
+      /* FLAW: gradient text WITHOUT -webkit-background-clip → renders as solid block */
+      background: linear-gradient(135deg, #f472b6, #818cf8, #34d399);
+      background-clip: text;
+      /* Missing: -webkit-background-clip: text; */
+      -webkit-text-fill-color: transparent;
+    }
+    .nav-links { display: flex; gap: 1.5rem; }
+    .nav-links a { color: rgba(255,255,255,0.7); text-decoration: none; font-size: 0.9rem; }
+    .nav-cta {
+      padding: 0.5rem 1.25rem;
+      background: linear-gradient(135deg, #f472b6, #818cf8);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    /* Hero with gradient text defect */
+    .hero {
+      padding: 6rem 2rem 4rem;
+      text-align: center;
+      position: relative;
+    }
+    .hero h1 {
+      font-size: 3.5rem;
+      font-weight: 800;
+      line-height: 1.1;
+      margin-bottom: 1.5rem;
+      /* FLAW: same gradient text issue */
+      background: linear-gradient(135deg, #f472b6, #818cf8, #34d399);
+      background-clip: text;
+      /* Missing: -webkit-background-clip: text; */
+      -webkit-text-fill-color: transparent;
+    }
+    .hero p {
+      font-size: 1.2rem;
+      color: rgba(255,255,255,0.6);
+      max-width: 550px;
+      margin: 0 auto 2rem;
+      line-height: 1.6;
+    }
+
+    /* Glassmorphism card — FLAW: backdrop-filter without rgba bg does nothing */
+    .glass-cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 0 2rem 4rem;
+    }
+    .glass-card {
+      /* FLAW: solid white bg prevents backdrop-filter from working */
+      background: #ffffff;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 16px;
+      padding: 2rem;
+    }
+    .glass-card h3 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #1a1a2e;
+      margin-bottom: 0.75rem;
+    }
+    .glass-card p {
+      font-size: 0.9rem;
+      color: #555;
+      line-height: 1.5;
+    }
+
+    /* Showcase section */
+    .showcase {
+      padding: 4rem 2rem;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    .showcase h2 {
+      font-size: 2rem;
+      font-weight: 700;
+      color: white;
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    /* FLAW: text clipped by overflow:hidden on too-small container */
+    .testimonial-box {
+      background: rgba(255,255,255,0.05);
+      border-radius: 12px;
+      padding: 1.5rem;
+      /* FLAW: fixed height + overflow hidden clips the testimonial text */
+      height: 80px;
+      overflow: hidden;
+      margin-bottom: 2rem;
+    }
+    .testimonial-box blockquote {
+      font-size: 1rem;
+      color: rgba(255,255,255,0.8);
+      line-height: 1.6;
+      font-style: italic;
+    }
+    .testimonial-box cite {
+      display: block;
+      margin-top: 0.75rem;
+      font-size: 0.85rem;
+      color: rgba(255,255,255,0.5);
+      font-style: normal;
+    }
+
+    /* Feature row with broken icon image */
+    .feature-row {
+      display: flex;
+      gap: 2rem;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+    .feature-row .feature-visual {
+      width: 200px;
+      height: 200px;
+      flex-shrink: 0;
+      background: rgba(255,255,255,0.03);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    /* FLAW: empty img tag with no src — renders as broken icon */
+    .feature-row .feature-visual img {
+      width: 120px;
+      height: 120px;
+    }
+    .feature-text h3 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: white;
+      margin-bottom: 0.75rem;
+    }
+    .feature-text p {
+      font-size: 0.95rem;
+      color: rgba(255,255,255,0.6);
+      line-height: 1.6;
+    }
+
+    /* CTA section */
+    .cta-section {
+      text-align: center;
+      padding: 4rem 2rem;
+    }
+    .cta-section h2 {
+      font-size: 2rem;
+      font-weight: 700;
+      color: white;
+      margin-bottom: 1rem;
+    }
+    .cta-section p {
+      color: rgba(255,255,255,0.6);
+      margin-bottom: 2rem;
+      font-size: 1.1rem;
+    }
+    .cta-btn {
+      display: inline-block;
+      padding: 1rem 2.5rem;
+      background: linear-gradient(135deg, #f472b6, #818cf8);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .footer {
+      text-align: center;
+      padding: 2rem;
+      color: rgba(255,255,255,0.3);
+      font-size: 0.8rem;
+    }
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav-brand">Prism</div>
+    <div class="nav-links">
+      <a href="#">Features</a>
+      <a href="#">Gallery</a>
+      <a href="#">Pricing</a>
+    </div>
+    <button class="nav-cta">Join Beta</button>
+  </nav>
+
+  <section class="hero">
+    <h1>Create Without<br>Boundaries</h1>
+    <p>The next-generation creative platform for designers who refuse to compromise on vision or velocity.</p>
+  </section>
+
+  <section class="glass-cards">
+    <div class="glass-card">
+      <h3>AI-Assisted Design</h3>
+      <p>Generate layouts, color palettes, and typography pairings with intelligent suggestions that learn your style.</p>
+    </div>
+    <div class="glass-card">
+      <h3>Real-time Collaboration</h3>
+      <p>Work together with your team in real-time with multiplayer cursors, comments, and version branching.</p>
+    </div>
+    <div class="glass-card">
+      <h3>One-Click Export</h3>
+      <p>Export production-ready assets for web, iOS, and Android with automatic responsive breakpoints.</p>
+    </div>
+  </section>
+
+  <section class="showcase">
+    <h2>What Creators Say</h2>
+
+    <div class="testimonial-box">
+      <blockquote>Prism completely transformed our design workflow. The AI suggestions are remarkably good — it feels like having a senior designer looking over your shoulder. We shipped our rebrand in half the time we estimated, and the result was better than anything we'd done before.</blockquote>
+      <cite>Jordan Rivera, Lead Designer at Wavelength</cite>
+    </div>
+
+    <div class="feature-row">
+      <div class="feature-visual">
+        <!-- FLAW: empty img with no src — broken image icon -->
+        <img alt="Design tool interface">
+      </div>
+      <div class="feature-text">
+        <h3>Adaptive Canvas</h3>
+        <p>An infinite canvas that adapts to your workflow — automatically organizing artboards, creating design systems, and maintaining spatial relationships as your project grows.</p>
+      </div>
+    </div>
+
+    <div class="feature-row">
+      <div class="feature-visual">
+        <img alt="Component library">
+      </div>
+      <div class="feature-text">
+        <h3>Smart Components</h3>
+        <p>Components that understand context — auto-adjusting padding, text sizing, and layout when you swap between mobile and desktop breakpoints.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-section">
+    <h2>Ready to Create?</h2>
+    <p>Join 5,000 designers already building with Prism.</p>
+    <a href="#" class="cta-btn">Start Creating Free</a>
+  </section>
+
+  <footer class="footer">
+    <p>&copy; 2026 Prism Labs. All rights reserved.</p>
+  </footer>
+</body>
+</html>

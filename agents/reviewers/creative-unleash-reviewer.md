@@ -260,6 +260,5 @@ Return the base JSON schema from `agents/visual-reviewer.md` plus these creative
 | `a11y_pass` | boolean | All comprehensive audits pass (contrast + keyboard + screen reader + color-blind) |
 | `a11y_issues` | array | `{element, issue_type, severity, details}` for each finding |
 
-Completion criteria: All 5 criteria >= 4/5 raw for 2 consecutive iterations.
-Identity MUST >= 4 — this is the primary criterion. No compromise.
+Return scores only. Completion logic is in loop-engine Step 7.
 </output-contract>
