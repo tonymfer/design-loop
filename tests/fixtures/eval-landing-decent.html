@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meridian — Design Consultancy</title>
+  <style>
+    * { margin: 0; box-sizing: border-box; }
+    body { font-family: 'Georgia', 'Times New Roman', serif; background: #faf8f5; color: #1a1a1a; }
+
+    /* EVAL: Decent landing page — has intentional design choices but room for polish */
+    .nav {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 1.25rem 3rem; border-bottom: 1px solid #e8e4de;
+    }
+    .nav-brand { font-size: 1.1rem; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 400; }
+    .nav-links { display: flex; gap: 2rem; }
+    .nav-links a { color: #666; text-decoration: none; font-size: 0.85rem; letter-spacing: 0.05em; }
+
+    .hero {
+      padding: 6rem 3rem;
+      max-width: 800px;
+    }
+    .hero h1 {
+      font-size: 3.5rem; font-weight: 400; line-height: 1.15;
+      letter-spacing: -0.02em; margin-bottom: 1.5rem; color: #1a1a1a;
+    }
+    .hero p {
+      font-size: 1.1rem; line-height: 1.7; color: #555; max-width: 540px; margin-bottom: 2rem;
+    }
+    .hero-cta {
+      display: inline-block; padding: 0.9rem 2rem;
+      background: #1a1a1a; color: #faf8f5; border: none;
+      font-size: 0.9rem; letter-spacing: 0.05em; cursor: pointer;
+    }
+
+    /* EVAL TARGET: Spacing inconsistency between sections — gap-like patterns differ */
+    .work-section {
+      padding: 4rem 3rem;
+      border-top: 1px solid #e8e4de;
+    }
+    .work-section h2 {
+      font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.15em;
+      color: #999; margin-bottom: 3rem;
+    }
+    .work-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+    }
+    .work-item {
+      aspect-ratio: 4/3; background: #e8e4de; position: relative;
+    }
+    .work-item span {
+      position: absolute; bottom: 1rem; left: 1rem;
+      font-size: 0.85rem; color: #666;
+    }
+
+    /* EVAL TARGET: Inconsistent bottom padding */
+    .about {
+      padding: 5rem 3rem; /* Different from 4rem above */
+      border-top: 1px solid #e8e4de;
+    }
+    .about p { font-size: 1.1rem; line-height: 1.7; color: #555; max-width: 600px; }
+
+    .footer {
+      padding: 2rem 3rem; /* Different again */
+      border-top: 1px solid #e8e4de;
+      display: flex; justify-content: space-between;
+      font-size: 0.8rem; color: #999;
+    }
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav-brand">Meridian</div>
+    <div class="nav-links">
+      <a href="#">Work</a><a href="#">About</a><a href="#">Contact</a>
+    </div>
+  </nav>
+  <section class="hero">
+    <h1>We design experiences that matter.</h1>
+    <p>Strategic design for brands that want to stand apart. We partner with ambitious teams to create digital products people love.</p>
+    <button class="hero-cta">See Our Work</button>
+  </section>
+  <section class="work-section">
+    <h2>Selected Work</h2>
+    <div class="work-grid">
+      <div class="work-item"><span>Project Alpha</span></div>
+      <div class="work-item"><span>Project Beta</span></div>
+      <div class="work-item"><span>Project Gamma</span></div>
+      <div class="work-item"><span>Project Delta</span></div>
+    </div>
+  </section>
+  <section class="about">
+    <p>Founded in 2019, Meridian is a small studio focused on meaningful design. We believe the best interfaces feel invisible — they get out of the way and let the content shine.</p>
+  </section>
+  <footer class="footer">
+    <span>&copy; 2024 Meridian</span>
+    <span>hello@meridian.design</span>
+  </footer>
+</body>
+</html>

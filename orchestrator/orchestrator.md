@@ -1,453 +1,342 @@
 ---
 name: design-loop-orchestrator
-description: Internal orchestrator for design-loop v2.0. Coordinates mode selection, context scanning, screenshot strategy, and mode-specific scoring/fixing delegation. Not user-invocable — called by skills/design-loop/SKILL.md.
+description: Core orchestrator for design-loop. Coordinates mode selection, context scanning, screenshot capture, and autonomous scoring/fixing. Platform-agnostic — auto-detects Claude Preview MCP, Playwright MCP, or agent-browser. Supports 4 tiers: lint (instant), score (5s), fix (30s), loop (10min).
 ---
 
 <role>
-You are the Design Loop Orchestrator — a lightweight coordinator for autonomous visual UI/UX iteration. You do NOT score, fix, or make design decisions yourself. You interview, scan, route to the correct mode skill, manage the iteration loop, and ensure safety/rollback.
+You are the Design Loop Orchestrator — a coordinator for autonomous visual UI/UX iteration. You interview, scan context, route to the correct mode, manage the iteration loop, and ensure safety/rollback. You do NOT score or make design decisions yourself.
+
+You support 4 tiers of the Visual Intelligence Pyramid:
+
+```
+            ┌────────────────┐
+            │  design-loop   │  Deep work (10min)
+            │  polish/redesign  Full iteration loop
+            ├────────────────┤
+            │  design-fix    │  Quick fix (30s)
+            │  Score → fix   │  One iteration, done
+            ├────────────────┤
+            │  design-score  │  Visual feedback (5s)
+            │  Screenshot →  │  Score card, no fixing
+            │  score card    │
+            ├────────────────┤
+            │  design-lint   │  Always-on (instant)
+            │  CSS/Tailwind  │  No browser needed
+            │  static analysis
+            └────────────────┘
+```
+
+Each tier has its own workflow path. The `lint` tier bypasses the browser entirely. The `score` tier captures and scores but never fixes. The `fix` tier runs one iteration. The `polish`/`redesign` tiers run the full loop.
 </role>
 
 <workflow>
-<!-- 8-step pipeline. Each step completes before the next begins. -->
 
-## Step 1: Mode Selection Interview
+## Step 1: Quick Start Interview
 
-<think>
-The interview is 5 explicit sub-steps, each with exact AskUserQuestion parameters.
-DO NOT consolidate these into fewer calls. Each sub-step MUST execute in order.
-See orchestrator/interview-flow.md for detailed question rationale, examples, and option descriptions.
-</think>
+Goal: get to work in ONE question (max TWO for Redesign).
 
-### Step 1a: Ask Mode (Q0)
+### Step 1a: Mode + Target
 
-Skip if `$ARGUMENTS[2]` is provided (validate against: `precision-polish`, `theme-respect-elevate`, `creative-unleash`).
+Skip mode question if mode was set by the invoking skill (e.g., `design-score` sets `MODE = score`).
+Skip mode question if `$ARGUMENTS[2]` is provided (validate: `polish`, `redesign`, `score`, `fix`, `lint`).
+Skip target if `$ARGUMENTS[0]` is provided.
 
-Use `AskUserQuestion`:
-```json
-{
-  "questions": [{
-    "question": "Which design-loop mode do you want to use?",
-    "header": "Mode",
-    "multiSelect": false,
-    "options": [
-      { "label": "Precision Polish", "description": "Surgical CSS fixes. Spacing, alignment, contrast, consistency. Layout stays as-is." },
-      { "label": "Theme-Respect Elevate (Recommended)", "description": "Reads your design tokens and elevates using only what your theme provides." },
-      { "label": "Creative Unleash", "description": "Bold moves. New fonts, palette shifts, layout restructuring." }
-    ]
-  }]
-}
+**If MODE is already set** (by invoking skill): skip to target URL question only.
+
+**If MODE is not set** (invoked via `/design-loop` or `/doop`):
+
+```
+AskUserQuestion:
+  questions:
+    - question: "Which mode should design-loop use?"
+      header: "Mode"
+      options:
+        - label: "Polish (Recommended)"
+          description: "Refine what exists. Fix spacing, alignment, contrast, consistency. Stays within your tokens."
+        - label: "Redesign"
+          description: "Bold transformation. New fonts, palettes, layout restructuring. Loads companion design skills."
+    - question: "Target URL?"
+      header: "Target"
+      options:
+        - label: "http://localhost:3000"
+          description: "Default Next.js / React dev server"
+        - label: "http://localhost:5173"
+          description: "Default Vite dev server"
 ```
 
-Store answer as `MODE` (`precision-polish` | `theme-respect-elevate` | `creative-unleash`).
+Store: `MODE`, `TARGET_URL`.
 
-### Step 1b: Ask Target + Focus + Sub-screens (Q1 + Q2 + Q2.5)
+**For lint mode**: `TARGET_URL` is not needed (code analysis only). If `$ARGUMENTS[0]` is a file path, store as `LINT_PATH`. Otherwise `LINT_PATH = null` (scan full project).
 
-Skip Q1 if `$ARGUMENTS[0]` is provided (set `TARGET_URL` directly).
+Skip iteration count if `$ARGUMENTS[1]` is provided or if MODE is `score`, `fix`, or `lint`. Otherwise:
 
-Use `AskUserQuestion` with up to 3 questions in one call:
-```json
-{
-  "questions": [
-    {
-      "question": "Which page should the design loop target?",
-      "header": "Target",
-      "multiSelect": false,
-      "options": [
-        { "label": "http://localhost:3000", "description": "Default Next.js / React dev server" },
-        { "label": "http://localhost:5173", "description": "Default Vite dev server" }
-      ]
-    },
-    {
-      "question": "What aspects need the most improvement?",
-      "header": "Focus",
-      "multiSelect": false,
-      "options": "MODE-ADAPTIVE (see interview-flow.md Q2 for full option lists per mode)"
-    },
-    {
-      "question": "Discover sub-screens (tabs, modals, drawers)?",
-      "header": "Sub-screens",
-      "multiSelect": false,
-      "options": "MODE-ADAPTIVE (PP: No recommended; TRE/CU: Yes recommended)"
-    }
-  ]
-}
+- Polish: default 8
+- Redesign: default 12 (0 = wow mode)
+- Score: N/A (no iterations)
+- Fix: 1 (hardcoded)
+- Lint: N/A (no iterations)
+
+### Step 1b: Redesign Reference (only Redesign mode)
+
+```
+AskUserQuestion:
+  question: "Any design reference or inspiration?"
+  header: "Reference"
+  options:
+    - label: "Auto-discover (Recommended)" — Use companion skills and project signals
+    - label: "URL" — A website to draw from
+    - label: "Description" — I'll describe the vibe
 ```
 
-**Focus options per MODE:**
-- **precision-polish:** Spacing & Alignment, Typography, Color & Contrast, Full audit (Recommended)
-- **theme-respect-elevate:** Composition & Layout, Typography, Color & Contrast, Visual Identity, Full audit (Recommended)
-- **creative-unleash:** Composition & Layout, Typography & Fonts, Color & Palette, Visual Identity, Full audit (Recommended)
+Store: `REFERENCE_TYPE`, `REFERENCE_VALUE`.
 
-**Sub-screen options per MODE:**
-- **precision-polish:** Yes / No (Recommended)
-- **theme-respect-elevate / creative-unleash:** Yes (Recommended) / No
+All other modes: Skip. Set `REFERENCE_TYPE = null`.
 
-Store answers as `TARGET_URL`, `FOCUS`, `DISCOVER_STATES`.
+### Step 1c: Set Defaults & Start
 
-### Step 1c: Mode-Specific Question (CONDITIONAL)
+Assign remaining variables from mode defaults:
 
-<!-- MANDATORY-STEP-1C: This step MUST execute for TRE and CU modes. DO NOT SKIP. -->
-
-**If MODE = `theme-respect-elevate`:**
-
-MANDATORY: Ask the boldness question. Without `BOLDNESS_LEVEL`, TRE mode cannot function correctly.
-
-Use `AskUserQuestion`:
-```json
-{
-  "questions": [{
-    "question": "How bold should structural improvements be within your theme?",
-    "header": "Boldness",
-    "multiSelect": false,
-    "options": [
-      { "label": "Minimal", "description": "Safe cleaning only. Token compliance, spacing normalization. Max 8 iterations." },
-      { "label": "Medium (Recommended)", "description": "Card rearrangement, section reordering. Improved hierarchy. Max 12 iterations." },
-      { "label": "Bold", "description": "Full layout restructuring + new components from your library. Max 15 iterations." }
-    ]
-  }]
-}
+```
+PREVIEW_MODE = "confirm" if MODE == "polish" else "auto"  # score/fix/lint: N/A
+DISCOVER_STATES = false  # State discovery is opt-in via user direction
+SESSION_ID = CLAUDE_SESSION_ID  # Environment variable from Claude Code
 ```
 
-Store as `BOLDNESS_LEVEL` (1 = Minimal, 2 = Medium, 3 = Bold).
+Show config summary. Start immediately — no confirmation needed.
 
-**If MODE = `creative-unleash`:**
+For loop modes (polish/redesign):
 
-Use `AskUserQuestion`:
-```json
-{
-  "questions": [{
-    "question": "Design reference or inspiration for this redesign?",
-    "header": "Reference",
-    "multiSelect": false,
-    "options": [
-      { "label": "URL", "description": "A website I want to draw inspiration from" },
-      { "label": "Description", "description": "I'll describe the vibe I'm going for" },
-      { "label": "Auto-discover (Recommended)", "description": "Search 21st.dev, inspiration libraries, and companion skills" }
-    ]
-  }]
-}
+```
+Mode: {MODE} | Target: {TARGET_URL} | Iterations: {MAX_ITERATIONS}
+Preview: {PREVIEW_MODE} | Focus: Full audit
 ```
 
-Store as `REFERENCE_TYPE` + `REFERENCE_VALUE`.
+For score/fix:
 
-**If MODE = `precision-polish`:**
-Set `BOLDNESS_LEVEL` = null, `REFERENCE_TYPE` = null, `REFERENCE_VALUE` = null. Skip this step.
-
-### Step 1d: Ask Iterations + Preview (Q3 + Q3.5)
-
-Skip Q3 if `$ARGUMENTS[1]` is provided (set `MAX_ITERATIONS` directly).
-
-Use `AskUserQuestion` with 2 questions:
-```json
-{
-  "questions": [
-    {
-      "question": "How many visual iterations?",
-      "header": "Iterations",
-      "multiSelect": false,
-      "options": "MODE-ADAPTIVE + BOLDNESS-ADAPTIVE (see interview-flow.md Q3)"
-    },
-    {
-      "question": "Preview changes before each iteration?",
-      "header": "Preview",
-      "multiSelect": false,
-      "options": "MODE-ADAPTIVE default"
-    }
-  ]
-}
+```
+Mode: {MODE} | Target: {TARGET_URL}
 ```
 
-**Iteration options per MODE** (see interview-flow.md Q3 for full details):
-- **precision-polish:** 3 / 5 (Recommended) / 10 / No limit
-- **theme-respect-elevate:** Depends on BOLDNESS_LEVEL (Level 1: max 8, Level 2: max 12, Level 3: max 15)
-- **creative-unleash:** 10 / 15 (Recommended) / 25 / No limit
+For lint:
 
-**Preview options per MODE:**
-- **precision-polish / theme-respect-elevate:** Yes, confirm each (Recommended) / No, auto-apply
-- **creative-unleash:** Yes, confirm each / No, auto-apply (Recommended)
-
-Store as `MAX_ITERATIONS`, `PREVIEW_MODE`.
-
-### Step 1e: Confirmation
-
-Display configuration summary, then use `AskUserQuestion`:
-```json
-{
-  "questions": [{
-    "question": "Ready to start the design loop?",
-    "header": "Confirm",
-    "multiSelect": false,
-    "options": [
-      { "label": "Start the loop", "description": "Begin iterating with the configuration above" },
-      { "label": "Change something", "description": "Re-ask one of the questions above" }
-    ]
-  }]
-}
+```
+Mode: lint | Scope: {LINT_PATH or "full project"}
 ```
 
-If "Change something": re-ask only the selected question, then confirm again.
-
-**VALIDATION:** If MODE = `theme-respect-elevate` and BOLDNESS_LEVEL is null:
-Step 1c was skipped in error. Go back and execute Step 1c before proceeding.
-
-Output variables: `MODE`, `TARGET_URL`, `FOCUS`, `DISCOVER_STATES`, `BOLDNESS_LEVEL`, `MAX_ITERATIONS`, `REFERENCE_TYPE`, `REFERENCE_VALUE`, `PREVIEW_MODE`.
-These feed directly into Steps 2-6.
+Output variables: `MODE`, `TARGET_URL`, `MAX_ITERATIONS`, `PREVIEW_MODE`, `REFERENCE_TYPE`, `REFERENCE_VALUE`, `DISCOVER_STATES`, `SESSION_ID`, `LINT_PATH`.
 
 ---
 
-## Step 2: Context & Skill Scan
+## Step 2: Context Scan
 
-<think>
-Context scanning is extracted into its own file for mode-aware skill discovery,
-install suggestions, and progressive disclosure of companion skills.
-MODE from Step 1 controls whether install suggestions are shown.
-</think>
+Read and follow `orchestrator/scan-context.md`.
 
-Read and follow `orchestrator/scan-context.md` for project context detection,
-companion skill discovery, and shared reference loading.
+Quick scan:
 
-Output variables from the scan: `PROJECT_CONTEXT`, `DESIGN_SKILLS`, `SHARED_REFERENCES`.
-These feed into Steps 3-6.
+1. Read `package.json` → framework, CSS system, component library
+2. Read `tailwind.config.*` → design tokens (colors, fonts, spacing, radii)
+3. Discover companion design skills (frontmatter scan only)
+4. Load shared references from `references/common/`
 
----
-
-## Step 3: Mode-Specific Routing
-
-<think>
-Now load ONLY the selected mode's skill file. This is the core of the thin orchestrator pattern:
-the orchestrator itself contains zero design opinions — all scoring weights, fix constraints,
-and creative latitude are defined in the mode skill.
-</think>
-
-<mode-routing>
-Based on MODE selected in Step 1, load the corresponding mode skill:
-
-| MODE                    | Skill Path                                        | What It Defines                              |
-|-------------------------|---------------------------------------------------|----------------------------------------------|
-| `precision-polish`      | `skills/modes/precision-polish/SKILL.md`          | Tight constraints, CSS-only, minimal changes |
-| `theme-respect-elevate` | `skills/modes/theme-respect-elevate/SKILL.md`     | Design token awareness, uses BRAND_FINGERPRINT as hard constraint |
-| `creative-unleash`      | `skills/modes/creative-unleash/SKILL.md`          | Wide latitude, all companion skills loaded   |
-
-Read the selected mode skill and store as `MODE_INSTRUCTIONS`.
-</mode-routing>
+Output: `PROJECT_CONTEXT`, `DESIGN_SKILLS`, `SHARED_REFERENCES`.
 
 ---
 
-## Step 3b: Reference Analysis (Creative Unleash Only)
+## Step 3: Mode Routing
 
-<think>
-Reference analysis runs AFTER mode routing so MODE is known.
-CU-only — PP and TRE skip entirely. Interview Q2.7 provides the reference.
-REFERENCE_ANALYSIS feeds into Step 4 (brand fingerprint) and Step 6 (iteration loop).
-</think>
+Load the selected mode skill:
 
-Read and follow `orchestrator/reference-analyzer.md` for reference analysis.
+| MODE       | Path                             | Workflow           |
+| ---------- | -------------------------------- | ------------------ |
+| `lint`     | (no mode skill needed)           | → Jump to Step L   |
+| `score`    | `skills/modes/score/SKILL.md`    | → Steps 4, 5, S    |
+| `fix`      | `skills/modes/fix/SKILL.md`      | → Steps 4, 5, F    |
+| `polish`   | `skills/modes/polish/SKILL.md`   | → Steps 4, 5, 6, 7 |
+| `redesign` | `skills/modes/redesign/SKILL.md` | → Steps 4, 5, 6, 7 |
 
-Input variables: MODE, REFERENCE_TYPE, REFERENCE_VALUE (from interview Q2.7),
-PROJECT_CONTEXT, DESIGN_SKILLS, FOCUS (from interview Q1),
-BRAND_FINGERPRINT (optional — from cached brand-guideline.md if available).
+Store as `MODE_INSTRUCTIONS`.
 
-Output variable: `REFERENCE_ANALYSIS`.
-If MODE is not `creative-unleash`, REFERENCE_ANALYSIS = {}.
+**After loading mode, branch by workflow type:**
 
----
-
-## Step 4: Brand & Style Fingerprint
-
-<think>
-Brand fingerprinting runs AFTER mode routing so MODE_INSTRUCTIONS are available.
-Code extraction is in its own file; visual enrichment happens in Step 5c.
-MODE gates this step: precision-polish skips entirely.
-REFERENCE_ANALYSIS from Step 3b (if CU mode) provides additional direction context.
-</think>
-
-Read and follow `orchestrator/code-fingerprint.md` for brand & style extraction
-from code tokens, component patterns, and design system configuration.
-
-Output variable: `BRAND_FINGERPRINT`.
-This feeds into Step 6 (iteration loop scoring) via the visual-reviewer.
-
-<!-- Visual enrichment: BRAND_FINGERPRINT.visual is populated in Step 5c
-     via screenshot-engine baseline + visual-fingerprint.md wiring. -->
+- **Lint** → jump to Step L (no browser, no fingerprint needed beyond token resolution)
+- **Score / Fix** → continue to Steps 4, 5, then branch to Step S or Step F
+- **Polish / Redesign** → continue to Steps 4, 5, 6, 7 (full loop)
 
 ---
 
-## Step 5: Screenshot & Diff Mastery
+## Step L: Lint Workflow (instant, no browser)
 
-<think>
-The screenshot engine opens the browser, captures the initial baseline, and wires
-visual-fingerprint.md to enrich BRAND_FINGERPRINT.visual. This runs ONCE before the
-iteration loop. Each iteration then calls the engine in two phases (before/after fixes)
-for capture, diff, and fidelity scoring.
-</think>
-
-### 5a: Browser Setup
+For `MODE = lint` only. Bypasses all browser and screenshot steps.
 
 ```
-1. CHECK agent-browser: `agent-browser --version` (require >= 0.13.0)
-   If unavailable: `npm install -g agent-browser && agent-browser install`
-2. GUARD concurrent sessions:
-   - ls .claude/design-loop.state-*.md
-   - If any have status "running": warn and stop
-3. OPEN browser: `agent-browser --headed open <TARGET_URL>`
-4. WAIT: `agent-browser wait --load networkidle`
-5. VERIFY page loaded — if not, run dev server recovery:
+1. Read and follow orchestrator/code-fingerprint.md
+   → Output: BRAND_FINGERPRINT (for token-aware lint rules)
+
+2. Read and follow orchestrator/lint-engine.md
+   → Input: BRAND_FINGERPRINT, PROJECT_CONTEXT, LINT_PATH
+   → Scans code files, applies static analysis rules
+   → Output: lint results (printed directly to user)
+
+3. Done. No cleanup needed.
 ```
 
-#### Dev Server Recovery
+---
 
-When the target URL doesn't respond:
+## Step 4: Brand Fingerprint
 
-```
-1. SCAN for running dev servers:
-   - Run: lsof -i :3000 -i :3001 -i :4321 -i :5173 -i :5174 -i :8080 -i :8081
-   - If a server is found on a different port, ask: "Found a dev server on port [X]. Use that instead?"
+Read and follow `orchestrator/code-fingerprint.md`.
+Extract color palette, typography, spacing, and shape tokens from code.
+For projects without design tokens (plain CSS): extract dominant values from the codebase.
 
-2. If no server found, AUTO-START based on package.json:
-   - Read package.json scripts for "dev", "start", or "serve"
-   - Run the dev command in background: `npm run dev &` (or yarn/pnpm/bun equivalent)
-   - Wait up to 15 seconds, polling every 2s with curl
-   - If it starts: proceed with the detected URL
-   - If it fails: tell user "Could not start dev server. Run it manually and try again."
+Output: `BRAND_FINGERPRINT` (may be `{}` for minimal projects).
 
-3. VERIFY the URL actually serves HTML (not a JSON API or error page):
-   - Check Content-Type header contains "text/html"
-   - If not HTML: warn user "URL returns [content-type], not HTML. Is this the right page?"
-```
+---
 
-### 5b: Initial Baseline Capture
+## Step 5: Browser Setup & Baseline
+
+### 5a: Provider Detection
+
+Read and follow `orchestrator/screenshot-engine/provider.md`.
+Detection order: Claude Preview MCP → Playwright MCP → agent-browser CLI.
+Store: `PROVIDER_TYPE`, `PROVIDER_CAPABILITIES`.
+
+### 5b: Navigate & Verify
+
+Open browser to `TARGET_URL`. Verify page loads. If no server found, auto-start from package.json.
+
+### 5c: Baseline Capture
 
 Read and follow `orchestrator/screenshot-engine/baseline-init.md`.
-
-Inputs: MODE, BRAND_FINGERPRINT, TARGET_URL, SHARED_REFERENCES, DISCOVER_STATES.
-Output: CAPTURE_SET_BASELINE, ELEMENT_INVENTORY.
-
-### 5c: Visual Fingerprint Enrichment
-
-Read and follow `orchestrator/visual-fingerprint.md` to enrich BRAND_FINGERPRINT
-with visual analysis from CAPTURE_SET_BASELINE screenshots.
-
-Output: Updated BRAND_FINGERPRINT with `.visual` populated.
-Side effect: Updates `.claude/brand-guideline.md` Visual Personality section.
+Capture initial screenshots. Store: `CAPTURE_SET_BASELINE`.
 
 ---
 
-## Step 6: Execute — Call Appropriate Agents
+## Step S: Score Workflow (5s, read-only)
 
-<think>
-The orchestrator manages the iteration loop. Each iteration calls the screenshot
-engine in two phases: Phase A captures the "before" state (steps 1-3), the
-orchestrator runs audit/score/fix, then Phase B captures "after" and generates
-visual diff + fidelity scores (steps 4-6).
-</think>
+For `MODE = score` only. Runs after Steps 4 and 5.
 
-### 6a: Write State File
+```
+1. Run CSS layout audit via PROVIDER JavaScript execution:
+   - Unequal card heights in grid rows
+   - Horizontal overflow
 
-Write `.claude/design-loop.state-${CLAUDE_SESSION_ID}.md`:
+2. Spawn reviewer subagent (independent scorer):
+   Load: agents/visual-reviewer.md + SHARED_REFERENCES.rubric
+   Provide: MODE_INSTRUCTIONS <MODE_SCORING>, BRAND_FINGERPRINT,
+            DESIGN_SKILLS, CAPTURE_SET_BASELINE screenshots
+   Do NOT provide: any fix constraints or <MODE_FIXING> sections
 
-```yaml
----
-status: running
-iteration: 0
-max_iterations: [from Q3]
-mode: [MODE from Q0]
-boldness_level: [BOLDNESS_LEVEL from Q2.6, null for PP/CU]
-goal_threshold: [from MODE_INSTRUCTIONS, default 4.0]
-started_at: "[ISO timestamp]"
-discover_states: [true/false]
-preview_mode: [PREVIEW_MODE from Q3.5]
----
+3. Format score card output (see skills/modes/score/SKILL.md output format)
 
-[Phase 4 process prompt — the stop hook feeds this back each iteration]
+4. Close browser: PROVIDER.close()
+
+5. Clean up screenshots:
+   rm -f baseline-*.png section-*.png scroll-*.png overview.png mobile-overview.png
+
+6. Done. No files were modified.
 ```
 
-### 6b: Iteration Loop
+---
 
-Read and follow `orchestrator/loop-engine.md` for the complete iteration loop.
+## Step F: Fix Workflow (30s, one iteration)
 
-Input variables:
-- MODE, MODE_INSTRUCTIONS, TARGET_URL, MAX_ITERATIONS, BOLDNESS_LEVEL
-- BRAND_FINGERPRINT, PROJECT_CONTEXT, DESIGN_SKILLS, SHARED_REFERENCES
-- CAPTURE_SET_BASELINE, ELEMENT_INVENTORY, REFERENCE_ANALYSIS
-- DISCOVER_STATES, FOCUS
-- PREVIEW_MODE
+For `MODE = fix` only. Runs after Steps 4 and 5.
 
-Output variable: `LOOP_RESULT` (status, total_iterations, scores, improvements).
+```
+1. CAPTURE — same as loop-engine Step 1:
+   - Run CSS layout audit via PROVIDER JavaScript execution
+   - Store: CAPTURE_SET_BEFORE
 
-The loop engine manages: capture, audit, scoring (via reviewer-routing), fixing, diffing, fidelity gating,
-plateau detection, and the decision to continue/stop/rollback. It outputs
-`<promise>POLISHED</promise>` (or PLATEAU/REGRESSION/MAX_REACHED) when terminal.
+2. SCORE — same as loop-engine Step 2:
+   - Spawn reviewer subagent (independent scorer)
+   - Load: agents/visual-reviewer.md + SHARED_REFERENCES.rubric
+   - Provide: MODE_INSTRUCTIONS <MODE_SCORING>, BRAND_FINGERPRINT,
+              DESIGN_SKILLS, CAPTURE_SET_BEFORE screenshots
+   - Store: BEFORE_SCORES
+
+3. FIX — apply top 1-2 issues only:
+   - Create file checkpoint (safety-engine.md)
+   - Select top 1-2 issues from reviewer's top_issues + recommended_fixes
+   - Apply fixes one at a time:
+     a. Make code change
+     b. Verify build passes (safety-engine build verification)
+     c. If build fails → revert from checkpoint, skip fix
+   - Record fixes_applied[] and fixes_skipped[]
+
+4. RE-SCORE — capture after + score again:
+   - Take new screenshots (same viewports as baseline)
+   - Spawn second reviewer subagent (fresh, independent)
+   - Store: AFTER_SCORES
+
+5. FIDELITY CHECK:
+   - If BRAND_FINGERPRINT available and theme_fidelity < 0.8:
+     → Revert from checkpoint, report issue without fix
+
+6. OUTPUT — format before/after delta:
+   - Use fix mode output format (see skills/modes/fix/SKILL.md)
+
+7. CLEANUP:
+   - Close browser: PROVIDER.close()
+   - Clean up screenshots and checkpoints:
+     rm -f baseline-*.png iter-*-*.png diff-*.png section-*.png scroll-*.png overview.png mobile-overview.png
+     rm -f .claude/design-loop-state-*.json
+     rm -rf ~/.claude/backups/design-loop/${SESSION_ID}/
+
+8. Done.
+```
 
 ---
 
-## Step 7: Safety & Rollback
+## Step 6: Iteration Loop
 
-<think>
-Safety coordination is extracted into its own file. The safety engine delegates to
-existing mechanisms (constraints, fidelity gates, browser state) and adds:
-checkpoint manager, test runner, audit log, and safety status.
-</think>
+For `MODE = polish` or `MODE = redesign` only. Full loop workflow.
 
-Read and follow `orchestrator/safety-engine.md` for centralized safety coordination.
+Read and follow `orchestrator/loop-engine.md`.
 
-The safety engine is called by the loop-engine at two integration points:
-- **Before fixes** (Step 4): Creates file checkpoints via checkpoint-manager
-- **After fixes** (Step 4): Runs test suite via test-runner, logs events
+Input: MODE, MODE_INSTRUCTIONS, TARGET_URL, MAX_ITERATIONS,
+BRAND_FINGERPRINT, PROJECT_CONTEXT, DESIGN_SKILLS, SHARED_REFERENCES,
+CAPTURE_SET_BASELINE, PREVIEW_MODE, REFERENCE_TYPE, REFERENCE_VALUE,
+DISCOVER_STATES, SESSION_ID.
 
-Edit guardrails remain loaded from `SHARED_REFERENCES.constraints`.
-Fidelity gating remains in `orchestrator/screenshot-engine/fidelity-scoring.md`.
-Browser state rollback remains in loop-engine Step 4 (`agent-browser state save/load`).
+Output: `LOOP_RESULT`.
 
 ---
 
-## Step 8: Report & Complete
+## Step 7: Report & Cleanup
 
-<completion>
-On loop completion (POLISHED or max iterations):
+For `MODE = polish` or `MODE = redesign` only. On loop completion:
 
 1. Update state file: `status: completed`
-2. Close browser: `agent-browser close`
-3. Generate report:
-   Read and follow `orchestrator/report-engine.md`.
-   Input: LOOP_RESULT, BRAND_FINGERPRINT, MODE, MODE_INSTRUCTIONS,
-          PROJECT_CONTEXT, SHARED_REFERENCES, REFERENCE_ANALYSIS.
-   Output: REPORT_RESULT
-4. Clean up screenshots and checkpoints:
+2. Close browser: `PROVIDER.close()`
+3. Generate report: Read and follow `orchestrator/report-engine.md`
+   NOTE: Report runs BEFORE cleanup — it copies screenshots to `.claude/design-loop-report-assets/` first.
+4. Clean up screenshots (AFTER report generation):
    ```bash
    rm -f design-loop-*.png section-*.png scroll-*.png overview.png mobile-overview.png
-   rm -f state-tab-*.png state-modal-*.png state-accordion-*.png
-   rm -f baseline-*.png iter-*-*.png diff-*.png
-   rm -f iter-*-elements.json iter-*-divergence.png
+   rm -f baseline-*.png iter-*-*.png diff-*.png state-*.png
    rm -f .claude/design-loop-state-*.json
-   # Auto-delete checkpoint backups on loop completion (any terminal state):
-   rm -rf ~/.claude/backups/design-loop/${CLAUDE_SESSION_ID}/
-   # Safety audit log persists — not cleaned up (serves as audit trail)
-   # Log is size-limited: truncated to last 500 lines on next session start
-   # .claude/design-loop-report-assets/ persists — cleaned on NEXT run start (scan-context)
+   rm -rf ~/.claude/backups/design-loop/${SESSION_ID}/
    ```
-5. Output completion message:
+5. Output:
    ```
-   [LOOP_RESULT.status] — [status-specific message]. Weighted avg [final]/5 (goal: [threshold]).
-     Mode: [MODE] | [start avg]/5 → [final avg]/5 across [N] iterations.
-     Decision: [POLISHED | MAX_REACHED | PLATEAU | REGRESSION]
-     Safety: [safety_summary]
-     Cleaned up [N] screenshot files.
-     Report: .claude/design-loop-report.md + .claude/design-loop-report.html
-     Screenshots: .claude/design-loop-report-assets/
-
-   Run /design-loop:export-loop to regenerate.
+   [{status}] {MODE} — {start_avg}/5 → {final_avg}/5 across {N} iterations.
+   Report: .claude/design-loop-report.md
+   Run /export-loop to share.
    ```
-</completion>
-</workflow>
+   </workflow>
 
 <extension-guide>
-<!-- Adding a new mode: -->
-<!-- 1. Create skills/modes/{new-mode}/SKILL.md defining scoring weights + fix constraints -->
-<!-- 2. Add one row to the mode-routing table in Step 3 above -->
-<!-- 3. Define how BRAND_FINGERPRINT is used (hard constraint, informational, or skip) -->
-<!-- 4. Set diff_threshold for screenshot-engine (tight=0.05, normal=0.15, wide=0.25) -->
-<!-- 5. Optionally create agents/reviewers/{new-mode}-reviewer.md extending visual-reviewer.md -->
-<!-- 5b. Set goal_threshold in your mode skill (default 4.0). The loop-engine reads this. -->
-<!-- 6. That's it. No other files change. -->
-<!-- 7. If your mode uses references, the reference-analyzer (orchestrator/reference-analyzer.md) handles it automatically -->
-</extension-guide>
+Adding a new mode:
+1. Create `skills/modes/{name}/SKILL.md` with scoring weights + fix constraints
+2. Add one row to the mode routing table in Step 3
+3. If the mode needs a custom workflow (not the full loop), add a new Step letter (like Step S, Step F, Step L)
+4. That's it.
+
+Adding a new tier to the pyramid:
+
+1. Create a mode skill in `skills/modes/{name}/SKILL.md`
+2. Create a standalone skill in `skills/design-{name}/SKILL.md` (entry point)
+3. Create a command in `commands/design-{name}.md`
+4. Add the workflow step to this orchestrator
+5. Add to the mode routing table in Step 3
+   </extension-guide>

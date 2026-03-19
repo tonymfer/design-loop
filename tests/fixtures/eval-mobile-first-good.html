@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nourish — Meal Planning</title>
+  <style>
+    * { margin: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Avenir Next', 'Segoe UI', sans-serif;
+      background: #f7f5f0; color: #2d2a26;
+    }
+
+    /* EVAL: Well-designed mobile-first page — should score 4+ */
+    .app-header {
+      padding: 1rem 1.25rem;
+      display: flex; justify-content: space-between; align-items: center;
+      background: #f7f5f0;
+      position: sticky; top: 0; z-index: 10;
+    }
+    .app-header .logo {
+      font-size: 1.3rem; font-weight: 700; color: #2d2a26;
+      letter-spacing: -0.02em;
+    }
+    .app-header .avatar {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: #c4b5a0; display: flex; align-items: center; justify-content: center;
+      font-size: 0.85rem; font-weight: 600; color: #fff;
+    }
+
+    .greeting {
+      padding: 0.5rem 1.25rem 1.5rem;
+    }
+    .greeting h1 {
+      font-size: 1.75rem; font-weight: 700; line-height: 1.2;
+      letter-spacing: -0.02em; color: #2d2a26;
+    }
+    .greeting p { font-size: 0.9rem; color: #8a8278; margin-top: 0.25rem; }
+
+    .today-card {
+      margin: 0 1.25rem 1.5rem;
+      background: #3d5a3e;
+      border-radius: 20px;
+      padding: 1.5rem;
+      color: #e8e4d8;
+    }
+    .today-card .label {
+      font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.12em;
+      color: rgba(232,228,216,0.6); margin-bottom: 0.75rem;
+    }
+    .today-card .meal-name {
+      font-size: 1.35rem; font-weight: 600; margin-bottom: 0.25rem; color: #fff;
+    }
+    .today-card .meal-meta {
+      font-size: 0.8rem; color: rgba(232,228,216,0.7);
+    }
+    .today-card .nutrition {
+      display: flex; gap: 1rem; margin-top: 1.25rem;
+      padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.15);
+    }
+    .today-card .nutrition .stat {
+      font-size: 1.1rem; font-weight: 700; color: #fff;
+    }
+    .today-card .nutrition .stat-label {
+      font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.08em;
+      color: rgba(232,228,216,0.5);
+    }
+
+    .section-title {
+      padding: 0 1.25rem;
+      font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em;
+      color: #8a8278; margin-bottom: 1rem; font-weight: 600;
+    }
+
+    .recipe-scroll {
+      display: flex; gap: 1rem;
+      padding: 0 1.25rem 2rem;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+    .recipe-scroll::-webkit-scrollbar { display: none; }
+
+    .recipe-card {
+      min-width: 240px; flex-shrink: 0;
+      background: #fff;
+      border-radius: 16px;
+      overflow: hidden;
+    }
+    .recipe-card .img {
+      height: 140px; background: #e8e4d8;
+    }
+    .recipe-card .info { padding: 1rem; }
+    .recipe-card .info h3 {
+      font-size: 0.95rem; font-weight: 600; margin-bottom: 0.25rem;
+    }
+    .recipe-card .info .time {
+      font-size: 0.75rem; color: #8a8278;
+    }
+
+    /* EVAL: Good hover/focus states */
+    .recipe-card:hover, .recipe-card:focus-within {
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      transform: translateY(-2px);
+      transition: all 0.2s ease;
+    }
+
+    .tab-bar {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      background: #f7f5f0; border-top: 1px solid #e8e4d8;
+      display: flex; justify-content: space-around;
+      padding: 0.75rem 0 calc(0.75rem + env(safe-area-inset-bottom));
+    }
+    .tab-bar .tab {
+      display: flex; flex-direction: column; align-items: center; gap: 0.25rem;
+      font-size: 0.65rem; color: #8a8278; text-decoration: none;
+      font-weight: 500;
+    }
+    .tab-bar .tab.active { color: #3d5a3e; }
+    .tab-bar .tab-icon { font-size: 1.2rem; }
+  </style>
+</head>
+<body>
+  <header class="app-header">
+    <div class="logo">nourish</div>
+    <div class="avatar">TM</div>
+  </header>
+  <section class="greeting">
+    <h1>Good morning, Tomo</h1>
+    <p>3 meals planned for today</p>
+  </section>
+  <div class="today-card">
+    <div class="label">Next Meal</div>
+    <div class="meal-name">Miso Glazed Salmon Bowl</div>
+    <div class="meal-meta">Lunch &middot; Ready in 25 min</div>
+    <div class="nutrition">
+      <div><div class="stat">420</div><div class="stat-label">Calories</div></div>
+      <div><div class="stat">34g</div><div class="stat-label">Protein</div></div>
+      <div><div class="stat">18g</div><div class="stat-label">Fat</div></div>
+      <div><div class="stat">38g</div><div class="stat-label">Carbs</div></div>
+    </div>
+  </div>
+  <h2 class="section-title">Quick Recipes</h2>
+  <div class="recipe-scroll">
+    <div class="recipe-card"><div class="img"></div><div class="info"><h3>Thai Basil Stir Fry</h3><span class="time">15 min</span></div></div>
+    <div class="recipe-card"><div class="img"></div><div class="info"><h3>Avocado Toast Deluxe</h3><span class="time">10 min</span></div></div>
+    <div class="recipe-card"><div class="img"></div><div class="info"><h3>Berry Smoothie Bowl</h3><span class="time">5 min</span></div></div>
+  </div>
+  <nav class="tab-bar">
+    <a href="#" class="tab active"><span class="tab-icon">🏠</span>Home</a>
+    <a href="#" class="tab"><span class="tab-icon">📅</span>Plan</a>
+    <a href="#" class="tab"><span class="tab-icon">🛒</span>Shop</a>
+    <a href="#" class="tab"><span class="tab-icon">⚙️</span>Settings</a>
+  </nav>
+</body>
+</html>

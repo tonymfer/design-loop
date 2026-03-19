@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pricing — CloudSync</title>
+  <style>
+    * { margin: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', system-ui, sans-serif; background: #0f172a; color: #e2e8f0; }
+
+    .nav {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 1rem 2rem; border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .nav-brand { font-size: 1.2rem; font-weight: 700; color: #fff; }
+
+    .pricing-header {
+      text-align: center; padding: 4rem 2rem 3rem;
+    }
+    .pricing-header h1 {
+      font-size: 2.5rem; font-weight: 700; color: #fff; margin-bottom: 1rem;
+    }
+    .pricing-header p { font-size: 1.1rem; color: #94a3b8; }
+
+    /* EVAL TARGET: Mixed issues — contrast fail + inconsistent radii + clipped text */
+    .pricing-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem; max-width: 900px; margin: 0 auto; padding: 0 2rem 4rem;
+    }
+    .pricing-card {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 16px; /* Main cards: 16px */
+      padding: 2rem;
+      position: relative;
+    }
+    .pricing-card.featured {
+      border-color: #3b82f6;
+      background: linear-gradient(180deg, #1e3a5f, #1e293b);
+    }
+    .pricing-card .tier { font-size: 0.875rem; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 1rem; }
+    .pricing-card .price { font-size: 3rem; font-weight: 800; color: #fff; margin-bottom: 0.5rem; }
+    .pricing-card .price span { font-size: 1rem; font-weight: 400; color: #94a3b8; }
+    .pricing-card .desc {
+      font-size: 0.875rem;
+      /* EVAL TARGET: Contrast failure — #475569 on #1e293b = ~2.7:1 ratio */
+      color: #475569;
+      margin-bottom: 1.5rem;
+      line-height: 1.5;
+    }
+    .pricing-card ul { list-style: none; padding: 0; margin-bottom: 2rem; }
+    .pricing-card li {
+      padding: 0.5rem 0; font-size: 0.875rem; color: #94a3b8;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .pricing-card .cta {
+      display: block; width: 100%; padding: 0.75rem;
+      border: 1px solid #334155; background: transparent;
+      color: #e2e8f0; font-size: 0.875rem;
+      border-radius: 8px; /* EVAL TARGET: Inconsistent radius — cards 16px, buttons 8px */
+      cursor: pointer; text-align: center;
+    }
+    .pricing-card.featured .cta {
+      background: #3b82f6; border-color: #3b82f6; color: white;
+      border-radius: 12px; /* EVAL TARGET: Third radius value — 12px */
+    }
+
+    .faq {
+      max-width: 600px; margin: 0 auto; padding: 3rem 2rem;
+    }
+    .faq h2 { font-size: 1.5rem; color: #fff; margin-bottom: 2rem; text-align: center; }
+    .faq-item {
+      padding: 1rem 0; border-bottom: 1px solid #334155;
+    }
+    .faq-item dt { font-size: 0.95rem; color: #e2e8f0; font-weight: 500; }
+    .faq-item dd {
+      font-size: 0.85rem; color: #64748b; margin-top: 0.5rem; line-height: 1.6;
+      /* EVAL TARGET: Text clipped in narrow viewport */
+      max-height: 3.2em; overflow: hidden;
+    }
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav-brand">CloudSync</div>
+  </nav>
+  <section class="pricing-header">
+    <h1>Simple, Transparent Pricing</h1>
+    <p>Start free. Scale as you grow. No hidden fees.</p>
+  </section>
+  <div class="pricing-grid">
+    <div class="pricing-card">
+      <div class="tier">Starter</div>
+      <div class="price">$0 <span>/mo</span></div>
+      <div class="desc">Perfect for individuals and small projects getting started with cloud sync.</div>
+      <ul>
+        <li>5 GB Storage</li><li>2 Team Members</li><li>Basic Support</li><li>API Access</li>
+      </ul>
+      <button class="cta">Get Started Free</button>
+    </div>
+    <div class="pricing-card featured">
+      <div class="tier">Pro</div>
+      <div class="price">$29 <span>/mo</span></div>
+      <div class="desc">For growing teams that need more power, storage, and priority support.</div>
+      <ul>
+        <li>100 GB Storage</li><li>10 Team Members</li><li>Priority Support</li><li>Advanced API</li><li>Custom Domains</li>
+      </ul>
+      <button class="cta">Start Pro Trial</button>
+    </div>
+    <div class="pricing-card">
+      <div class="tier">Enterprise</div>
+      <div class="price">Custom</div>
+      <div class="desc">For organizations with advanced security, compliance, and scale requirements.</div>
+      <ul>
+        <li>Unlimited Storage</li><li>Unlimited Members</li><li>24/7 Support</li><li>SSO / SAML</li><li>SLA</li>
+      </ul>
+      <button class="cta">Contact Sales</button>
+    </div>
+  </div>
+  <section class="faq">
+    <h2>Frequently Asked Questions</h2>
+    <dl>
+      <div class="faq-item">
+        <dt>Can I change plans later?</dt>
+        <dd>Yes, you can upgrade or downgrade at any time. Changes take effect on your next billing cycle. Pro-rated refunds are available for annual plans.</dd>
+      </div>
+      <div class="faq-item">
+        <dt>Is there a free trial?</dt>
+        <dd>All paid plans include a 14-day free trial with full access to all features. No credit card required to start your trial period.</dd>
+      </div>
+    </dl>
+  </section>
+</body>
+</html>

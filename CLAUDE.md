@@ -1,58 +1,92 @@
 # design-loop
 
-Claude Code plugin for autonomous visual UI/UX iteration.
+Claude Code plugin for autonomous visual UI/UX iteration. Platform-agnostic — works on Claude Desktop and CLI.
+
+## Visual Intelligence Pyramid
+
+4 tiers of visual feedback, from instant to deep:
+
+```
+            /design-loop     Full iteration loop (10min)
+           /design-fix       Quick fix — score + fix top issue (30s)
+          /design-score      Visual score card (5s)
+         /design-lint        CSS static analysis (instant, no browser)
+```
+
+Each tier builds on the one below. Any frontend skill can call the tier that matches its need.
 
 ## Structure
 
-- `skills/design-loop/SKILL.md` — Entry point wrapper (delegates to orchestrator)
-- `orchestrator/orchestrator.md` — Core workflow coordinator (v2.0 thin orchestrator)
-- `orchestrator/interview-flow.md` — Rich mode selection interview with examples and adaptive questions
-- `orchestrator/scan-context.md` — Mode-aware project context, companion skill discovery, shared reference loading
-- `orchestrator/code-fingerprint.md` — Code-based brand token extraction (colors, typography, spacing, shape)
-- `orchestrator/reference-analyzer.md` — CU-only reference analysis, library recommendation, safe install
-- `orchestrator/loop-engine.md` — 7-step iteration loop with LOOP_STATE, plateau detection, decision trees
-- `orchestrator/report-engine.md` — Rich visual report generator: SVG charts, screenshot gallery, fidelity heatmap
-- `orchestrator/safety-engine.md` — Safety coordinator: checkpoints, test runner, audit log
-- `orchestrator/visual-fingerprint.md` — Visual analysis interface (designed, wired by Screenshot Mastery)
-- `orchestrator/screenshot-engine/` — Visual capture, diff, and fidelity scoring (baseline-init, iteration-workflow, fidelity-scoring)
-- `skills/modes/precision-polish/SKILL.md` — Surgical CSS fixes, tight constraints
-- `skills/modes/theme-respect-elevate/SKILL.md` — Design-token-aware, elevate within system
-- `skills/modes/creative-unleash/SKILL.md` — Bold redesign, all companion skills loaded
+- `skills/design-loop/SKILL.md` — Entry point for full loop (delegates to orchestrator)
+- `skills/design-lint/SKILL.md` — Entry point for CSS static analysis
+- `skills/design-score/SKILL.md` — Entry point for visual score card
+- `skills/design-fix/SKILL.md` — Entry point for quick fix
+- `orchestrator/orchestrator.md` — Core workflow coordinator (routes all 4 tiers)
+- `orchestrator/lint-engine.md` — CSS/Tailwind static analysis rules (no browser needed)
+- `orchestrator/scan-context.md` — Project context detection, companion skill discovery
+- `orchestrator/code-fingerprint.md` — Brand token extraction (colors, typography, spacing, shape)
+- `orchestrator/loop-engine.md` — 4-step iteration loop: Capture → Score → Fix → Verify
+- `orchestrator/report-engine.md` — Report generator (Markdown + HTML with SVG charts)
+- `orchestrator/safety-engine.md` — File checkpoints, build verification, audit log
+- `orchestrator/screenshot-engine/` — Visual capture, diff, and fidelity scoring
+  - `provider.md` — Provider abstraction: detection, capability matrix, abstract interface
+  - `provider-claude-preview.md` — Claude Preview MCP adapter
+  - `provider-playwright.md` — Playwright MCP adapter
+  - `provider-agent-browser.md` — agent-browser CLI adapter
+  - `baseline-init.md` — Baseline capture
+  - `iteration-workflow.md` — Per-iteration capture/diff
+  - `fidelity-scoring.md` — Visual + theme fidelity scoring
+- `skills/modes/polish/SKILL.md` — Refine within tokens, safe for production
+- `skills/modes/redesign/SKILL.md` — Bold transformation, loads companion skills
+- `skills/modes/score/SKILL.md` — Score-only mode (no fixing)
+- `skills/modes/fix/SKILL.md` — Single-iteration fix mode
 - `references/common/` — Shared references (rubric, screenshots, constraints, output-format)
-- `references/inspirations/sources.md` — Dynamic inspiration source directory (YAML knowledge base)
-- `agents/visual-reviewer.md` — Visual scoring agent (accepts mode weight overrides)
-- `agents/reviewers/precision-reviewer.md` — Pixel-level regression specialist (extends visual-reviewer)
-- `agents/reviewers/theme-respect-reviewer.md` — Design token compliance auditor (extends visual-reviewer)
-- `agents/reviewers/creative-unleash-reviewer.md` — Design conviction evaluator (extends visual-reviewer)
-- `agents/preview-agent.md` — Per-iteration change preview with code diffs and confirmation gate
-- `agents/apply-agent.md` — Per-iteration safe component scaffolding (shadcn, 21st.dev) with backup/verify/rollback
-- `commands/design-loop.md` — `/design-loop` slash command entry point
-- `commands/doop.md` — `/doop` shorthand alias
-- `commands/export-loop.md` — `/export-loop` slash command
-- `commands/version.md` — `/version` command (check for updates)
-- `hooks/hooks.json` — Plugin hook manifest
-- `hooks/stop-hook.sh` — Stop hook for autonomous iteration
-- `site/` — Interactive demo site (Next.js, deployed to design-loop.vercel.app)
-- `.claude-plugin/` — Plugin manifest for Claude Code marketplace
+- `agents/visual-reviewer.md` — Visual scoring agent (mode weight overrides)
+- `agents/reviewers/` — Mode-specific reviewers (polish, redesign)
+- `agents/preview-agent.md` — Change preview with confirmation gate
+- `commands/` — Slash commands (design-loop, doop, design-lint, design-score, design-fix, export-loop, version)
+- `hooks/` — Stop hook for autonomous iteration, session-start hook
+- `site/` — Interactive demo (design-loop.vercel.app)
 
 ## Architecture
 
-v2.0 uses a Thin Orchestrator pattern:
-- `SKILL.md` is a 15-line wrapper that delegates to `orchestrator/orchestrator.md`
-- The orchestrator handles shared phases: dependency check, context scan, interview, screenshots, loop control
-- Mode skills (`skills/modes/*/SKILL.md`) define only scoring weights + fix constraints (~80-120 lines each)
-- Shared references (`references/common/`) are loaded by the orchestrator, not duplicated per mode
-- Adding a new mode = 1 new file + 1 table row in the orchestrator
+v4.0 uses a Lean Orchestrator + Provider Abstraction pattern:
+
+### Tier Workflows
+
+| Tier           | Workflow                                                             | Browser? | Modifies files?     |
+| -------------- | -------------------------------------------------------------------- | -------- | ------------------- |
+| `design-lint`  | Fingerprint → lint-engine → report                                   | No       | No                  |
+| `design-score` | Fingerprint → browser → screenshot → score → report                  | Yes      | No                  |
+| `design-fix`   | Fingerprint → browser → screenshot → score → fix → re-score → report | Yes      | Yes (1-2 fixes)     |
+| `design-loop`  | Full 7-step orchestrator with iteration loop                         | Yes      | Yes (per iteration) |
+
+### Core Loop (4 Steps — used by design-loop and design-fix)
+
+1. **Capture** — Screenshot via provider abstraction + CSS layout audit
+2. **Score** — Independent reviewer subagent (mode-specific, prevents bias)
+3. **Fix** — Apply top issues within mode constraints, build-verify each
+4. **Verify** — After screenshots, fidelity gate, preview gate, decision tree
+
+### 4 Modes (for full loop)
+
+- **Polish** — Refine within design tokens. Safe for production.
+- **Redesign** — Bold transformation. Loads all companion skills.
+
+### Provider Layer
+
+- Auto-detects: Claude Preview MCP > Playwright MCP > agent-browser CLI
+- Unified PROVIDER.\* interface
+- Graceful degradation for missing capabilities
 
 ## Development
 
-- The plugin has no runtime code — the orchestrator + mode skills ARE the product
+- Plugin is prompt-only — no runtime code
 - Demo site: `cd site && npm run dev` → http://localhost:3000
-- Site uses `data-iteration` CSS custom property switching to demo 5 visual states
 
 ## Conventions
 
-- SKILL.md delegates to the orchestrator — do not put workflow logic in SKILL.md
+- SKILL.md delegates to orchestrator — no workflow logic in SKILL.md
 - Mode skills are declarative (weights + constraints), not procedural
-- Keep `*.png` gitignored — screenshots are development artifacts
-- Plugin version lives in `.claude-plugin/plugin.json` and `.claude-plugin/marketplace.json`
+- All visual operations use PROVIDER.\* abstraction
+- Keep \*.png gitignored — screenshots are development artifacts

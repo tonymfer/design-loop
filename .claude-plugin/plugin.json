@@ -1,7 +1,7 @@
 {
   "name": "design-loop",
-  "version": "2.0.0",
-  "description": "Autonomous visual iteration loop for frontend UI/UX with 3 operational modes: Precision Polish (surgical CSS fixes), Theme-Respect Elevate (design-system-aware), and Creative Unleash (bold redesign). Takes section-level screenshots, scores against 5 anti-slop criteria, fixes issues, and repeats until polished.",
+  "version": "4.0.0",
+  "description": "Visual intelligence pyramid for frontend UI/UX. 4 tiers: /design-lint (instant CSS analysis, no browser), /design-score (5s visual score card), /design-fix (30s quick fix), /design-loop (full iteration loop). AI can code your UI, but it can't see it — design-loop gives Claude eyes. Scores against 5 anti-slop criteria. 2 loop modes: Polish (refine within tokens) and Redesign (bold transformation). Auto-discovers companion design skills. Platform-agnostic.",
   "author": {
     "name": "tonymfer",
     "email": "tony.base.eth@gmail.com"
@@ -9,5 +9,21 @@
   "homepage": "https://design-loop.vercel.app",
   "repository": "https://github.com/tonymfer/design-loop",
   "license": "MIT",
-  "keywords": ["design", "ui", "ux", "visual-polish", "screenshots", "agent-browser", "iteration", "autonomous", "next.js", "react", "tailwind", "section-screenshots", "orchestrator", "modes", "brand-fingerprint", "screenshot-engine", "visual-diff", "mode-reviewers", "reference-analyzer", "loop-engine", "safety-engine"]
+  "keywords": [
+    "design",
+    "ui",
+    "ux",
+    "visual-polish",
+    "screenshots",
+    "autonomous",
+    "claude-code",
+    "claude-desktop",
+    "playwright",
+    "agent-browser",
+    "css",
+    "tailwind",
+    "react",
+    "next.js",
+    "companion-skills"
+  ]
 }

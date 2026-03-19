@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — Analytics Pro</title>
+  <style>
+    * { margin: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', system-ui, -apple-system, sans-serif; background: #f9fafb; color: #374151; }
+
+    /* EVAL: AI-generic dashboard — all cards same size, purple accents, centered everything */
+    .sidebar {
+      position: fixed; left: 0; top: 0; width: 240px; height: 100vh;
+      background: linear-gradient(180deg, #7c3aed, #6d28d9);
+      padding: 1.5rem;
+    }
+    .sidebar-brand { color: white; font-size: 1.25rem; font-weight: 700; margin-bottom: 2rem; }
+    .sidebar-link {
+      display: block; padding: 0.75rem 1rem; color: rgba(255,255,255,0.7);
+      text-decoration: none; font-size: 0.875rem; border-radius: 8px; margin-bottom: 0.25rem;
+    }
+    .sidebar-link.active { background: rgba(255,255,255,0.15); color: white; }
+
+    .main { margin-left: 240px; padding: 2rem; }
+    .main h1 { font-size: 1.5rem; font-weight: 600; margin-bottom: 1.5rem; color: #111827; }
+
+    /* EVAL TARGET: Identity < 4 — uniform card grid, all same height, same style */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .stat-card {
+      background: white;
+      border-radius: 12px;
+      padding: 1.5rem;
+      border: 1px solid #e5e7eb;
+    }
+    .stat-card .label { font-size: 0.875rem; color: #6b7280; margin-bottom: 0.5rem; }
+    .stat-card .value { font-size: 2rem; font-weight: 700; color: #111827; }
+    .stat-card .change { font-size: 0.75rem; color: #10b981; margin-top: 0.25rem; }
+
+    /* EVAL TARGET: Composition — uniform grid, no asymmetry */
+    .charts-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.5rem;
+    }
+    .chart-card {
+      background: white;
+      border-radius: 12px;
+      padding: 1.5rem;
+      border: 1px solid #e5e7eb;
+      height: 300px;
+    }
+    .chart-card h3 { font-size: 1rem; font-weight: 600; color: #374151; margin-bottom: 1rem; }
+    .chart-placeholder {
+      width: 100%; height: 220px; background: #f3f4f6; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      color: #9ca3af; font-size: 0.875rem;
+    }
+  </style>
+</head>
+<body>
+  <nav class="sidebar">
+    <div class="sidebar-brand">Analytics Pro</div>
+    <a href="#" class="sidebar-link active">Dashboard</a>
+    <a href="#" class="sidebar-link">Analytics</a>
+    <a href="#" class="sidebar-link">Reports</a>
+    <a href="#" class="sidebar-link">Users</a>
+    <a href="#" class="sidebar-link">Settings</a>
+  </nav>
+  <main class="main">
+    <h1>Dashboard</h1>
+    <div class="stats-grid">
+      <div class="stat-card"><div class="label">Total Users</div><div class="value">12,847</div><div class="change">+12.5%</div></div>
+      <div class="stat-card"><div class="label">Revenue</div><div class="value">$48,290</div><div class="change">+8.2%</div></div>
+      <div class="stat-card"><div class="label">Orders</div><div class="value">1,429</div><div class="change">+3.1%</div></div>
+      <div class="stat-card"><div class="label">Conversion</div><div class="value">3.2%</div><div class="change">+0.4%</div></div>
+    </div>
+    <div class="charts-grid">
+      <div class="chart-card"><h3>Revenue Over Time</h3><div class="chart-placeholder">Chart placeholder</div></div>
+      <div class="chart-card"><h3>User Growth</h3><div class="chart-placeholder">Chart placeholder</div></div>
+    </div>
+  </main>
+</body>
+</html>
