@@ -1,6 +1,6 @@
 ---
-name: design-lint
-description: Use when user wants instant visual quality feedback from code — no browser needed. Detects spacing issues, typography problems, contrast failures, token violations. Say "design lint", "lint the CSS", "check visual quality", or "design-lint".
+name: lint
+description: Use when user wants instant visual quality feedback from code — no browser needed. Detects spacing issues, typography problems, contrast failures, token violations. Say "doop lint", "design lint", "lint the CSS", "check visual quality".
 argument-hint: "[path]"
 allowed-tools: Read, Glob, Grep, Bash
 ---

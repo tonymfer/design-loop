@@ -1,9 +1,9 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
-  "name": "design-loop",
+  "name": "doop",
   "metadata": {
-    "description": "Autonomous visual iteration loop for frontend UI/UX — gives Claude eyes",
-    "version": "4.0.0"
+    "description": "Visual intelligence pyramid for frontend UI/UX — gives Claude eyes",
+    "version": "5.0.0"
   },
   "owner": {
     "name": "tonymfer",
@@ -11,9 +11,9 @@
   },
   "plugins": [
     {
-      "name": "design-loop",
-      "description": "Visual intelligence pyramid for frontend UI/UX. 4 tiers of feedback: /design-lint (instant CSS analysis, no browser), /design-score (5s visual score card), /design-fix (30s quick fix), /design-loop (full iteration loop). AI can code your UI, but it can't see it — design-loop gives Claude eyes. Scores against 5 anti-slop criteria. 2 loop modes: Polish and Redesign. Auto-discovers companion design skills. Platform-agnostic.",
-      "version": "4.0.0",
+      "name": "doop",
+      "description": "Visual intelligence pyramid for frontend UI/UX. 4 tiers: /doop:lint (instant CSS analysis), /doop:score (5s visual score card), /doop:fix (30s quick fix), /doop (full iteration loop). AI can code your UI, but it can't see it — doop gives Claude eyes. Scores against 5 anti-slop criteria. 2 loop modes: Polish and Redesign. Auto-discovers companion design skills. Platform-agnostic.",
+      "version": "5.0.0",
       "author": {
         "name": "tonymfer",
         "email": "tony.base.eth@gmail.com"
@@ -39,7 +39,8 @@
         "tailwind",
         "react",
         "next.js",
-        "companion-skills"
+        "companion-skills",
+        "doop"
       ],
       "tags": [
         "frontend",
@@ -47,8 +48,7 @@
         "design-polish",
         "screenshot-driven",
         "anti-slop",
-        "design-lint",
-        "design-score",
+        "doop",
         "visual-intelligence"
       ]
     }

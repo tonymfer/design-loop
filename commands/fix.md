@@ -1,5 +1,5 @@
 ---
-name: design-fix
+name: fix
 description: Quick visual fix — score, fix top issue, re-score, done in 30 seconds
 arguments:
   - name: url
@@ -7,20 +7,20 @@ arguments:
     required: false
 ---
 
-# /design-fix
+# /doop:fix
 
 Score it. Fix the top issue. Re-score. 30 seconds.
 
 ## What It Does
 
-1. Takes a screenshot and scores your page (like /design-score)
+1. Takes a screenshot and scores your page (like /doop:score)
 2. Applies the #1 most impactful fix (safe, within your tokens)
 3. Re-scores to show before/after improvement
 4. Shows delta and suggests next steps
 
 ## Instructions
 
-Invoke the `design-fix` skill. It runs one iteration of the design-loop engine.
+Invoke the `fix` skill. It runs one iteration of the loop engine.
 
 If arguments were provided:
 

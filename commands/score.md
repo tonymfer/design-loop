@@ -1,5 +1,5 @@
 ---
-name: design-score
+name: score
 description: Visual score card — one screenshot, one score, no fixing
 arguments:
   - name: url
@@ -7,7 +7,7 @@ arguments:
     required: false
 ---
 
-# /design-score
+# /doop:score
 
 One screenshot. One score. Done. No fixing, no loop.
 
@@ -25,7 +25,7 @@ A score card with 5 criteria (1-5), top issues, and recommended fixes. Takes ~5 
 
 ## Instructions
 
-Invoke the `design-score` skill. It takes a screenshot and scores — no files are modified.
+Invoke the `score` skill. It takes a screenshot and scores — no files are modified.
 
 If arguments were provided:
 

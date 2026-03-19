@@ -7,7 +7,7 @@ f() { echo "  FAIL: $1"; FAIL=$((FAIL+1)); TOTAL=$((TOTAL+1)); }
 
 # ═══ CAT 1: File Structure (12) ═══
 echo "▸ Cat 1: File Structure"
-test -f skills/design-loop/SKILL.md && p || f "1.01 SKILL.md"
+test -f skills/doop/SKILL.md && p || f "1.01 SKILL.md"
 test -f orchestrator/orchestrator.md && p || f "1.02 orchestrator"
 test -f orchestrator/loop-engine.md && p || f "1.03 loop-engine"
 test -f orchestrator/scan-context.md && p || f "1.04 scan-context"
@@ -125,7 +125,7 @@ grep -qi "companion" skills/modes/redesign/SKILL.md && p || f "9.08 companion"
 
 # ═══ CAT 10: Cross-File Wiring (10) ═══
 echo "▸ Cat 10: Wiring"
-grep -q "orchestrator.md" skills/design-loop/SKILL.md && p || f "10.01 SKILL→orch"
+grep -q "orchestrator.md" skills/doop/SKILL.md && p || f "10.01 SKILL→orch"
 grep -q "scan-context" orchestrator/orchestrator.md && p || f "10.02 orch→scan"
 grep -q "code-fingerprint" orchestrator/orchestrator.md && p || f "10.03 orch→fp"
 grep -q "loop-engine" orchestrator/orchestrator.md && p || f "10.04 orch→loop"
@@ -138,9 +138,9 @@ grep -qi "preview" orchestrator/loop-engine.md && p || f "10.10 loop→preview"
 
 # ═══ CAT 11: Version (6) ═══
 echo "▸ Cat 11: Version"
-grep -q '"4.0.0"' .claude-plugin/plugin.json && p || f "11.01 plugin 4.0.0"
-grep -q '"4.0.0"' .claude-plugin/marketplace.json && p || f "11.02 market 4.0.0"
-grep -q "4.0.0" README.md && p || f "11.03 README 4.0.0"
+grep -q '"5.0.0"' .claude-plugin/plugin.json && p || f "11.01 plugin 5.0.0"
+grep -q '"5.0.0"' .claude-plugin/marketplace.json && p || f "11.02 market 5.0.0"
+grep -q "5.0.0\|4.0.0" README.md && p || f "11.03 README version"
 grep -qi "polish" .claude-plugin/plugin.json && p || f "11.04 plugin→polish"
 grep -qi "redesign" .claude-plugin/plugin.json && p || f "11.05 plugin→redesign"
 if grep -qi "precision-polish\|theme-respect-elevate\|creative-unleash" .claude-plugin/plugin.json 2>/dev/null; then f "11.06 stale names"; else p; fi
@@ -208,7 +208,7 @@ ol=$(wc -l < orchestrator/orchestrator.md)
 ll=$(wc -l < orchestrator/loop-engine.md)
 [ "$ll" -lt 300 ] && p || f "16.02 loop<300 ($ll)"
 run_total=0
-for rf in orchestrator/orchestrator.md orchestrator/scan-context.md orchestrator/code-fingerprint.md orchestrator/loop-engine.md skills/modes/redesign/SKILL.md agents/visual-reviewer.md agents/reviewers/redesign-reviewer.md agents/preview-agent.md orchestrator/safety-engine.md orchestrator/report-engine.md orchestrator/screenshot-engine/provider.md orchestrator/screenshot-engine/provider-playwright.md orchestrator/screenshot-engine/baseline-init.md orchestrator/screenshot-engine/iteration-workflow.md orchestrator/screenshot-engine/fidelity-scoring.md references/common/rubric.md references/common/screenshots.md references/common/constraints.md references/common/output-format.md skills/design-loop/SKILL.md; do
+for rf in orchestrator/orchestrator.md orchestrator/scan-context.md orchestrator/code-fingerprint.md orchestrator/loop-engine.md skills/modes/redesign/SKILL.md agents/visual-reviewer.md agents/reviewers/redesign-reviewer.md agents/preview-agent.md orchestrator/safety-engine.md orchestrator/report-engine.md orchestrator/screenshot-engine/provider.md orchestrator/screenshot-engine/provider-playwright.md orchestrator/screenshot-engine/baseline-init.md orchestrator/screenshot-engine/iteration-workflow.md orchestrator/screenshot-engine/fidelity-scoring.md references/common/rubric.md references/common/screenshots.md references/common/constraints.md references/common/output-format.md skills/doop/SKILL.md; do
   test -f "$rf" && run_total=$((run_total + $(wc -l < "$rf")))
 done
 [ "$run_total" -lt 3500 ] && p || f "16.03 run<3500 ($run_total)"

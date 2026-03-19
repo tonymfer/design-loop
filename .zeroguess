@@ -1,0 +1,80 @@
+# ZeroGuess Contract — ALL decisions, guardrails, and defaults below are LOCKED. Agents MUST obey.
+# ⚠️ AGENTS: Read this file before ANY implementation.
+# Locked decisions are NON-NEGOTIABLE. Do not override them.
+# Guardrails are NON-NEGOTIABLE. They cannot be opted out of.
+# Assumed defaults are low-impact — override only if you have a reason.
+# Open questions MUST be asked before you decide them.
+# Humans: edit freely. Agents will respect your changes.
+
+project: doop
+created: 2026-03-19
+
+purpose:
+  what: "Rebrand design-loop plugin to 'doop' with short command names + create GitHub illustrations via Stitch"
+  why: "Better daily UX (5-char prefix vs 12), ownable brand name, professional GitHub presence"
+  locked: true
+
+decisions:
+  plugin_name:
+    value: "doop"
+    source: user
+    impact: high
+    reversibility: hard
+    locked: true
+
+  command_names:
+    value: "/doop (loop), /doop:lint, /doop:score, /doop:fix — short names"
+    source: user
+    impact: high
+    reversibility: medium
+    locked: true
+
+  backward_compat:
+    value: "Keep /design-loop as a hidden alias for backward compat"
+    source: user (confirmed via preview)
+    impact: medium
+    reversibility: easy
+    locked: true
+
+  illustrations:
+    value: "Pyramid hero image + one workflow diagram, created via Stitch"
+    source: surprise_me
+    impact: low
+    reversibility: easy
+    locked: true
+
+  illustration_tool:
+    value: "Stitch (stitch.withgoogle.com) — Google's design-md tool"
+    source: user
+    impact: low
+    reversibility: easy
+    locked: true
+
+guardrails:
+  - "All existing 212 tests must continue to pass after rename"
+  - "Do not change the internal orchestrator/engine file names — only user-facing names"
+  - "Do not modify site/ directory"
+  - "Illustrations go in repo assets (e.g., assets/ or .github/), not in plugin prompt files"
+
+assumed_defaults:
+  marketplace_name:
+    value: "doop"
+    reason: "Matches plugin name — marketplace.json 'name' field"
+    source: skipped
+  skill_names:
+    value: "lint, score, fix, doop (internal SKILL.md 'name' fields)"
+    reason: "Match the short command convention"
+    source: skipped
+  alias_mechanism:
+    value: "Keep existing commands/doop.md as primary, commands/design-loop.md as alias"
+    reason: "Flip the primary/alias relationship"
+    source: skipped
+  illustration_style:
+    value: "Material Design 3 style via Stitch — clean, minimal, dark mode"
+    reason: "Matches the plugin's developer tooling aesthetic"
+    source: surprise_me
+
+open_questions:
+  - "Exact illustration content/layout for the pyramid hero (will design in Stitch)"
+  - "Whether to rename the GitHub repo from design-loop to doop"
+  - "Whether the demo site URL changes (design-loop.vercel.app → doop.vercel.app)"

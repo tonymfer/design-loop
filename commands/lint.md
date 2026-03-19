@@ -1,5 +1,5 @@
 ---
-name: design-lint
+name: lint
 description: Instant visual quality lint — detects CSS/Tailwind issues from code alone, no browser needed
 arguments:
   - name: path
@@ -7,7 +7,7 @@ arguments:
     required: false
 ---
 
-# /design-lint
+# /doop:lint
 
 Instant visual quality feedback from code. No browser, no screenshot, no dev server.
 
@@ -23,7 +23,7 @@ Instant visual quality feedback from code. No browser, no screenshot, no dev ser
 
 ## Instructions
 
-Invoke the `design-lint` skill. It reads code files directly — no browser setup needed.
+Invoke the `lint` skill. It reads code files directly — no browser setup needed.
 
 If arguments were provided:
 

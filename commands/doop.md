@@ -1,44 +1,50 @@
 ---
 name: doop
-description: Shorthand for /design-loop — start an autonomous visual polish loop
+description: Start an autonomous visual iteration loop — screenshots, scores, fixes, repeats
 arguments:
   - name: url
     description: Target page URL (default: http://localhost:3000)
     required: false
   - name: iterations
-    description: Max iterations (default: 10, 0 for no limit)
+    description: Max iterations (default: 8 for polish, 12 for redesign, 0 for no limit)
     required: false
   - name: mode
-    description: "Mode: precision-polish, theme-respect-elevate, or creative-unleash"
+    description: "Mode: polish or redesign"
     required: false
 ---
 
 # /doop
 
-Shorthand alias for `/design-loop`. Just doop it.
+Start an autonomous visual iteration loop. Just doop it.
+
+## Modes
+
+| Mode         | Best For                                 | Risk Level                              |
+| ------------ | ---------------------------------------- | --------------------------------------- |
+| **Polish**   | Production sites, design-system projects | Low — refines within your tokens        |
+| **Redesign** | Greenfield, redesigns                    | High — bold moves, layout restructuring |
 
 ## Instructions
 
-Invoke the `design-loop` skill. It will load the orchestrator which handles:
-- Mode selection interview (Q0)
-- Dependency check (auto-install agent-browser)
+Invoke the `doop` skill. It loads the orchestrator which handles:
+
+- Mode selection (Polish or Redesign)
+- Provider detection (Claude Preview MCP > Playwright MCP > agent-browser)
 - Context scan (package.json, tailwind config, component libraries)
-- Interview (target page, focus area, max iterations)
-- Section screenshots (node mode or scroll mode)
-- Mode-specific scoring and fixing
-- Iteration loop with rollback safety
+- Section screenshots and scoring
+- Autonomous iteration with rollback safety
 
 If arguments were provided:
+
 - `url`: Skip target question, use provided URL
 - `iterations`: Skip iterations question, use provided value (0 = no limit)
 - `mode`: Skip mode question, use provided mode name
 
-## Prerequisites (auto-installed)
+## Also available
 
-Before starting, check and auto-install missing dependencies:
-
-1. **agent-browser** — run `agent-browser --version` via Bash. If unavailable, run:
-   `npm install -g agent-browser && agent-browser install`
-2. **Dev server** — verify it's running at the target URL. If not, tell the user to start it.
-
-Only stop if the dev server isn't running — agent-browser is installed automatically.
+| Command       | What it does        | Time  |
+| ------------- | ------------------- | ----- |
+| `/doop:lint`  | CSS static analysis | 0s    |
+| `/doop:score` | Visual score card   | 5s    |
+| `/doop:fix`   | Quick fix top issue | 30s   |
+| `/doop`       | Full iteration loop | 10min |

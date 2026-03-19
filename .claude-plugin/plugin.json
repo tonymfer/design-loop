@@ -1,7 +1,7 @@
 {
-  "name": "design-loop",
-  "version": "4.0.0",
-  "description": "Visual intelligence pyramid for frontend UI/UX. 4 tiers: /design-lint (instant CSS analysis, no browser), /design-score (5s visual score card), /design-fix (30s quick fix), /design-loop (full iteration loop). AI can code your UI, but it can't see it — design-loop gives Claude eyes. Scores against 5 anti-slop criteria. 2 loop modes: Polish (refine within tokens) and Redesign (bold transformation). Auto-discovers companion design skills. Platform-agnostic.",
+  "name": "doop",
+  "version": "5.0.0",
+  "description": "Visual intelligence pyramid for frontend UI/UX. 4 tiers: /doop:lint (instant CSS analysis, no browser), /doop:score (5s visual score card), /doop:fix (30s quick fix), /doop (full iteration loop). AI can code your UI, but it can't see it — doop gives Claude eyes. Scores against 5 anti-slop criteria. 2 loop modes: Polish (refine within tokens) and Redesign (bold transformation). Auto-discovers companion design skills. Platform-agnostic.",
   "author": {
     "name": "tonymfer",
     "email": "tony.base.eth@gmail.com"
@@ -24,6 +24,7 @@
     "tailwind",
     "react",
     "next.js",
-    "companion-skills"
+    "companion-skills",
+    "doop"
   ]
 }
